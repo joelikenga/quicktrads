@@ -31,7 +31,31 @@ export const Navbar = () => {
   const [currencyOptions, setCurrencyOptions] = useState<boolean>(false);
   const [categoryOptions, setCategoryOptions] = useState<boolean>(false);
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
-  const [profileOption, setProfileOption] = useState<boolean>(false)
+  const [profileOption, setProfileOption] = useState<boolean>(false);
+
+  // ----- for mobile -----
+  const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
+  const [menDropdown, setMenDropdown] = useState<boolean>(false);
+  const [womenDropdown, setWomenDropdown] = useState<boolean>(false);
+
+  const handleCollectionDropdown = () => {
+    setCollectionDropdown(!collectionDropdown);
+    setMenDropdown(false);
+    setWomenDropdown(false);
+  };
+
+  const handleMenDropdown = () => {
+    setCollectionDropdown(false);
+    setMenDropdown(!menDropdown);
+    setWomenDropdown(false);
+  };
+
+  const handleWomenDropdown = () => {
+    setCollectionDropdown(false);
+    setMenDropdown(false);
+    setWomenDropdown(!womenDropdown);
+  };
+  // -----  -----
 
   // const handleSearchOptions = () => {
   //   if (currencyOptions && searchValue.length > 0) {
@@ -61,10 +85,33 @@ export const Navbar = () => {
     setCurrencyOptions(!currencyOptions);
   };
 
+  const handleMobileCategoryOptions = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setCategoryOptions(!categoryOptions);
+    if (currencyOptions) setCurrencyOptions(false);
+    if (profileOption) setProfileOption(false);
+  };
+
+  const handleMobileCurrencyOptions = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setCurrencyOptions(!currencyOptions);
+    if (categoryOptions) setCategoryOptions(false);
+    if (profileOption) setProfileOption(false);
+  };
+
+  const handleMobileProfileOption = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setProfileOption(!profileOption);
+    if (categoryOptions) setCategoryOptions(false);
+    if (currencyOptions) setCurrencyOptions(false);
+  };
+
   const handleCategoryOptions = (event: React.MouseEvent) => {
     event.stopPropagation();
     setCategoryOptions(!categoryOptions);
   };
+
+  // };
 
   const handleMouseLeaveCategory = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -140,7 +187,11 @@ export const Navbar = () => {
               >
                 {nigeriaIcon()}
                 <p className="">NGN ₦</p>
-                {arrowDown()}
+                <i
+                  className={`${currencyOptions && "rotate-180"} duration-300`}
+                >
+                  {arrowDown()}
+                </i>
               </div>
               {/* ----- currency dropdown ----- */}
               {currencyOptions && (
@@ -215,21 +266,29 @@ export const Navbar = () => {
             {
               <div className="border-l pl-6 relative flex justify-center">
                 <div
-                  onClick={() => {setProfileOption(!profileOption)}}
+                  onClick={() => {
+                    setProfileOption(!profileOption);
+                  }}
                   className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer ${
-                    currencyOptions && "border-b-2"
+                    profileOption && "border-b-2"
                   } border-text_strong py-1 text-nowrap`}
                 >
                   <Image
                     className="min-w-[24px] max-w-[24px] min-h-[24px] max-h-[24px] rounded-full"
-                    src={"https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png"}
+                    src={
+                      "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png"
+                    }
                     priority
                     width={25}
                     height={25}
                     alt=""
                   />
                   <p className="">Frank Emeka</p>
-                  <i>{arrowDown()}</i>
+                  <i
+                    className={`${profileOption && "rotate-180"} duration-300`}
+                  >
+                    {arrowDown()}
+                  </i>
                 </div>
                 {/* ----- profile dropdown ----- */}
                 {profileOption && (
@@ -282,7 +341,7 @@ export const Navbar = () => {
 
         {/* ----- mobile dropdown ----- */}
         {mobileDropdown && (
-          <>
+          <div className="flex flex-col justify-between items-start">
             <div className="bg-background w-full h-full fixed top-0 left-0 px-6 pt-4 overflow-y-auto">
               {/* ----- search and close btn ----- */}
               <div className="flex justify-between items-center mb-12 ">
@@ -307,17 +366,24 @@ export const Navbar = () => {
                 <div className="w-full gap-6 flex flex-col  border-b pb-6">
                   <div className=" h-[46px flex justify-between items-start  ">
                     <div
+                      onClick={handleMobileCurrencyOptions}
                       className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1`}
                     >
                       {nigeriaIcon()}
                       <p className="">NGN ₦</p>
                     </div>
                     {/*  */}
-                    <>{arrowDown()}</>
+                    <i
+                      className={`${
+                        currencyOptions && "rotate-180"
+                      } duration-300`}
+                    >
+                      {arrowDown()}
+                    </i>
                   </div>
                   {/* ----- currency dropdown ----- */}
 
-                  {
+                  {currencyOptions && (
                     <div className="flex flex-row gap-4 ">
                       <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
                         <div className="gap-2 flex">
@@ -334,117 +400,244 @@ export const Navbar = () => {
                         {unChecked()}
                       </div>
                     </div>
-                  }
+                  )}
                 </div>
                 {/* ------------- category -------- */}
                 <div className="w-full gap-6 flex flex-col  border-b pb-6">
                   <div className=" h-[46px flex justify-between items-start  ">
                     <div
+                      onClick={handleMobileCategoryOptions}
                       className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                     >
                       {category()}
                       <p className="">Category</p>
                     </div>
                     {/*  */}
-                    <>{arrowDown()}</>
+                    <i
+                      className={`${
+                        categoryOptions && "rotate-180"
+                      } duration-300`}
+                    >
+                      {arrowDown()}
+                    </i>
                   </div>
 
                   {/* ----- dropdown  ----- */}
 
-                  {
-                    // collections dropdown
-                    <div className="">
-                      {/* ----- Collections ----- */}
-                      <div className=" h-[46px flex justify-between items-start  ">
-                        <div
-                          className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                        >
-                          <p className="">Collections</p>
-                        </div>
-                        {/*  */}
-                        <>{arrowDown()}</>
-                      </div>
-                      {/* ----- collections dropdown ----- */}
+                  {categoryOptions && (
+                    <>
                       {
-                        <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak">
-                          <Link href={``} className="">
-                            Features
-                          </Link>
-                          <Link href={``} className="">
-                            Trending
-                          </Link>
-                          <Link href={``} className="">
-                            Latest wear
-                          </Link>
+                        // collections dropdown
+                        <div className="">
+                          {/* ----- Collections ----- */}
+                          <div
+                            onClick={handleCollectionDropdown}
+                            className=" h-[46px flex justify-between items-start  "
+                          >
+                            <div
+                              className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
+                            >
+                              <p className="">Collections</p>
+                            </div>
+                            {/*  */}
+                            <i
+                              className={`${
+                                collectionDropdown && "rotate-180"
+                              } duration-300`}
+                            >
+                              {arrowDown()}
+                            </i>
+                          </div>
+                          {/* ----- collections dropdown ----- */}
+                          {collectionDropdown && (
+                            <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                              <Link href={``} className="">
+                                Features
+                              </Link>
+                              <Link href={``} className="">
+                                Trending
+                              </Link>
+                              <Link href={``} className="">
+                                Latest wear
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       }
-                    </div>
-                  }
-                  {/*  */}
-                  {
-                    // men dropdown
-                    <div className="">
-                      {/* ----- Men ----- */}
-                      <div className=" h-[46px flex justify-between items-start  ">
-                        <div
-                          className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                        >
-                          <p className="">Men</p>
-                        </div>
-                        {/*  */}
-                        <>{arrowDown()}</>
-                      </div>
-                      {/* ----- Men dropdown ----- */}
-                      {
-                        <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak">
-                          <Link href={``} className="">
-                            Features
-                          </Link>
-                          <Link href={``} className="">
-                            Trending
-                          </Link>
-                          <Link href={``} className="">
-                            Latest wear
-                          </Link>
-                        </div>
-                      }
-                    </div>
-                  }
 
-                  {
-                    <div className="">
-                      {/* ----- Women ----- */}
-                      <div className=" h-[46px flex justify-between items-start  ">
-                        <div
-                          className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                        >
-                          <p className="">Women</p>
-                        </div>
-                        {/*  */}
-                        <>{arrowDown()}</>
-                      </div>
-                      {/* ----- Women dropdown ----- */}
                       {
-                        <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak">
-                          <Link href={``} className="">
-                            Features
-                          </Link>
-                          <Link href={``} className="">
-                            Trending
-                          </Link>
-                          <Link href={``} className="">
-                            Latest wear
-                          </Link>
+                        // Men dropdown
+                        <div className="">
+                          {/* ----- Men ----- */}
+                          <div
+                            onClick={handleMenDropdown}
+                            className=" h-[46px flex justify-between items-start  "
+                          >
+                            <div
+                              className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
+                            >
+                              <p className="">Men</p>
+                            </div>
+                            {/*  */}
+                            <i
+                              className={`${
+                                menDropdown && "rotate-180"
+                              } duration-300`}
+                            >
+                              {arrowDown()}
+                            </i>
+                          </div>
+                          {/* ----- Men dropdown ----- */}
+                          {menDropdown && (
+                            <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                              <Link href={``} className="">
+                                Features
+                              </Link>
+                              <Link href={``} className="">
+                                Trending
+                              </Link>
+                              <Link href={``} className="">
+                                Latest wear
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       }
+
+                      {
+                        // Women dropdown
+                        <div className="">
+                          {/* ----- Women ----- */}
+                          <div
+                            onClick={handleWomenDropdown}
+                            className=" h-[46px flex justify-between items-start  "
+                          >
+                            <div
+                              className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
+                            >
+                              <p className="">Women</p>
+                            </div>
+                            {/*  */}
+                            <i
+                              className={`${
+                                womenDropdown && "rotate-180"
+                              } duration-300`}
+                            >
+                              {arrowDown()}
+                            </i>
+                          </div>
+                          {/* ----- Women dropdown ----- */}
+                          {womenDropdown && (
+                            <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                              <Link href={``} className="">
+                                Features
+                              </Link>
+                              <Link href={``} className="">
+                                Trending
+                              </Link>
+                              <Link href={``} className="">
+                                Latest wear
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      }
+                    </>
+                  )}
+                </div>
+                {/* -----profile----- */}
+                <div className="w-full gap-6 flex flex-col  border-b pb-6">
+                  <div className=" h-[46px flex justify-between items-start  ">
+                    <div
+                      onClick={handleMobileProfileOption}
+                      className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1 text-nowrap`}
+                    >
+                      <Image
+                        className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
+                        src={
+                          "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png"
+                        }
+                        priority
+                        width={25}
+                        height={25}
+                        alt=""
+                      />
+                      <p className="">Frank Emeka</p>
                     </div>
-                  }
+                    {/*  */}
+                    <i
+                      className={`${
+                        profileOption && "rotate-180"
+                      } duration-300`}
+                    >
+                      {arrowDown()}
+                    </i>
+                  </div>
+                  {/* ----- profile dropdown ----- */}
+
+                  {profileOption && (
+                    <div className="flex flex-col gap-4 ">
+                      <Link
+                        href={``}
+                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                      >
+                        Profile
+                      </Link>{" "}
+                      <Link
+                        href={``}
+                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                      >
+                        Orders
+                      </Link>{" "}
+                      <Link
+                        href={``}
+                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                      >
+                        Address
+                      </Link>{" "}
+                      <Link
+                        href={``}
+                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                      >
+                        Password
+                      </Link>{" "}
+                      <Link
+                        href={``}
+                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                      >
+                        Logout
+                      </Link>{" "}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* ----- quick contact ----- */}
             </div>
-          </>
+
+            {/*------------ socials ----------*/}
+            <div className="w-full bg-[red] flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
+              {/* ----- map ----- */}
+              <div className="flex justify-center items-center gap-1 font-medium">
+                <i>{map()}</i>
+                <p className="text-sm text-text_strong">
+                  27 fola osibo, Lagos, Nigeria
+                </p>
+              </div>
+
+              {/* ----- whatsapp ----- */}
+              <div className="flex justify-center items-center gap-1 font-medium">
+                <i>{whatsapp()}</i>
+                <p className="text-sm text-text_strong">+234 704 451 4049</p>
+              </div>
+
+              {/* ----- instagram ----- */}
+              <div className="flex justify-center items-center gap-1 font-medium">
+                <i>{instagram()}</i>
+                <p className="text-sm text-text_strong">Quicktrads</p>
+              </div>
+            </div>
+          </div>
         )}
       </nav>
 
