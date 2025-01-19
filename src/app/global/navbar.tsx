@@ -5,6 +5,7 @@ import {
   cart,
   category,
   checked,
+  closeBtn,
   humbuger,
   instagram,
   logo,
@@ -341,12 +342,12 @@ export const Navbar = () => {
 
         {/* ----- mobile dropdown ----- */}
         {mobileDropdown && (
-          <div className="flex flex-col justify-between items-start">
+          <div className="flex flex-col justify-between items-start z-50">
             <div className="bg-background w-full h-full fixed top-0 left-0 px-6 pt-4 overflow-y-auto">
               {/* ----- search and close btn ----- */}
               <div className="flex justify-between items-center mb-12 ">
                 {/* ----- search ----- */}
-                <div className="flex items-center gap-2 font-medium text-sm  bg-fill border-stroke_strong px-4 rounded-full border max-w-[260px] w-full  text-text_strong">
+                <div className="flex items-center gap-2 font-medium text-sm  bg-fill border-stroke_strong px-4 rounded-full border w-[260px w-full   text-text_strong">
                   {search()}
                   <input
                     type="text"
@@ -357,7 +358,9 @@ export const Navbar = () => {
                   />
                 </div>
                 {/* ----- colse btn -----  */}
-                {/* <></> */}
+                <i className="p-5" onClick={() => setMobileDropdown(!mobileDropdown)}>
+                  {closeBtn()}
+                </i>
               </div>
 
               {/* ----- currency znd category ------ */}
