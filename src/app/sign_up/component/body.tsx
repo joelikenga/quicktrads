@@ -4,16 +4,17 @@ import { celebration, checked, logo } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { signup_Step_1, signup_Step_2 } from "@/app/validationSchemas";
 import { useEffect, useState } from "react";
+import { resendOTP, userSignup, verifyOtp } from "@/app/utils/api/user/auth";
 
 type step_1 = {
   fullName: string;
   email: string;
-  Password: string;
+  password: string;
   confirmPassword: string;
 };
 type step_2 = {
@@ -25,6 +26,11 @@ interface steps {
   step2: step_2;
 }
 
+// const otpData = {
+//   email: string;
+//   otp: string;
+// };
+
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
@@ -35,16 +41,17 @@ const currentYear = new Date().getFullYear();
 export const Body = () => {
   const [step, setStep] = useState<number>(1);
   const [data, setData] = useState<steps>({
-    step1: { fullName: "", email: "", Password: "", confirmPassword: "" },
+    step1: { fullName: "", email: "", password: "", confirmPassword: "" },
     step2: { OTP: "" },
   });
 
   const [otpArray, setOtpArray] = useState(["", "", "", "", ""]);
-  const [isBlinking, setIsBlinking] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  // const [isBlinking, setIsBlinking] = useState<boolean>(false);
+  // const [showPassword, setShowPassword] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(1 * 60);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  // const [hasStarted, setHasStarted] = useState<boolean>(false);
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -55,7 +62,7 @@ export const Body = () => {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
-      setHasStarted(false);
+      // setHasStarted(false);
     }
 
     return () => clearInterval(timer);
@@ -69,7 +76,7 @@ export const Body = () => {
         setTimeLeft(1 * 60);
       }
       setIsRunning(true);
-      setHasStarted(true);
+      // setHasStarted(true);
     }
   };
 
@@ -88,16 +95,16 @@ export const Body = () => {
     resolver: zodResolver(step === 1 ? signup_Step_1 : signup_Step_2),
   });
 
-  const handleBack = () => {
-    if (step > 1) {
-      setStep((prev) => prev - 1);
-      if (step === 2) {
-        setValue("step1.email", data.step1.email);
-      } else if (step === 3) {
-        setValue("step2.OTP", data.step2.OTP);
-      }
-    }
-  };
+  // const handleBack = () => {
+  //   if (step > 1) {
+  //     setStep((prev) => prev - 1);
+  //     if (step === 2) {
+  //       setValue("step1.email", data.step1.email);
+  //     } else if (step === 3) {
+  //       setValue("step2.OTP", data.step2.OTP);
+  //     }
+  //   }
+  // };
 
   const handleForward = (formData: steps) => {
     if (step === 1) {
@@ -110,16 +117,67 @@ export const Body = () => {
     setStep((prevStep) => prevStep + 1);
   };
 
-  const onSubmit = (formData: steps) => {
+  const onSubmit: SubmitHandler<steps> = async (formData) => {
     // Check current step and validate accordingly
     if (step === 1) {
-      handleForward(formData);
+      if (formData.step1.password !== formData.step1.confirmPassword) {
+        console.error("Passwords do not match");
+        return;
+      }
+      // setLoading(true);
+      try {
+        const { confirmPassword, ...signupData } = formData.step1; // Exclude confirmPassword
+
+        if (formData.step1.password !== confirmPassword) {
+          console.error("Passwords do not match");
+          return;
+        }
+        console.log("Sending signup data:", signupData); // Log the request payload
+        const res = (await userSignup(signupData)) as { data: unknown }; // Specify type
+        console.log("User registration successful:", res);
+        handleForward(formData);
+        // setLoading(false);
+      } catch (error: unknown) {
+        console.error("User registration error:", error);
+        // setLoading(false);
+      }
     } else if (step === 2) {
       if (formData.step2.OTP.length === 5) {
-        handleForward(formData);
+        // setLoading(true);
+        try {
+          const otpValidationResponse = await verifyOtp(
+            data?.step1.email,
+            formData.step2.OTP
+          );
+          console.log("OTP validation :", otpValidationResponse.data);
+
+          if (otpValidationResponse) {
+            console.log("OTP validation successful:", otpValidationResponse);
+            handleForward(formData);
+            // setLoading(false);
+          } else {
+            console.log("Invalid OTP");
+            // setLoading(false);
+          }
+        } catch (error: unknown) {
+          console.error("OTP validation error:", error);
+          // setLoading(false);
+        }
       } else {
         console.log("Please enter a valid 5-digit OTP");
       }
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      // setLoading(true);
+      const res = await resendOTP(data?.step1?.email);
+      console.log("OTP resent successfully:", res);
+      // setLoading(false);
+    } catch (error: unknown) {
+      console.error("Resend OTP error:", error);
+      // setLoading(false);
     }
   };
 
@@ -237,17 +295,17 @@ export const Body = () => {
                     <p className="">Password</p>
                     <input
                       className={`${
-                        errors.step1?.Password
+                        errors.step1?.password
                           ? "border-error_1 shake bg-error_2"
                           : "focus:border-stroke_strong"
                       } w-full border  outline-none rounded-lg h-10 px-4 `}
                       placeholder="••••••••••"
                       type="password"
-                      {...register("step1.Password")}
+                      {...register("step1.password")}
                     />
-                    {errors.step1?.Password && (
+                    {errors.step1?.password && (
                       <div className="text-xs text-error_1">
-                        {errors.step1.Password.message}
+                        {errors.step1.password.message}
                       </div>
                     )}
 
@@ -283,6 +341,7 @@ export const Body = () => {
 
                     {/* ----- proceed button ----- */}
                     <button
+                      // onClick={handleForward(step1)}
                       type="submit"
                       className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
@@ -361,12 +420,15 @@ export const Body = () => {
                           </defs>
                         </svg>
                       )}
-                      <p className="text-text_strong">Didn’t get the code?</p>
+                      <p className="text-text_strong">{`Didn’t get the code?`}</p>
                       {isRunning ? (
                         <p className="text-success_1">{formatTime(timeLeft)}</p>
                       ) : (
                         <p
-                          onClick={() => toggleTimer()}
+                          onClick={() => {
+                            toggleTimer();
+                            handleResendOtp();
+                          }}
                           className="text-text_strong underline cursor-pointer"
                         >
                           Resend

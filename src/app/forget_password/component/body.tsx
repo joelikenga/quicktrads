@@ -5,13 +5,18 @@ import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   forgotPassword_Step_1,
   forgotPassword_Step_2,
   forgotPassword_Step_3,
 } from "@/app/validationSchemas";
+import {
+  forgetPassword,
+  resetPassword,
+  validateOtp,
+} from "@/app/utils/api/user/auth";
 
 type step_1 = {
   email: string;
@@ -46,11 +51,12 @@ export const Body = () => {
   });
 
   const [otpArray, setOtpArray] = useState(["", "", "", "", ""]);
-  const [isBlinking, setIsBlinking] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  // const [isBlinking, setIsBlinking] = useState<boolean>(false);
+  // const [showPassword, setShowPassword] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(1 * 60);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  // const [hasStarted, setHasStarted] = useState<boolean>(false);
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -61,7 +67,7 @@ export const Body = () => {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
-      setHasStarted(false);
+      // setHasStarted(false);
     }
 
     return () => clearInterval(timer);
@@ -75,7 +81,7 @@ export const Body = () => {
         setTimeLeft(1 * 60);
       }
       setIsRunning(true);
-      setHasStarted(true);
+      // setHasStarted(true);
     }
   };
 
@@ -100,16 +106,16 @@ export const Body = () => {
     ),
   });
 
-  const handleBack = () => {
-    if (step > 1) {
-      setStep((prev) => prev - 1);
-      if (step === 2) {
-        setValue("step1.email", data.step1.email);
-      } else if (step === 3) {
-        setValue("step2.OTP", data.step2.OTP);
-      }
-    }
-  };
+  // const handleBack = () => {
+  //   if (step > 1) {
+  //     setStep((prev) => prev - 1);
+  //     if (step === 2) {
+  //       setValue("step1.email", data.step1.email);
+  //     } else if (step === 3) {
+  //       setValue("step2.OTP", data.step2.OTP);
+  //     }
+  //   }
+  // };
 
   const handleForward = (formData: steps) => {
     if (step === 1) {
@@ -125,21 +131,60 @@ export const Body = () => {
     setStep((prevStep) => prevStep + 1);
   };
 
-  const onSubmit = (formData: steps) => {
+  const onSubmit: SubmitHandler<steps> = async (formData) => {
     // Check current step and validate accordingly
     if (step === 1) {
-      handleForward(formData);
+      // setLoading(true);
+      try {
+        const res = (await forgetPassword(formData.step1.email)) as { data: unknown }; // Specify type
+        console.log("Sending forget password data:", data.step1.email); // Log the request payload
+        console.log("User registration successful:", res);
+        handleForward(formData);
+        // setLoading(false);
+      } catch (error: unknown) {
+        console.error("User registration error:", error);
+        // setLoading(false);
+      }
     } else if (step === 2) {
       if (formData.step2.OTP.length === 5) {
-        handleForward(formData);
+        // setLoading(true);
+        try {
+          const otpValidationResponse = await validateOtp(
+            data.step1.email,
+            formData.step2.OTP
+          );
+          console.log("OTP validation :", otpValidationResponse.data);
+
+          if (otpValidationResponse) {
+            console.log("OTP validation successful:", otpValidationResponse);
+            handleForward(formData);
+            // setLoading(false);
+          } else {
+            console.log("Invalid OTP");
+            // setLoading(false);
+          }
+        } catch (error: unknown) {
+          console.error("OTP validation error:", error);
+          // setLoading(false);
+        }
       } else {
         console.log("Please enter a valid 5-digit OTP");
       }
     } else if (step === 3) {
-      if (formData.step3.Password === formData.step3.confirmPassword) {
+      // setLoading(true);
+      try {
+        const reset = (await resetPassword(
+          formData.step1.email,
+          formData.step2.OTP,
+          formData.step3.Password
+        )) as { data: unknown }; // Specify type
+        console.log("successful reset:", reset);
+
         handleForward(formData);
-      } else {
-        console.log("Passwords do not match");
+        // setLoading(false);
+      } catch (error: unknown) {
+        console.error("reset error:", error);
+        // setLoading(false);
       }
     }
   };
@@ -355,9 +400,9 @@ export const Body = () => {
                 )}
 
                 {step === 3 && (
-                  <>
+                  <div className="w-full">
                     <div className="flex flex-col w-full text-text_strong text-sm font-normal gap-2">
-                      <p className="">Email</p>
+                      <p className="">Password</p>
 
                       <input
                         className={`${
@@ -399,11 +444,11 @@ export const Body = () => {
                     {/* ----- proceed button ----- */}
                     <button
                       type="submit"
-                      className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
+                      className="w-full bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
                       <p>Proceed</p>
                     </button>
-                  </>
+                  </div>
                 )}
 
                 {step === 4 && (

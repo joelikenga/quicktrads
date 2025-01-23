@@ -7,11 +7,27 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { AxiosResponse } from "axios";
+import { userLogin } from "@/app/utils/api/user/auth";
+import nookies from "nookies";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type FormValues = {
   email: string;
   password: string;
 };
+
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiry: string;
+  refreshTokenExpiry: string;
+  user: {
+    id: string;
+    fullName: string;
+  };
+}
 
 const lora = Lora({
   variable: "--font-lora",
@@ -21,19 +37,53 @@ const lora = Lora({
 const currentYear = new Date().getFullYear();
 
 export const Body = () => {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(login),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    // setLoading(true);
+  useEffect(() => {
+    const cookies = nookies.get(null);
+    if (!cookies.accessToken) {
+      router.push("/login");
+    } else {
+      router.push("/");
+    }
+  }, [router]);
 
-    console.log(data);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    try {
+      const res: AxiosResponse<LoginResponse> = (await userLogin(data)) as AxiosResponse<LoginResponse>;
+      const loginData = res.data;
+      const { accessToken, refreshToken } = loginData;
+
+      // Set cookies using nookies
+      nookies.set(null, "accessToken", accessToken, {
+        maxAge: 1 * 24 * 60 * 60, // Cookie expires in a day
+        path: "/",
+      });
+
+      nookies.set(null, "refreshToken", refreshToken, {
+        maxAge: 3 * 24 * 60 * 60, // Cookie expires in 3 days
+        path: "/",
+      });
+
+      if (!accessToken) {
+        throw new Error("Access token not found in the login response");
+      }
+
+      console.log("Access token", accessToken);
+      console.log("Login successful:", res);
+
+      router.push("/");
+    } catch (error: unknown) {
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -90,7 +140,7 @@ export const Body = () => {
 
                 {/* ----- password ----- */}
                 <div className="flex flex-col w-full text-text_strong text-sm font-normal gap-2">
-                  <p className="">Email</p>
+                  <p className="">Password</p>
 
                   <input
                     className={`${

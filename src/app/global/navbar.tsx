@@ -119,6 +119,27 @@ export const Navbar = () => {
     setCategoryOptions(false);
   };
 
+//   const logout = () => {
+//     // Clear cookies
+//     nookies.destroy(null, "token", { path: "/" });
+//     nookies.destroy(null, "refreshToken", { path: "/" });   
+//      nookies.destroy(null, "token", { path: "/en/admin-dashboard" });
+//     nookies.destroy(null, "refreshToken", { path: "/en/admin-dashboard" });
+
+//     // Clear client-side state
+//     localStorage.clear();
+//     sessionStorage.clear();
+
+//     // Show logout success message
+//     showToast("Logged out", "success");
+
+//     // Redirect to login page
+//     router.push("/en/admin-dashboard/login");
+//   };
+
+//   return logout;
+// };
+
   return (
     <div className="w-full z-50 ">
       {/* ----- Quick contact ----- */}

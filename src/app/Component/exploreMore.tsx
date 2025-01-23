@@ -36,7 +36,7 @@ const content = [
 
 export const ExploreMore = () => {
   return (
-    <div className="w-ful px-6 md:px-10  lg:px-20 flex flex-col gap-4 mt-12 z-0">
+    <div className="w-full px-6 md:px-10  lg:px-20 flex flex-col gap-4 mt-12 z-0">
       <div className="w-full max-w-7xl mx-auto">
         {/* ----- title and view all ----- */}
         <div className="flex justify-start items-center font-normal text-text_strong">
