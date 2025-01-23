@@ -11,7 +11,7 @@ const currentYear = new Date().getFullYear();
 
 export const Footer = () => {
   return (
-    <div className="w-full mt-[102px] mb-12">
+    <div className="w-full mt-[102px] mb-12 pb-4 md:pb-0">
       {/* ----- instagram connect ----- */}
       <div className="w-full max-w-[725px] mx-auto text-center items-center flex flex-col gap-8 mb-[77px]">
         <div className="flex flex-col gap-4 mx-auto w-full items-center">
@@ -34,15 +34,15 @@ export const Footer = () => {
       </div>
 
       {/* ----- logo and link ----- */}
-      <div className="w-full my-12 px-6 md:px-20">
-        i
+      <div className="w-full mt-12 px-6 md:px-20">
+        
         <div className="w-full max-w-7xl mx-auto flex flex-col items-center gap-8 ">
           <div className="flex flex-col gap-12 items-center justify-between">
             <i className="flex justify-center ">
               {/* ----- logo ----- */}
               {logo()}
             </i>
-            <div className="flex flex-row flex-wrap justify-center gap-2 md:gap-6 font-medium">
+            <div className="flex flex-row flex-wrap justify-center gap-6  font-medium">
               <Link href={``}>
                 <p className="text-text_strong text-base">About us</p>
               </Link>
@@ -73,10 +73,10 @@ export const Footer = () => {
       </div>
 
       {/* ----- socials and reserved rights ----- */}
-      <div className="w-full px-6 md:px-20 flex items-center  bg-background h-12">
-        <div className="w-full max-w-7xl mx-auto justify-between flex flex-col lg:flex-row flex-wrap lg:flex-nowrap items-center  gap-6">
+      <div className="w-full mt-[88px] px-6 md:px-20 flex items-center  bg-background h-12 ">
+        <div className="w-full max-w-7xl mx-auto justify-between flex flex-col lg:flex-row flex-wrap lg:flex-nowrap items-center  gap-y-12 gap-6">
           {/* socials */}
-          <div className="w-full flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
+          <div className="w-full flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-4 md:gap-6">
             {/* ----- map ----- */}
             <div className="flex justify-center items-center gap-1 font-medium">
               <i>{map()}</i>

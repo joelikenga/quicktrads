@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import {  Raleway, } from "next/font/google";
+import {  Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const raleway = Raleway({
+const openSans = Open_Sans({
   variable: "--font-raleway",
   subsets: ["latin"],
 });
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${raleway.className}  antialiased`}
+        className={`${openSans.className}  antialiased`}
       >
         {children}
       </body>
