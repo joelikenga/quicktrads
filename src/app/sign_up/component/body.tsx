@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signup_Step_1, signup_Step_2 } from "@/app/validationSchemas";
 import { useEffect, useState } from "react";
 import { resendOTP, userSignup, verifyOtp } from "@/app/utils/api/user/auth";
-import { set } from "zod";
+// import { set } from "zod";
 
 type step_1 = {
   fullName: string;
@@ -128,6 +128,8 @@ export const Body = () => {
       try {
         const { confirmPassword, ...signupData } = formData.step1;
         const res = (await userSignup(signupData)) as { data: unknown };
+        console.log("validation:", confirmPassword === formData.step1.password);
+        console.log("User registration response:", res === null);
         setData((prevData) => ({ ...prevData, step1: formData.step1 }));
         setStep(2);
       } catch (error: unknown) {

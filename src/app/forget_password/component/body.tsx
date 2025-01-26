@@ -24,7 +24,7 @@ import {
   resetPassword,
   validateOtp,
 } from "@/app/utils/api/user/auth";
-import { set } from "zod";
+// import { set } from "zod";
 
 type step_1 = {
   email: string;
@@ -146,6 +146,7 @@ export const Body = () => {
       setLoading(true);
       try {
         const res = await forgetPassword(formData.step1.email);
+        console.log(res === null);
         setData((prevData) => ({
           ...prevData,
           step1: formData.step1,
@@ -190,6 +191,7 @@ export const Body = () => {
           data.step2.OTP,
           formData.step3.Password
         );
+        console.log(reset === null);
         setData((prevData) => ({
           ...prevData,
           step3: formData.step3,
