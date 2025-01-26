@@ -728,3 +728,73 @@ export const trash = () => {
     </svg>
   );
 };
+
+export const eyeOpen = () => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M17.9536 9.21425C18.207 9.56951 18.3337 9.74715 18.3337 10.0101C18.3337 10.273 18.207 10.4507 17.9536 10.8059C16.8152 12.4022 13.908 15.8434 10.0003 15.8434C6.09264 15.8434 3.18541 12.4022 2.04703 10.8059C1.79367 10.4507 1.66699 10.273 1.66699 10.0101C1.66699 9.74715 1.79367 9.56951 2.04703 9.21425C3.18541 7.61796 6.09264 4.17676 10.0003 4.17676C13.908 4.17676 16.8152 7.61796 17.9536 9.21425Z"
+        stroke="#525252"
+        stroke-width="1.25"
+      />
+      <path
+        d="M12.5005 10.0103C12.5005 8.62954 11.3812 7.51025 10.0005 7.51025C8.61978 7.51025 7.50049 8.62954 7.50049 10.0103C7.50049 11.391 8.61978 12.5103 10.0005 12.5103C11.3812 12.5103 12.5005 11.391 12.5005 10.0103Z"
+        stroke="#525252"
+        stroke-width="1.25"
+      />
+    </svg>
+  );
+};
+
+export const eyeClose = () => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18.3332 6.67676C18.3332 6.67676 14.9998 11.6768 9.99984 11.6768C4.99984 11.6768 1.6665 6.67676 1.6665 6.67676"
+        stroke="#525252"
+        stroke-width="1.25"
+        stroke-linecap="round"
+      />
+      <path
+        d="M12.5 11.26L13.75 13.3433"
+        stroke="#525252"
+        stroke-width="1.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16.6665 9.17676L18.3332 10.8434"
+        stroke="#525252"
+        stroke-width="1.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M1.6665 10.8435L3.33317 9.17684"
+        stroke="#525252"
+        stroke-width="1.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M7.5 11.26L6.25 13.3433"
+        stroke="#525252"
+        stroke-width="1.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
