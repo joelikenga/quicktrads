@@ -37,29 +37,29 @@ export const forgotPassword_Step_2 = z.object({
 });
 
 export const forgotPassword_Step_3 = z.object({
-  step3: z
-    .object({
-      password: z
-        .string()
-        .min(8, "Password must be at least 8 characters long")
-        .refine((value) => /[A-Z]/.test(value), {
-          message: "Password must include at least one uppercase letter",
-        })
-        .refine((value) => /[a-z]/.test(value), {
-          message: "Password must include at least one lowercase letter",
-        })
-        .refine((value) => /\d/.test(value), {
-          message: "Password must include at least one number",
-        })
-        .refine((value) => /[!@#$%^&*(),.?":{}|<>-]/.test(value), {
-          message: "Password must include at least one special character",
-        }),
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    }),
+  step3: z.object({
+    Password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(50, "Password must not exceed 50 characters")
+      .refine((value) => /[A-Z]/.test(value), {
+        message: "Password must include at least one uppercase letter",
+      })
+      .refine((value) => /[a-z]/.test(value), {
+        message: "Password must include at least one lowercase letter",
+      })
+      .refine((value) => /\d/.test(value), {
+        message: "Password must include at least one number",
+      })
+      .refine((value) => /[!@#$%^&*(),.?":{}|<>-]/.test(value), {
+        message: "Password must include at least one special character",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.Password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  }),
 });
 
 export const signup_Step_1 = z.object({
