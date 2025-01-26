@@ -1,6 +1,13 @@
 "use client";
 
-import { celebration, checked, eyeClose, eyeOpen, logo } from "@/app/global/svg";
+import {
+  celebration,
+  checked,
+  eyeClose,
+  eyeOpen,
+  logo,
+  spinner,
+} from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +24,7 @@ import {
   resetPassword,
   validateOtp,
 } from "@/app/utils/api/user/auth";
+// import { set } from "zod";
 
 type step_1 = {
   email: string;
@@ -56,8 +64,9 @@ export const Body = () => {
   const [timeLeft, setTimeLeft] = useState<number>(1 * 60);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   // const [hasStarted, setHasStarted] = useState<boolean>(false);
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -134,13 +143,10 @@ export const Body = () => {
 
   const onSubmit: SubmitHandler<steps> = async (formData) => {
     if (step === 1) {
+      setLoading(true);
       try {
-        const res = (await forgetPassword(formData.step1.email)) as {
-          data: unknown;
-        };
-        console.log("Sending forget password data:", formData.step1.email);
-        console.log("User registration successful:", res);
-        // Save step 1 data
+        const res = await forgetPassword(formData.step1.email);
+        console.log(res === null);
         setData((prevData) => ({
           ...prevData,
           step1: formData.step1,
@@ -148,35 +154,35 @@ export const Body = () => {
         setStep(2);
       } catch (error: unknown) {
         console.error("User registration error:", error);
+      } finally {
+        setLoading(false);
       }
     } else if (step === 2) {
       if (formData.step2.OTP.length === 5) {
+        setLoading(true);
         try {
           const otpValidationResponse = await validateOtp(
             data.step1.email,
             formData.step2.OTP
           );
-          console.log("OTP validation :", otpValidationResponse.data);
-
           if (otpValidationResponse) {
-            // Save step 2 data
             setData((prevData) => ({
               ...prevData,
               step2: formData.step2,
             }));
             setStep(3);
-          } else {
-            console.log("Invalid OTP");
           }
         } catch (error: unknown) {
           console.error("OTP validation error:", error);
+        } finally {
+          setLoading(false);
         }
-      } else {
-        console.log("Please enter a valid 5-digit OTP");
       }
     } else if (step === 3) {
+      setLoading(true);
       if (formData.step3.Password !== formData.step3.confirmPassword) {
         console.error("Passwords do not match");
+        setLoading(false);
         return;
       }
       try {
@@ -185,8 +191,7 @@ export const Body = () => {
           data.step2.OTP,
           formData.step3.Password
         );
-        console.log("successful reset:", reset);
-        // Save step 3 data
+        console.log(reset === null);
         setData((prevData) => ({
           ...prevData,
           step3: formData.step3,
@@ -194,6 +199,8 @@ export const Body = () => {
         setStep(4);
       } catch (error: unknown) {
         console.error("reset error:", error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -311,7 +318,11 @@ export const Body = () => {
                       type="submit"
                       className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
-                      <p>Proceed</p>
+                      {loading ? (
+                        <i className="animate-spin ">{spinner()} </i>
+                      ) : (
+                        <p>Proceed</p>
+                      )}
                     </button>
                   </div>
                 )}
@@ -403,7 +414,11 @@ export const Body = () => {
                       type="submit"
                       className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
-                      <p>Proceed</p>
+                      {loading ? (
+                        <i className="animate-spin ">{spinner()} </i>
+                      ) : (
+                        <p>Proceed</p>
+                      )}
                     </button>
                   </>
                 )}
@@ -412,8 +427,6 @@ export const Body = () => {
                   <div className="w-full">
                     <div className="flex flex-col w-full text-text_strong text-sm font-normal gap-2">
                       <p className="">Password</p>
-
-
 
                       <div className="relative">
                         <input
@@ -445,16 +458,27 @@ export const Body = () => {
                     <div className="flex flex-col w-full text-text_strong text-sm font-normal gap-2 mt-4">
                       <p className="">Confirm password</p>
 
-                      <input
-                        className={`${
-                          errors.step3?.confirmPassword
-                            ? "border-error_1 shake bg-error_2"
-                            : "focus:border-stroke_strong"
-                        } w-full border  outline-none rounded-lg h-10 px-4 `}
-                        placeholder="••••••••••"
-                        type={showPassword ? "text" : "password"}
-                        {...register("step3.confirmPassword")}
-                      />
+                      <div className="relative">
+                        <input
+                          className={`${
+                            errors.step3?.confirmPassword
+                              ? "border-error_1 shake bg-error_2"
+                              : "focus:border-stroke_strong"
+                          } w-full border  outline-none rounded-lg h-10 px-4 `}
+                          placeholder="••••••••••"
+                          type={showPassword1 ? "text" : "password"}
+                          {...register("step3.confirmPassword")}
+                        />
+                        <span
+                          onClick={() => {
+                            setShowPassword1(!showPassword1);
+                          }}
+                          className="absolute right-4 top-3 bg-background cursor-pointer  flex items-center "
+                        >
+                          <i>{showPassword1 ? eyeClose() : eyeOpen()}</i>
+                        </span>
+                      </div>
+
                       {errors.step3?.confirmPassword && (
                         <div className="text-xs text-error_1">
                           {errors.step3.confirmPassword.message}
@@ -467,7 +491,11 @@ export const Body = () => {
                       type="submit"
                       className="w-full bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
-                      <p>Proceed</p>
+                      {loading ? (
+                        <i className="animate-spin ">{spinner()} </i>
+                      ) : (
+                        <p>Proceed</p>
+                      )}
                     </button>
                   </div>
                 )}
