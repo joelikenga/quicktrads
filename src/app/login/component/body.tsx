@@ -1,6 +1,6 @@
 "use client";
 
-import { eyeClose, eyeOpen, logo } from "@/app/global/svg";
+import { eyeClose, eyeOpen, logo, spinner } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -48,6 +48,7 @@ export const Body = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const cookies = nookies.get(null);
@@ -59,6 +60,7 @@ export const Body = () => {
   }, [router]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setLoading(true);
     try {
       const res: AxiosResponse<LoginResponse> = (await userLogin(
         data
@@ -83,10 +85,11 @@ export const Body = () => {
 
       console.log("Access token", accessToken);
       console.log("Login successful:", res);
-
+      setLoading(false);
       router.push("/");
     } catch (error: unknown) {
       console.error("Login error:", error);
+      setLoading(false);
     }
   };
 
@@ -185,7 +188,7 @@ export const Body = () => {
                   type="submit"
                   className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                 >
-                  <p>Login</p>
+                  {loading ? <i className="animate-spin ">{spinner()} </i>: <p>Login</p>}
                 </button>
 
                 <div className="w-full flex justify-center text-sm mt-8">

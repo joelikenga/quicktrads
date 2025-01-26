@@ -1,6 +1,13 @@
 "use client";
 
-import { celebration, checked, eyeClose, eyeOpen, logo } from "@/app/global/svg";
+import {
+  celebration,
+  checked,
+  eyeClose,
+  eyeOpen,
+  logo,
+  spinner,
+} from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signup_Step_1, signup_Step_2 } from "@/app/validationSchemas";
 import { useEffect, useState } from "react";
 import { resendOTP, userSignup, verifyOtp } from "@/app/utils/api/user/auth";
+// import { set } from "zod";
 
 type step_1 = {
   fullName: string;
@@ -51,9 +59,10 @@ export const Body = () => {
   const [timeLeft, setTimeLeft] = useState<number>(1 * 60);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   // const [hasStarted, setHasStarted] = useState<boolean>(false);
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -110,41 +119,41 @@ export const Body = () => {
 
   const onSubmit: SubmitHandler<steps> = async (formData) => {
     if (step === 1) {
+      setLoading(true);
       if (formData.step1.password !== formData.step1.confirmPassword) {
         console.error("Passwords do not match");
+        setLoading(false);
         return;
       }
       try {
         const { confirmPassword, ...signupData } = formData.step1;
-        console.log("Sending signup data:", confirmPassword === signupData.password);
         const res = (await userSignup(signupData)) as { data: unknown };
-        console.log("User registration successful:", res);
+        console.log("validation:", confirmPassword === formData.step1.password);
+        console.log("User registration response:", res === null);
         setData((prevData) => ({ ...prevData, step1: formData.step1 }));
-        setStep(2); // Directly set the step instead of using handleForward
+        setStep(2);
       } catch (error: unknown) {
         console.error("User registration error:", error);
+      } finally {
+        setLoading(false);
       }
     } else if (step === 2) {
+      setLoading(true);
       if (formData.step2.OTP.length === 5) {
         try {
           const otpValidationResponse = await verifyOtp(
             data?.step1.email,
             formData.step2.OTP
           );
-          console.log("OTP validation :", otpValidationResponse.data);
-
           if (otpValidationResponse) {
-            console.log("OTP validation successful:", otpValidationResponse);
             setData((prevData) => ({ ...prevData, step2: formData.step2 }));
-            setStep(3); // Directly set the step instead of using handleForward
-          } else {
-            console.log("Invalid OTP");
+            setStep(3);
           }
         } catch (error: unknown) {
           console.error("OTP validation error:", error);
+        } finally {
+          setLoading(false);
         }
-      } else {
-        console.log("Please enter a valid 5-digit OTP");
       }
     }
   };
@@ -162,14 +171,14 @@ export const Body = () => {
   // };
 
   const handleResendOtp = async () => {
+    setLoading(true);
     try {
-      // setLoading(true);
       const res = await resendOTP(data?.step1?.email);
       console.log("OTP resent successfully:", res);
-      // setLoading(false);
     } catch (error: unknown) {
       console.error("Resend OTP error:", error);
-      // setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -286,27 +295,26 @@ export const Body = () => {
 
                     <p className="">Password</p>
 
-
-                  <div className="relative">
-                    <input
-                      className={`${
-                        errors.step1?.password
-                          ? "border-error_1 shake bg-error_2"
-                          : "focus:border-stroke_strong"
-                      } w-full border  outline-none rounded-lg h-10 px-4 `}
-                      placeholder="••••••••••"
-                      type={showPassword ? "text" : "password"}
-                      {...register("step1.password")}
-                    />
-                    <span
-                      onClick={() => {
-                        setShowPassword(!showPassword);
-                      }}
-                      className="absolute right-4 top-3 bg-background cursor-pointer  flex items-center "
-                    >
-                      <i>{showPassword ? eyeClose() : eyeOpen()}</i>
-                    </span>
-                  </div>
+                    <div className="relative">
+                      <input
+                        className={`${
+                          errors.step1?.password
+                            ? "border-error_1 shake bg-error_2"
+                            : "focus:border-stroke_strong"
+                        } w-full border  outline-none rounded-lg h-10 px-4 `}
+                        placeholder="••••••••••"
+                        type={showPassword ? "text" : "password"}
+                        {...register("step1.password")}
+                      />
+                      <span
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        className="absolute right-4 top-3 bg-background cursor-pointer  flex items-center "
+                      >
+                        <i>{showPassword ? eyeClose() : eyeOpen()}</i>
+                      </span>
+                    </div>
 
                     {errors.step1?.password && (
                       <div className="text-xs text-error_1">
@@ -315,16 +323,27 @@ export const Body = () => {
                     )}
 
                     <p className="">Confirm Password</p>
-                    <input
-                      className={`${
-                        errors.step1?.confirmPassword
-                          ? "border-error_1 shake bg-error_2"
-                          : "focus:border-stroke_strong"
-                      } w-full border  outline-none rounded-lg h-10 px-4 `}
-                      placeholder="••••••••••"
-                      type="password"
-                      {...register("step1.confirmPassword")}
-                    />
+
+                    <div className="relative">
+                      <input
+                        className={`${
+                          errors.step1?.confirmPassword
+                            ? "border-error_1 shake bg-error_2"
+                            : "focus:border-stroke_strong"
+                        } w-full border  outline-none rounded-lg h-10 px-4 `}
+                        placeholder="••••••••••"
+                        type={showPassword1 ? "text" : "password"}
+                        {...register("step1.confirmPassword")}
+                      />
+                      <span
+                        onClick={() => {
+                          setShowPassword1(!showPassword1);
+                        }}
+                        className="absolute right-4 top-3 bg-background cursor-pointer  flex items-center "
+                      >
+                        <i>{showPassword1 ? eyeClose() : eyeOpen()}</i>
+                      </span>
+                    </div>
                     {errors.step1?.confirmPassword && (
                       <div className="text-xs text-error_1">
                         {errors.step1.confirmPassword.message}
@@ -350,7 +369,11 @@ export const Body = () => {
                       type="submit"
                       className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
-                      <p>Proceed</p>
+                      {loading ? (
+                        <i className="animate-spin ">{spinner()} </i>
+                      ) : (
+                        <p>Proceed</p>
+                      )}
                     </button>
                   </div>
                 )}
@@ -445,7 +468,11 @@ export const Body = () => {
                       type="submit"
                       className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                     >
-                      <p>Proceed</p>
+                      {loading ? (
+                        <i className="animate-spin ">{spinner()} </i>
+                      ) : (
+                        <p>Proceed</p>
+                      )}
                     </button>
                   </>
                 )}
