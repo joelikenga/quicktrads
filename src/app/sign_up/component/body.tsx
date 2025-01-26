@@ -1,6 +1,6 @@
 "use client";
 
-import { celebration, checked, logo } from "@/app/global/svg";
+import { celebration, checked, eyeClose, eyeOpen, logo } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,6 +52,8 @@ export const Body = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   // const [hasStarted, setHasStarted] = useState<boolean>(false);
   // const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -106,44 +108,24 @@ export const Body = () => {
   //   }
   // };
 
-  const handleForward = (formData: steps) => {
-    if (step === 1) {
-      console.log(formData.step1); // Log Step 1 Data
-      setData((prevData) => ({ ...prevData, step1: formData.step1 }));
-    } else if (step === 2) {
-      console.log(formData.step2); // Log Step 2 Data
-      setData((prevData) => ({ ...prevData, step2: formData.step2 }));
-    }
-    setStep((prevStep) => prevStep + 1);
-  };
-
   const onSubmit: SubmitHandler<steps> = async (formData) => {
-    // Check current step and validate accordingly
     if (step === 1) {
       if (formData.step1.password !== formData.step1.confirmPassword) {
         console.error("Passwords do not match");
         return;
       }
-      // setLoading(true);
       try {
-        const { confirmPassword, ...signupData } = formData.step1; // Exclude confirmPassword
-
-        if (formData.step1.password !== confirmPassword) {
-          console.error("Passwords do not match");
-          return;
-        }
-        console.log("Sending signup data:", signupData); // Log the request payload
-        const res = (await userSignup(signupData)) as { data: unknown }; // Specify type
+        const { confirmPassword, ...signupData } = formData.step1;
+        console.log("Sending signup data:", confirmPassword === signupData.password);
+        const res = (await userSignup(signupData)) as { data: unknown };
         console.log("User registration successful:", res);
-        handleForward(formData);
-        // setLoading(false);
+        setData((prevData) => ({ ...prevData, step1: formData.step1 }));
+        setStep(2); // Directly set the step instead of using handleForward
       } catch (error: unknown) {
         console.error("User registration error:", error);
-        // setLoading(false);
       }
     } else if (step === 2) {
       if (formData.step2.OTP.length === 5) {
-        // setLoading(true);
         try {
           const otpValidationResponse = await verifyOtp(
             data?.step1.email,
@@ -153,21 +135,31 @@ export const Body = () => {
 
           if (otpValidationResponse) {
             console.log("OTP validation successful:", otpValidationResponse);
-            handleForward(formData);
-            // setLoading(false);
+            setData((prevData) => ({ ...prevData, step2: formData.step2 }));
+            setStep(3); // Directly set the step instead of using handleForward
           } else {
             console.log("Invalid OTP");
-            // setLoading(false);
           }
         } catch (error: unknown) {
           console.error("OTP validation error:", error);
-          // setLoading(false);
         }
       } else {
         console.log("Please enter a valid 5-digit OTP");
       }
     }
   };
+
+  // Remove or comment out the handleForward function since we're not using it anymore
+  // const handleForward = (formData: steps) => {
+  //   if (step === 1) {
+  //     console.log(formData.step1);
+  //     setData((prevData) => ({ ...prevData, step1: formData.step1 }));
+  //   } else if (step === 2) {
+  //     console.log(formData.step2);
+  //     setData((prevData) => ({ ...prevData, step2: formData.step2 }));
+  //   }
+  //   setStep((prevStep) => prevStep + 1);
+  // };
 
   const handleResendOtp = async () => {
     try {
@@ -293,6 +285,9 @@ export const Body = () => {
                     )}
 
                     <p className="">Password</p>
+
+
+                  <div className="relative">
                     <input
                       className={`${
                         errors.step1?.password
@@ -300,9 +295,19 @@ export const Body = () => {
                           : "focus:border-stroke_strong"
                       } w-full border  outline-none rounded-lg h-10 px-4 `}
                       placeholder="••••••••••"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       {...register("step1.password")}
                     />
+                    <span
+                      onClick={() => {
+                        setShowPassword(!showPassword);
+                      }}
+                      className="absolute right-4 top-3 bg-background cursor-pointer  flex items-center "
+                    >
+                      <i>{showPassword ? eyeClose() : eyeOpen()}</i>
+                    </span>
+                  </div>
+
                     {errors.step1?.password && (
                       <div className="text-xs text-error_1">
                         {errors.step1.password.message}
@@ -328,7 +333,7 @@ export const Body = () => {
 
                     <div className="max-w-[286px] text-center text-sm text-text_weak mt-4">
                       <div>
-                        {`By clicking “Continue” you agree to Quicktrads’ `}{" "}
+                        {`By clicking “Proceed” you agree to Quicktrads’ `}{" "}
                         <Link className="underline" href={``}>
                           {"terms of use "}{" "}
                         </Link>
@@ -460,12 +465,14 @@ export const Body = () => {
                         }
                       </p>
                     </div>
-                    <button
-                      type="submit"
-                      className=" w-full bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
-                    >
-                      <p>Shop now</p>
-                    </button>
+                    <Link className="w-full" href={`/login`}>
+                      <button
+                        type="submit"
+                        className=" w-full bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
+                      >
+                        <p>Shop now</p>
+                      </button>
+                    </Link>
                   </div>
                 )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { logo } from "@/app/global/svg";
+import { eyeClose, eyeOpen, logo } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
 import { userLogin } from "@/app/utils/api/user/auth";
 import nookies from "nookies";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type FormValues = {
@@ -47,6 +47,8 @@ export const Body = () => {
     resolver: zodResolver(login),
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     const cookies = nookies.get(null);
     if (!cookies.accessToken) {
@@ -58,7 +60,9 @@ export const Body = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const res: AxiosResponse<LoginResponse> = (await userLogin(data)) as AxiosResponse<LoginResponse>;
+      const res: AxiosResponse<LoginResponse> = (await userLogin(
+        data
+      )) as AxiosResponse<LoginResponse>;
       const loginData = res.data;
       const { accessToken, refreshToken } = loginData;
 
@@ -142,16 +146,26 @@ export const Body = () => {
                 <div className="flex flex-col w-full text-text_strong text-sm font-normal gap-2">
                   <p className="">Password</p>
 
-                  <input
-                    className={`${
-                      errors.password
-                        ? "border-error_1 shake bg-error_2"
-                        : "focus:border-stroke_strong"
-                    } w-full border  outline-none rounded-lg h-10 px-4 `}
-                    placeholder="••••••••••"
-                    type="password"
-                    {...register("password")}
-                  />
+                  <div className="relative">
+                    <input
+                      className={`${
+                        errors.password
+                          ? "border-error_1 shake bg-error_2"
+                          : "focus:border-stroke_strong"
+                      } w-full border  outline-none rounded-lg h-10 px-4 `}
+                      placeholder="••••••••••"
+                      type={showPassword ? "text" : "password"}
+                      {...register("password")}
+                    />
+                    <span
+                      onClick={() => {
+                        setShowPassword(!showPassword);
+                      }}
+                      className="absolute right-4 top-3 bg-background cursor-pointer  flex items-center "
+                    >
+                      <i>{showPassword ? eyeClose() : eyeOpen()}</i>
+                    </span>
+                  </div>
                   {errors.password && (
                     <div className="text-xs text-error_1">
                       {errors.password.message}
