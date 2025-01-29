@@ -90,3 +90,12 @@ export const resetPassword = async (
     throw error;
   }
 };
+
+export const loggedInUser = async () => {    
+  try {
+    const response = await axios$.get("/auth/user");
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
