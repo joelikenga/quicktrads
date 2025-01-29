@@ -18,8 +18,11 @@ import {
   whatsapp,
 } from "./svg";
 import { Lora } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useLogin } from "../utils/hooks/useLogin";
+import { ProfileAvatar } from "./profileGenerator";
+import { useLogout } from "./logout";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -39,6 +42,8 @@ export const Navbar = () => {
   const [menDropdown, setMenDropdown] = useState<boolean>(false);
   const [womenDropdown, setWomenDropdown] = useState<boolean>(false);
 
+  const logout = useLogout();
+
   const handleCollectionDropdown = () => {
     setCollectionDropdown(!collectionDropdown);
     setMenDropdown(false);
@@ -56,18 +61,6 @@ export const Navbar = () => {
     setMenDropdown(false);
     setWomenDropdown(!womenDropdown);
   };
-  // -----  -----
-
-  // const handleSearchOptions = () => {
-  //   if (currencyOptions && searchValue.length > 0) {
-  //     setSearchOptions(true);
-  //     setCurrencyOptions(false);
-  //   } else if (searchOptions && searchValue.length > 0) {
-  //     setSearchOptions(true);
-  //   } else {
-  //     setSearchOptions(false);
-  //   }
-  // };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -81,9 +74,51 @@ export const Navbar = () => {
     }
   };
 
+  const profileWrapperRef = useRef<HTMLDivElement>(null);
+  const currencyWrapperRef = useRef<HTMLDivElement>(null);
+  const categoryWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileWrapperRef.current &&
+        !profileWrapperRef.current.contains(event.target as Node)
+      ) {
+        setProfileOption(false);
+      }
+      if (
+        currencyWrapperRef.current &&
+        !currencyWrapperRef.current.contains(event.target as Node)
+      ) {
+        setCurrencyOptions(false);
+      }
+      if (
+        categoryWrapperRef.current &&
+        !categoryWrapperRef.current.contains(event.target as Node)
+      ) {
+        setCategoryOptions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleCurrencyOptions = (event: React.MouseEvent) => {
     event.stopPropagation();
     setCurrencyOptions(!currencyOptions);
+  };
+
+  const handleProfileOption = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setProfileOption(!profileOption);
+  };
+
+  const handleCategoryOptions = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setCategoryOptions(!categoryOptions);
   };
 
   const handleMobileCategoryOptions = (event: React.MouseEvent) => {
@@ -107,38 +142,12 @@ export const Navbar = () => {
     if (currencyOptions) setCurrencyOptions(false);
   };
 
-  const handleCategoryOptions = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCategoryOptions(!categoryOptions);
-  };
-
-  // };
-
   const handleMouseLeaveCategory = (event: React.MouseEvent) => {
     event.stopPropagation();
     setCategoryOptions(false);
   };
 
-//   const logout = () => {
-//     // Clear cookies
-//     nookies.destroy(null, "token", { path: "/" });
-//     nookies.destroy(null, "refreshToken", { path: "/" });   
-//      nookies.destroy(null, "token", { path: "/en/admin-dashboard" });
-//     nookies.destroy(null, "refreshToken", { path: "/en/admin-dashboard" });
-
-//     // Clear client-side state
-//     localStorage.clear();
-//     sessionStorage.clear();
-
-//     // Show logout success message
-//     showToast("Logged out", "success");
-
-//     // Redirect to login page
-//     router.push("/en/admin-dashboard/login");
-//   };
-
-//   return logout;
-// };
+  const { isLoggedIn, userDetails } = useLogin();
 
   return (
     <div className="w-full z-50 ">
@@ -200,7 +209,10 @@ export const Navbar = () => {
             </div>
 
             {/* ----- currency ----- */}
-            <div className="relative flex justify-center">
+            <div
+              ref={currencyWrapperRef}
+              className="relative flex justify-center"
+            >
               <div
                 onClick={handleCurrencyOptions}
                 className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer ${
@@ -244,68 +256,58 @@ export const Navbar = () => {
           <Link href={``}>{logo()}</Link>
 
           {/*----- category cart login and signup ----- */}
-          <div className="flex gap-6 items-center ">
+          <div className="flex gap-6 items-center">
             {/* ----- category ----- */}
-            <div
-              onClick={handleCategoryOptions}
-              className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer ${
-                categoryOptions && " border-b-2"
-              } border-text_strong py-1`}
-            >
-              {category()}
-              <p className="">Category</p>
+            <div ref={categoryWrapperRef}>
+              <div
+                onClick={handleCategoryOptions}
+                className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer ${
+                  categoryOptions && " border-b-2"
+                } border-text_strong py-1`}
+              >
+                {category()}
+                <p className="">Category</p>
+              </div>
             </div>
 
             {/* ----- cart ----- */}
-            <div className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1">
+            <Link
+              href={`/cart`}
+              className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1"
+            >
               {cart()}
               <p className="">Cart</p>
-            </div>
-
-            {/* login and signup */}
-            {false && (
-              <div className="border-l pl-6 flex gap-6 items-center">
-                {/* ----- Login ----- */}
-                <Link
-                  href={``}
-                  className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1"
-                >
-                  <p className="">Login</p>
-                </Link>
-
-                {/* ----- Signup ----- */}
-                <Link
-                  href={``}
-                  className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
-                >
-                  <p className="">Signup</p>
-                </Link>
-              </div>
-            )}
+            </Link>
 
             {/* ----- profile----- */}
-
-            {
-              <div className="border-l pl-6 relative flex justify-center">
+            {isLoggedIn && userDetails ? (
+              <div
+                ref={profileWrapperRef}
+                className="border-l pl-6 relative flex justify-center  py-1"
+              >
                 <div
-                  onClick={() => {
-                    setProfileOption(!profileOption);
-                  }}
-                  className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer ${
-                    profileOption && "border-b-2"
-                  } border-text_strong py-1 text-nowrap`}
+                  onClick={handleProfileOption}
+                  className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b-2 py-1 text-nowrap ${
+                    profileOption ? "border-text_strong" : "border-transparent"
+                  }`}
                 >
-                  <Image
-                    className="min-w-[24px] max-w-[24px] min-h-[24px] max-h-[24px] rounded-full"
-                    src={
-                      "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png"
-                    }
-                    priority
-                    width={25}
-                    height={25}
-                    alt=""
-                  />
-                  <p className="">Frank Emeka</p>
+                  {userDetails.data.avatar === "" ||
+                  userDetails.data.avatar === null ? (
+                    <ProfileAvatar
+                      name={userDetails?.data?.fullName || "User"}
+                      size="small"
+                    />
+                  ) : (
+                    <Image
+                      className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px]  rounded-full"
+                      src={userDetails.data.avatar}
+                      priority
+                      width={25}
+                      height={25}
+                      alt=""
+                    />
+                  )}
+                  <p className="">{userDetails?.data?.fullName}</p>
                   <i
                     className={`${profileOption && "rotate-180"} duration-300`}
                   >
@@ -314,7 +316,7 @@ export const Navbar = () => {
                 </div>
                 {/* ----- profile dropdown ----- */}
                 {profileOption && (
-                  <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-10 right-0 bg-background  h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
+                  <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background  h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
                     <Link
                       href={``}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
@@ -339,27 +341,46 @@ export const Navbar = () => {
                     >
                       Password
                     </Link>{" "}
-                    <Link
-                      href={``}
+                    <div
+                      onClick={logout}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Logout
-                    </Link>{" "}
+                    </div>{" "}
                   </div>
                 )}
               </div>
-            }
+            ) : (
+              // login and signup
+              <div className="border-l pl-6 flex gap-6 items-center">
+                {/* ----- Login ----- */}
+                <Link
+                  href={`/login`}
+                  className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1"
+                >
+                  <p className="">Login</p>
+                </Link>
+
+                {/* ----- Signup ----- */}
+                <Link
+                  href={`/sign_up`}
+                  className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
+                >
+                  <p className="">Signup</p>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </nav>
 
       {/* ----- Navbar Mobile----- */}
       <nav className="flex justify-between items-center lg:hidden w-full px-8 py-4  bg-background h-[72px] relative">
-        <Link href={``}>{cart()}</Link>
+        <Link href={`/cart`}>{cart()}</Link>
         <Link href={``}>{logo()}</Link>
-        <Link onClick={() => setMobileDropdown(!mobileDropdown)} href={``}>
+        <div onClick={() => setMobileDropdown(!mobileDropdown)} className="">
           {humbuger()}
-        </Link>
+        </div>
 
         {/* ----- mobile dropdown ----- */}
         {mobileDropdown && (
@@ -379,13 +400,16 @@ export const Navbar = () => {
                   />
                 </div>
                 {/* ----- colse btn -----  */}
-                <i className="p-5" onClick={() => setMobileDropdown(!mobileDropdown)}>
+                <i
+                  className="p-3"
+                  onClick={() => setMobileDropdown(!mobileDropdown)}
+                >
                   {closeBtn()}
                 </i>
               </div>
 
               {/* ----- currency znd category ------ */}
-              <div className="gap-6 flex flex-col ">
+              <div ref={currencyWrapperRef} className="gap-6 flex flex-col ">
                 {/* ----- currency ----- */}
                 <div className="w-full gap-6 flex flex-col  border-b pb-6">
                   <div className=" h-[46px flex justify-between items-start  ">
@@ -427,7 +451,10 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* ------------- category -------- */}
-                <div className="w-full gap-6 flex flex-col  border-b pb-6">
+                <div
+                  ref={categoryWrapperRef}
+                  className="w-full gap-6 flex flex-col  border-b pb-6"
+                >
                   <div className=" h-[46px flex justify-between items-start  ">
                     <div
                       onClick={handleMobileCategoryOptions}
@@ -570,23 +597,20 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* -----profile----- */}
-                <div className="w-full gap-6 flex flex-col  border-b pb-6">
+                <div
+                  ref={profileWrapperRef}
+                  className="w-full gap-6 flex flex-col  border-b pb-6"
+                >
                   <div className=" h-[46px flex justify-between items-start  ">
                     <div
                       onClick={handleMobileProfileOption}
                       className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1 text-nowrap`}
                     >
-                      <Image
-                        className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
-                        src={
-                          "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png"
-                        }
-                        priority
-                        width={25}
-                        height={25}
-                        alt=""
+                      <ProfileAvatar
+                        name={userDetails?.data?.fullName || "User"}
+                        size="large"
                       />
-                      <p className="">Frank Emeka</p>
+                      <p className="">{userDetails?.data.fullName}</p>
                     </div>
                     {/*  */}
                     <i
@@ -625,12 +649,12 @@ export const Navbar = () => {
                       >
                         Password
                       </Link>{" "}
-                      <Link
-                        href={``}
+                      <div
+                        onClick={logout}
                         className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                       >
                         Logout
-                      </Link>{" "}
+                      </div>{" "}
                     </div>
                   )}
                 </div>
@@ -744,25 +768,3 @@ export const Navbar = () => {
     </div>
   );
 };
-
-// {/* <div className="w-full h-full max-h-[100px] bg-fill flex justify-center flex-col items-center gap-6">
-// {/* ----- map ----- */}
-// <div className="flex justify-center items-center gap-1 font-medium">
-//   <div>{map()}</div>
-//   <p className="text-sm text-text_strong">
-//     27 fola osibo, Lagos, Nigeria
-//   </p>
-// </div>
-
-// {/* ----- whatsapp ----- */}
-// <div className="flex justify-center items-center gap-1 font-medium">
-// <div> {whatsapp()}</div>
-//   <p className="text-sm text-text_strong">+234 704 451 4049</p>
-// </div>
-
-// {/* ----- instagram ----- */}
-// <div className="flex justify-center items-center gap-1 font-medium">
-//  <div> {instagram()}</div>
-//   <p className="text-sm text-text_strong">Quicktrads</p>
-// </div>
-// </div> */}
