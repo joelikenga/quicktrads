@@ -597,67 +597,92 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* -----profile----- */}
-                <div
-                  ref={profileWrapperRef}
-                  className="w-full gap-6 flex flex-col  border-b pb-6"
-                >
-                  <div className=" h-[46px flex justify-between items-start  ">
-                    <div
-                      onClick={handleMobileProfileOption}
-                      className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1 text-nowrap`}
-                    >
-                      <ProfileAvatar
-                        name={userDetails?.data?.fullName || "User"}
-                        size="large"
-                      />
-                      <p className="">{userDetails?.data.fullName}</p>
-                    </div>
-                    {/*  */}
-                    <i
-                      className={`${
-                        profileOption && "rotate-180"
-                      } duration-300`}
-                    >
-                      {arrowDown()}
-                    </i>
-                  </div>
-                  {/* ----- profile dropdown ----- */}
-
-                  {profileOption && (
-                    <div className="flex flex-col gap-4 ">
-                      <Link
-                        href={``}
-                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
-                      >
-                        Profile
-                      </Link>{" "}
-                      <Link
-                        href={``}
-                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
-                      >
-                        Orders
-                      </Link>{" "}
-                      <Link
-                        href={``}
-                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
-                      >
-                        Address
-                      </Link>{" "}
-                      <Link
-                        href={``}
-                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
-                      >
-                        Password
-                      </Link>{" "}
+                {isLoggedIn && userDetails != null ? (
+                  <div
+                    ref={profileWrapperRef}
+                    className="w-full gap-6 flex flex-col  border-b pb-6"
+                  >
+                    <div className=" h-[46px flex justify-between items-start  ">
                       <div
-                        onClick={logout}
-                        className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                        onClick={handleMobileProfileOption}
+                        className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1 text-nowrap`}
                       >
-                        Logout
-                      </div>{" "}
+                        <ProfileAvatar
+                          name={userDetails?.data?.fullName || "User"}
+                          size="small"
+                        />
+                        <p className="">{userDetails?.data.fullName}</p>
+                      </div>
+                      {/*  */}
+                      <i
+                        className={`${
+                          profileOption && "rotate-180"
+                        } duration-300`}
+                      >
+                        {arrowDown()}
+                      </i>
                     </div>
-                  )}
-                </div>
+                    {/* ----- profile dropdown ----- */}
+
+                    {profileOption && (
+                      <div className="flex flex-col gap-4 ">
+                        <Link
+                          href={``}
+                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                        >
+                          Profile
+                        </Link>{" "}
+                        <Link
+                          href={``}
+                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                        >
+                          Orders
+                        </Link>{" "}
+                        <Link
+                          href={``}
+                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                        >
+                          Address
+                        </Link>{" "}
+                        <Link
+                          href={``}
+                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                        >
+                          Password
+                        </Link>{" "}
+                        <div
+                          onClick={logout}
+                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                        >
+                          Logout
+                        </div>{" "}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="min-h-[10rem] flex flex-col gap-6 justify-end">
+                    {/* text */}
+                    {/* <div className="font-base text-base text-text_weak">
+                    If you already have an account, click Login to access your profile. If you’re a new user, click Sign up to create an account.
+                    </div> */}
+                    {/* signup */}
+                    <div className="flex font-medium text-sm w-full justify-between">
+                      <Link
+                        href={`/login`}
+                        className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer bg-text_strong text-background"
+                      >
+                        <p className="">Signup</p>
+                      </Link>
+
+                      <Link
+                        href={`/login`}
+                        className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer border"
+                      >
+                        <p className="">Login</p>
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* ----- quick contact ----- */}
