@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = nookies.get(null)['accessToken'];
-    console.log("Access Token:", accessToken); // Debugging
+    // console.log("Access Token:", accessToken); // Debugging
 
     // const refreshToken = nookies.get(null)['refreshToken'];
     // Add access token to Authorization header if it exists

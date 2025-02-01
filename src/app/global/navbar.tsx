@@ -12,6 +12,7 @@ import {
   map,
   nigeriaIcon,
   redCategoryicon,
+  redInfo,
   search,
   unChecked,
   USAIcon,
@@ -36,6 +37,7 @@ export const Navbar = () => {
   const [categoryOptions, setCategoryOptions] = useState<boolean>(false);
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const [profileOption, setProfileOption] = useState<boolean>(false);
+  const [logoutModal, setLogoutModal] = useState<boolean>(false);
 
   // ----- for mobile -----
   const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
@@ -151,6 +153,48 @@ export const Navbar = () => {
 
   return (
     <div className="w-full z-50 ">
+      {/* ----- logout modal ----- */}
+      {logoutModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[60] flex justify-start flex-col pt-[120px] md:pt-0 md:justify-center items-center backdrop-blur px-4 md:px-0">
+          <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-8 rounded-lg ">
+            <div className="w-full flex flex-col justify-center items-center gap-4  text-center">
+              <div
+                className="cursor-pointer"
+                // onClick={() => setDeleteItem(false)}
+              >
+                {redInfo()}
+              </div>
+
+              <p
+                className={`${lora.className} text-text_strong text-lg md:text-[22px] font-normal`}
+              >
+                {`Are you sure you want to logout your account?`}
+              </p>
+
+              <p className="text-text_strong text-sm md:text-base font-normal">
+                {`This action will logout your account. If you're not to logout, you can cancel to continue shopping`}
+              </p>
+            </div>
+
+            {/* ----- button ----- */}
+            <div className="flex justify-end gap-4">
+              <button
+                className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
+                onClick={logout}
+              >
+                <p>Logout</p>
+              </button>
+              <button
+                className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
+                onClick={() => setLogoutModal(false)}
+              >
+                <p>Cancel</p>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ----- Quick contact ----- */}
       <div className="hidden lg:flex w-full px-20  items-center bg-fill h-12">
         <div className="w-full max-w-7xl mx-auto flex justify-start items-center gap-6">
@@ -342,7 +386,7 @@ export const Navbar = () => {
                       Password
                     </Link>{" "}
                     <div
-                      onClick={logout}
+                      onClick={() => setLogoutModal(true)}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Logout
@@ -651,7 +695,7 @@ export const Navbar = () => {
                           Password
                         </Link>{" "}
                         <div
-                          onClick={logout}
+                          onClick={() => setLogoutModal(true)}
                           className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Logout
@@ -660,7 +704,7 @@ export const Navbar = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="min-h-[10rem] flex flex-col gap-6 justify-end">
+                  <div className="min-h-[8rem] flex flex-col gap-6 justify-end">
                     {/* text */}
                     {/* <div className="font-base text-base text-text_weak">
                     If you already have an account, click Login to access your profile. If you’re a new user, click Sign up to create an account.
