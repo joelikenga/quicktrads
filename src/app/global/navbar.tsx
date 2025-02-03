@@ -160,10 +160,10 @@ export const Navbar = () => {
     if (currencyOptions) setCurrencyOptions(false);
   };
 
-  const handleMouseLeaveCategory = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCategoryOptions(false);
-  };
+  // const handleMouseLeaveCategory = (event: React.MouseEvent) => {
+  //   event.stopPropagation();
+  //   setCategoryOptions(false);
+  // };
 
   const { isLoggedIn, userDetails } = useLogin();
 

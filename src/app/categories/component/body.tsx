@@ -11,7 +11,7 @@ const lora = Lora({
 });
 
 export const Body = () => {
-  const [selectedCategory, setSelectedCategory] = useState<any>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showGender, setShowGender] = useState<boolean>(false);
   const [showSize, setShowSize] = useState<boolean>(false);
