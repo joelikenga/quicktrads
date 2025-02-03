@@ -24,6 +24,7 @@ import Image from "next/image";
 import { useLogin } from "../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
+import { useRouter } from "next/navigation";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -45,6 +46,21 @@ export const Navbar = () => {
   const [womenDropdown, setWomenDropdown] = useState<boolean>(false);
 
   const logout = useLogout();
+
+  const router = useRouter();
+  const handleNavigation = (item: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    localStorage.setItem("category", item); // Save item to localStorage
+
+    if (window.location.pathname === "/categories") {
+      // If already on the /categories page, just set the localStorage
+      window.location.reload();
+    } else {
+      // Navigate to the /categories page
+      router.push("/categories");
+    }
+  };
 
   const handleCollectionDropdown = () => {
     setCollectionDropdown(!collectionDropdown);
@@ -274,7 +290,7 @@ export const Navbar = () => {
               {/* ----- currency dropdown ----- */}
               {currencyOptions && (
                 <div
-                  onMouseLeave={handleCurrencyOptions}
+                  // onMouseLeave={handleCurrencyOptions}
                   className="flex flex-col gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
                 >
                   <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
@@ -312,6 +328,128 @@ export const Navbar = () => {
                 {category()}
                 <p className="">Category</p>
               </div>
+
+                    {/* ----- category drop down ----- */}
+      {categoryOptions && (
+        <div
+            // onMouseLeave={handleMouseLeaveCategory}
+          className="bg-text_strong bg-opacity-80 h-full w-full fixed left-0 top-[120px]  hidden lg:flex z-50"
+        >
+          {/* ----- category content ----- */}
+          <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
+            {/* ----- card section ----- */}
+
+            <div className="w-1/2 flex items-center">
+              {/* ----- card ----- */}
+              <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
+                {redCategoryicon()}
+                <div className="gap-2 flex flex-col items-start">
+                  <p
+                    className={`${lora.variable} font-medium text-[22px]`}
+                  >{`Shop quick with quicktads category`}</p>
+                  <p
+                    className={`font-normal text-base`}
+                  >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* ----- category lists ----- */}
+
+            <div className="w-1/2 items-start flex justify-between gap-8">
+              {/* ----- collection ----- */}
+              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                <p
+                  onClick={(event) => handleNavigation("collections", event)}
+                  className="text-base font-medium cursor-pointer"
+                >
+                  Collections
+                </p>
+                <div
+                  onClick={(event) => handleNavigation("c-Featured", event)}
+                  className="text-lg font-normal"
+                >
+                  Features
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("c-Trending", event)}
+                  className="text-lg font-normal"
+                >
+                  Trending
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("c-Latest", event)}
+                  className="text-lg font-normal"
+                >
+                  Latest wear
+                </div>
+              </div>
+
+              {/* ----- men ----- */}
+              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                <p
+                  onClick={(event) => handleNavigation("men", event)}
+                  className="text-base font-medium cursor-pointer"
+                >
+                  Men
+                </p>
+                <div
+                  onClick={(event) => handleNavigation("m-Tops", event)}
+                  className="text-lg font-normal"
+                >
+                  Tops
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("m-Trousers", event)}
+                  className="text-lg font-normal"
+                >
+                  Trousers
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("m-TwoPiece", event)}
+                  className="text-lg font-normal"
+                >
+                  Two-piece
+                </div>
+              </div>
+
+              {/* ----- Women ----- */}
+              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                <p
+                  onClick={(event) => handleNavigation("women", event)}
+                  className="text-base font-medium cursor-pointer"
+                >
+                  Women
+                </p>
+                <div
+                  onClick={(event) => handleNavigation("w-Bubu", event)}
+                  className="text-lg font-normal"
+                >
+                  Bubu
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("w-Tops", event)}
+                  className="text-lg font-normal"
+                >
+                  Tops
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("w-Trouser", event)}
+                  className="text-lg font-normal"
+                >
+                  Trousers
+                </div>
+                <div
+                  onClick={(event) => handleNavigation("w-TwoPiece", event)}
+                  className="text-lg font-normal"
+                >
+                  Two-piece
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
             </div>
 
             {/* ----- cart ----- */}
@@ -417,6 +555,8 @@ export const Navbar = () => {
           </div>
         </div>
       </nav>
+
+
 
       {/* ----- Navbar Mobile----- */}
       <nav className="flex justify-between items-center lg:hidden w-full px-8 py-4  bg-background h-[72px] relative">
@@ -757,83 +897,6 @@ export const Navbar = () => {
           </div>
         )}
       </nav>
-
-      {/* ----- category drop down ----- */}
-      {categoryOptions && (
-        <div
-          onMouseLeave={handleMouseLeaveCategory}
-          className="bg-text_strong bg-opacity-80 h-full w-full fixed  hidden lg:flex"
-        >
-          {/* ----- category content ----- */}
-          <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
-            {/* ----- card section ----- */}
-
-            <div className="w-1/2 flex items-center">
-              {/* ----- card ----- */}
-              <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
-                {redCategoryicon()}
-                <div className="gap-2 flex flex-col items-start">
-                  <p
-                    className={`${lora.variable} font-medium text-[22px]`}
-                  >{`Shop quick with quicktads category`}</p>
-                  <p
-                    className={`font-normal text-base`}
-                  >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ----- category lists ----- */}
-
-            <div className="w-1/2 items-start flex justify-between gap-8">
-              {/* ----- collection ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p className="text-base font-medium">Collections</p>
-                <Link href={``} className="text-lg font-normal">
-                  Features
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Trending
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Latest wear
-                </Link>
-              </div>
-
-              {/* ----- men ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p className="text-base font-medium">Men</p>
-                <Link href={``} className="text-lg font-normal">
-                  Tops
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Trousers
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Two-piece
-                </Link>
-              </div>
-
-              {/* ----- Women ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p className="text-base font-medium">Women</p>
-                <Link href={``} className="text-lg font-normal">
-                  Buba
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Tops
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Trousers
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Two-piece
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
