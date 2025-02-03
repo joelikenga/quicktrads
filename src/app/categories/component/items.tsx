@@ -44,7 +44,7 @@ export const Items = ({ showFilter }: ItemsProps) => {
         return (
           <div
             key={index}
-            className="col-span-1 flex flex-col items-center gap-4 h-ful w-full  max-w-[390px]  h-fit pb-[22px]"
+            className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col items-center gap-4 h-ful w-full  max-w-[390px]  h-fit pb-[22px]"
           >
             <div className="w-full h-[400px] border flex items-center">
               <Image

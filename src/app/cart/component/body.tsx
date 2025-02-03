@@ -17,7 +17,7 @@ export const Body = () => {
   const [mobileCheckout, setMobileCheckout] = useState<boolean>(false);
 
   return (
-    <div className="w-full px-6 md:px-10  lg:px-20 flex flex-col gap-4 z-0">
+    <div className="w-full px-6 md:px-10  lg:px-10 flex flex-col gap-4 z-0">
       {/* ----- deleteItem modal ----- */}
       {deleteItem && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
@@ -159,7 +159,7 @@ export const Body = () => {
 
         {/* ----- items added ----- */}
         {
-          <div className="min-h-[500px] flex flex-col md:flex-row w-full gap-[108px]">
+          <div className="min-h-[500px] flex flex-col md:flex-row w-full gap-[128px]">
             {/* ------- items ------ */}
             <div className="pt- w-full md:w-1/2 overflow-y-auto hidden_scroll">
               <div

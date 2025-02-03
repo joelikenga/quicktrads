@@ -212,7 +212,7 @@ export const Navbar = () => {
       )}
 
       {/* ----- Quick contact ----- */}
-      <div className="hidden lg:flex w-full px-20  items-center bg-fill h-12">
+      <div className="hidden lg:flex w-full px-10  items-center bg-fill h-12">
         <div className="w-full max-w-7xl mx-auto flex justify-start items-center gap-6">
           {/* ----- map ----- */}
           <div className="flex justify-center items-center gap-1 font-medium">
@@ -236,7 +236,7 @@ export const Navbar = () => {
         </div>
       </div>
       {/* ----- Navbar Desktop----- */}
-      <nav className="hidden lg:flex w-full px-20 bg-background h-[72px]   items-center border-b border">
+      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px]   items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
           {/* ----- search and currency ----- */}
           <div className="flex gap-6 items-center">
@@ -313,7 +313,7 @@ export const Navbar = () => {
           </div>
 
           {/* ----- logo ----- */}
-          <Link href={``}>{logo()}</Link>
+          <Link href={`/`}>{logo()}</Link>
 
           {/*----- category cart login and signup ----- */}
           <div className="flex gap-6 items-center">
@@ -559,9 +559,9 @@ export const Navbar = () => {
 
 
       {/* ----- Navbar Mobile----- */}
-      <nav className="flex justify-between items-center lg:hidden w-full px-8 py-4  bg-background h-[72px] relative">
+      <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4  bg-background h-[72px] relative">
         <Link href={`/cart`}>{cart()}</Link>
-        <Link href={``}>{logo()}</Link>
+        <Link href={`/`}>{logo()}</Link>
         <div onClick={() => setMobileDropdown(!mobileDropdown)} className="">
           {humbuger()}
         </div>

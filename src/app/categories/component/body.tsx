@@ -30,7 +30,7 @@ export const Body = () => {
   };
 
   return (
-    <div className=" md:px-10  lg:px-20  overflow-y-auto">
+    <div className=" md:px-10  lg:px-10  overflow-y-auto">
       <div className="bg-background w-full max-w-7xl mx-auto flex justify-between">
         {/* ------- content ------- */}
         <div className="w-full ">
@@ -58,7 +58,7 @@ export const Body = () => {
 
             <div
               onClick={() => setShowFilter(!showFilter)}
-              className="flex gap-2 font-medium text-base items-center"
+              className="flex gap-2 font-medium text-base items-center cursor-pointer"
             >
               <i>{filterIcon()}</i>
               <p>{showFilter ? "Hide filter" : "Show filter"}</p>
@@ -68,7 +68,7 @@ export const Body = () => {
           <div className="flex gap-8 justify-between relative">
             {/* filter section */}
             {showFilter && (
-              <div className=" min-w-[40%] md:min-w-[240px]  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative  top-0 bg-background md:h-full pt-12 md:pt-0 px-6 md:pr-6  md:block">
+              <div className=" min-w-[40%] md:min-w-[240px]  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative  top-0 bg-background md:h-full pt-12 md:pt-0 px-2 md:pr-6  md:block">
                 {selectedCategory === "collections" && (
                   <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
                     <div

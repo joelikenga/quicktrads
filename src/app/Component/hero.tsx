@@ -9,7 +9,7 @@ const lora = Lora({
 
 export const Hero = () => {
   return (
-    <div className="w-full lg:px-20 mt-4 md:mt-8 my-8">
+    <div className="w-full lg:px-10 mt-4 md:mt-8 my-8">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-brand_yellow   md:h-[440px] px-6 md:px-10  lg:px-20 mx-auto w-full max-w-7xl">
         {/*----- text and button container -----*/}
         <div className=" w-full md:w-1/2 flex items-center ">
