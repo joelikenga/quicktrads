@@ -168,7 +168,7 @@ export const Navbar = () => {
   const { isLoggedIn, userDetails } = useLogin();
 
   return (
-    <div className="w-full z-50 ">
+    <div className="w-full left-0 top-0 fixed z-50  ">
       {/* ----- logout modal ----- */}
       {logoutModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[60] flex justify-start flex-col pt-[120px] md:pt-0 md:justify-center items-center backdrop-blur px-4 md:px-0">
@@ -329,127 +329,159 @@ export const Navbar = () => {
                 <p className="">Category</p>
               </div>
 
-                    {/* ----- category drop down ----- */}
-      {categoryOptions && (
-        <div
-            // onMouseLeave={handleMouseLeaveCategory}
-          className="bg-text_strong bg-opacity-80 h-full w-full fixed left-0 top-[120px]  hidden lg:flex z-50"
-        >
-          {/* ----- category content ----- */}
-          <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
-            {/* ----- card section ----- */}
+              {/* ----- category drop down ----- */}
+              {categoryOptions && (
+                <div
+                  // onMouseLeave={handleMouseLeaveCategory}
+                  className="bg-text_strong bg-opacity-80 h-full w-full fixed left-0 top-[120px]  hidden lg:flex z-50"
+                >
+                  {/* ----- category content ----- */}
+                  <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
+                    {/* ----- card section ----- */}
 
-            <div className="w-1/2 flex items-center">
-              {/* ----- card ----- */}
-              <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
-                {redCategoryicon()}
-                <div className="gap-2 flex flex-col items-start">
-                  <p
-                    className={`${lora.variable} font-medium text-[22px]`}
-                  >{`Shop quick with quicktads category`}</p>
-                  <p
-                    className={`font-normal text-base`}
-                  >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
-                </div>
-              </div>
-            </div>
+                    <div className="w-1/2 flex items-center">
+                      {/* ----- card ----- */}
+                      <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
+                        {redCategoryicon()}
+                        <div className="gap-2 flex flex-col items-start">
+                          <p
+                            className={`${lora.variable} font-medium text-[22px]`}
+                          >{`Shop quick with quicktads category`}</p>
+                          <p
+                            className={`font-normal text-base`}
+                          >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
+                        </div>
+                      </div>
+                    </div>
 
-            {/* ----- category lists ----- */}
+                    {/* ----- category lists ----- */}
 
-            <div className="w-1/2 items-start flex justify-between gap-8">
-              {/* ----- collection ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p
-                  onClick={(event) => handleNavigation("collections", event)}
-                  className="text-base font-medium cursor-pointer"
-                >
-                  Collections
-                </p>
-                <div
-                  onClick={(event) => handleNavigation("c-Featured", event)}
-                  className="text-lg font-normal"
-                >
-                  Features
-                </div>
-                <div
-                  onClick={(event) => handleNavigation("c-Trending", event)}
-                  className="text-lg font-normal"
-                >
-                  Trending
-                </div>
-                <div
-                  onClick={(event) => handleNavigation("c-Latest", event)}
-                  className="text-lg font-normal"
-                >
-                  Latest wear
-                </div>
-              </div>
+                    <div className="w-1/2 items-start flex justify-between gap-8">
+                      {/* ----- Featured ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p className="text-base font-semibold cursor-pointer">
+                          Featured
+                        </p>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("trending", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trending
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("latestWear", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Latest wear
+                        </div>
+                      </div>
 
-              {/* ----- men ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p
-                  onClick={(event) => handleNavigation("men", event)}
-                  className="text-base font-medium cursor-pointer"
-                >
-                  Men
-                </p>
-                <div
-                  onClick={(event) => handleNavigation("m-Tops", event)}
-                  className="text-lg font-normal"
-                >
-                  Tops
-                </div>
-                <div
-                  onClick={(event) => handleNavigation("m-Trousers", event)}
-                  className="text-lg font-normal"
-                >
-                  Trousers
-                </div>
-                <div
-                  onClick={(event) => handleNavigation("m-TwoPiece", event)}
-                  className="text-lg font-normal"
-                >
-                  Two-piece
-                </div>
-              </div>
+                      {/* ----- Unisex ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p className="text-base font-semibold cursor-pointer">
+                          Unisex
+                        </p>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("u-Tops", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Tops
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("u-Trousers", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trousers
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("u-TwoPiece", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Two-piece
+                        </div>
+                      </div>
 
-              {/* ----- Women ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p
-                  onClick={(event) => handleNavigation("women", event)}
-                  className="text-base font-medium cursor-pointer"
-                >
-                  Women
-                </p>
-                <div
-                  onClick={(event) => handleNavigation("w-Bubu", event)}
-                  className="text-lg font-normal"
-                >
-                  Bubu
+                      {/* ----- men ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p
+                          className="text-base font-semibold cursor-pointer"
+                        >
+                          Men
+                        </p>
+                        <div
+                          onClick={(event) => handleNavigation("m-Tops", event)}
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Tops
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("m-Trousers", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trousers
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("m-TwoPiece", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Two-piece
+                        </div>
+                      </div>
+
+                      {/* ----- Women ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p
+                          className="text-base font-semibold cursor-pointer"
+                        >
+                          Women
+                        </p>
+                        <div
+                          onClick={(event) => handleNavigation("w-Bubu", event)}
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Bubu
+                        </div>
+                        <div
+                          onClick={(event) => handleNavigation("w-Tops", event)}
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Tops
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("w-Trouser", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trousers
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("w-TwoPiece", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Two-piece
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div
-                  onClick={(event) => handleNavigation("w-Tops", event)}
-                  className="text-lg font-normal"
-                >
-                  Tops
-                </div>
-                <div
-                  onClick={(event) => handleNavigation("w-Trouser", event)}
-                  className="text-lg font-normal"
-                >
-                  Trousers
-                </div>
-                <div
-                  onClick={(event) => handleNavigation("w-TwoPiece", event)}
-                  className="text-lg font-normal"
-                >
-                  Two-piece
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+              )}
             </div>
 
             {/* ----- cart ----- */}
@@ -555,8 +587,6 @@ export const Navbar = () => {
           </div>
         </div>
       </nav>
-
-
 
       {/* ----- Navbar Mobile----- */}
       <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4  bg-background h-[72px] relative">

@@ -30,16 +30,23 @@ export const Body = () => {
   };
 
   return (
-    <div className=" md:px-10  lg:px-10  overflow-y-auto">
-      <div className="bg-background w-full max-w-7xl mx-auto flex justify-between">
+    <div className=" md:px-10  lg:px-10  overflow-y-auto mt-[120px] ">
+      <div className="bg-background w-full max-w-7xl mx-auto flex justify-between  ">
         {/* ------- content ------- */}
-        <div className="w-full ">
+        <div className="w-full">
           <div className="px-6 lg:px-2 flex justify-between w-full text-text_strong items-center py-8">
-            {selectedCategory.startsWith("collections") && (
+            {selectedCategory.startsWith("Trending") && (
+              <p className="font-normal text-[22px]">{`Featured (${100})`}</p>
+            )}
+            {selectedCategory.startsWith("latestWear") && (
               <p className="font-normal text-[22px]">{`Collections (${100})`}</p>
             )}
-            {selectedCategory.includes("c-") && (
-              <p className="font-normal text-[22px]">{`Collections (${100})`}</p>
+
+            {selectedCategory.startsWith("unisex") && (
+              <p className="font-normal text-[22px]">{`Unisex (${100})`}</p>
+            )}
+            {selectedCategory.includes("u-") && (
+              <p className="font-normal text-[22px]">{`Unisex (${100})`}</p>
             )}
 
             {selectedCategory.startsWith("men") && (
@@ -68,7 +75,7 @@ export const Body = () => {
           <div className="flex gap-8 justify-between relative">
             {/* filter section */}
             {showFilter && (
-              <div className=" min-w-[40%] md:min-w-[240px]  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative  top-0 bg-background md:h-full pt-12 md:pt-0 px-2 md:pr-6  md:block">
+              <div className=" min-w-[40%] md:min-w-[240px]  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative   top-0 bg-background md:h-full pt-12 md:pt-0 px-2 md:pr-6  md:block">
                 {selectedCategory === "collections" && (
                   <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
                     <div
@@ -91,6 +98,30 @@ export const Body = () => {
                     </div>
                   </div>
                 )}
+
+                {selectedCategory === "unisex" && (
+                  <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
+                    <div
+                      onClick={() => handleClick("u-Tops")}
+                      className="cursor-pointer"
+                    >
+                      Tops
+                    </div>
+                    <div
+                      onClick={() => handleClick("u-Trousers")}
+                      className="cursor-pointer"
+                    >
+                      Trousers
+                    </div>
+                    <div
+                      onClick={() => handleClick("u-TwoPiece")}
+                      className="cursor-pointer"
+                    >
+                      Two-piece
+                    </div>
+                  </div>
+                )}
+
                 {selectedCategory === "men" && (
                   <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
                     <div
@@ -143,57 +174,53 @@ export const Body = () => {
                   </div>
                 )}
 
-                {/* ----------------- for collections------------------ */}
+                {/* ---------------for unisex --------------------- */}
 
-                {selectedCategory === "c-Featured" && (
+                {selectedCategory === "u-Tops" && (
                   <div className="flex flex-col w-fit gap-1 text-text_strong">
                     <div className="flex  gap-6 text-base font-normal">
                       <p
-                        onClick={() => handleClick("collections")}
+                        onClick={() => handleClick("unisex")}
                         className="text-text_weak"
                       >
-                        Collctions
+                        Unisex
                       </p>
                       <i className="-rotate-90">{arrowDown()}</i>
-                      <p className={`cursor-pointer`}>Featured</p>
+                      <p className={`cursor-pointer`}>Tops</p>
                     </div>
-                    <p className={`text-[22px] ${lora.className}`}>Featured</p>
+                    <p className={`text-[22px] ${lora.className}`}>Tops</p>
                   </div>
                 )}
 
-                {selectedCategory === "c-Trending" && (
+                {selectedCategory === "u-Trousers" && (
                   <div className="flex flex-col w-fit gap-1 text-text_strong">
                     <div className="flex  gap-6 text-base font-normal">
                       <p
-                        onClick={() => handleClick("collections")}
+                        onClick={() => handleClick("unisex")}
                         className="text-text_weak"
                       >
-                        Collctions
+                        Unisex
                       </p>
                       <i className="-rotate-90">{arrowDown()}</i>
-                      <p className={`cursor-pointer`}>Trending</p>
+                      <p className={`cursor-pointer`}>Trousers</p>
                     </div>
-                    <p className={`text-[22px] ${lora.className}`}>Trending</p>
+                    <p className={`text-[22px] ${lora.className}`}>Trousers</p>
                   </div>
                 )}
 
-                {selectedCategory === "c-Latest" && (
+                {selectedCategory === "u-TwoPiece" && (
                   <div className="flex flex-col w-fit gap-1 text-text_strong">
                     <div className="flex  gap-6 text-base font-normal">
                       <p
-                        onClick={() => handleClick("collections")}
+                        onClick={() => handleClick("unisex")}
                         className="text-text_weak"
                       >
-                        Collctions
+                        Unisex
                       </p>
                       <i className="-rotate-90">{arrowDown()}</i>
-                      <p className={`cursor-pointer text-nowrap`}>
-                        Latest wear
-                      </p>
+                      <p className={`cursor-pointer`}>Two-piece</p>
                     </div>
-                    <p className={`text-[22px] ${lora.className}`}>
-                      Latest wear
-                    </p>
+                    <p className={`text-[22px] ${lora.className}`}>Two-piece</p>
                   </div>
                 )}
 
@@ -447,7 +474,9 @@ export const Body = () => {
             )}
 
             {/* ----- item display ----- */}
-            <Items showFilter={showFilter} />
+            <div className="overflow-y-auto h-full">
+              <Items showFilter={showFilter} />
+            </div>
           </div>
         </div>
       </div>
