@@ -30,22 +30,19 @@ const ManagentLink = ({ href, children, }) => {
 }
 
 
-
 function Page() {
     return (
         <>
-
             {/* // header for the management page */}
-            <div className="w-full z-50 border-b border-b-stroke_weak">
+            <div className="w-full z-50 border-b border-b-stroke_weak" >
                 {/* ----- management header ----- */}
-                <div className="flex w-full justify-between px-20 py-8 h-12 items-center">
+                <div className="flex w-full justify-between px-20 py-8 h-12 items-center" >
                     {/* ----- logo ----- */}
                     <Link href={`/`}>{logo()}</Link>
 
 
 
                     <div className='flex gap-6'>
-
                         {/* the links for navigation for the management page - desktop view */}
                         <div className='flex gap-6 items-center'>
                             <NavLink href={`/dashboard`}>{dashborad()} Dashboard</NavLink>
@@ -66,34 +63,27 @@ function Page() {
             </div>
 
 
+
             {/* // management control area */}
-            
+
             <div className=''>
-            <div className='flex flex-row gap-4 pt-8'>
-            {/* side panel */}
-                <aside className='flex flex-col w-[30svw] gap-4 pl-20 h-[90svh]'>
-                    <ManagentLink href={`/management`}>Products</ManagentLink>
-                    <ManagentLink href={`/products`}>Orders</ManagentLink>
-                    <ManagentLink href={`/products`}>Customers</ManagentLink>
-                </aside>
+                <div className='flex flex-row gap-4 pt-8'>
+                    {/* side panel */}
+                    <aside className='flex flex-col w-[30svw] gap-4 pl-20 h-[90svh]'>
+                        <ManagentLink href={`/management`}>Products</ManagentLink>
+                        <ManagentLink href={`/products`}>Orders</ManagentLink>
+                        <ManagentLink href={`/products`}>Customers</ManagentLink>
+                    </aside>
 
 
-                {/* main panel */}
-                <div>
-                    <p className="text-lg font-[500]">Product</p>
-
-                    <div className="h-full flex justify-center items-center w-[70svw]">
-                        <div className='flex flex-col w-full justify-center items-center'>
-                            <div>{noproducts()}</div>
-                            <h3 className='text-text_strong text-lg'>There are currently no products!</h3>
-                            <p className='text-text_weak text-sm text-center pb-4 '>It looks like there are currently no products<div />available at the moment</p>
-                            <Link href={``} className='bg-text_strong text-white rounded-full py-2 px-6'>Add product</Link>
-                        </div>
+                    {/* main panel */}
+                    <div>
+                        
                     </div>
+
                 </div>
             </div>
 
-            </div>
         </>
     )
 }
