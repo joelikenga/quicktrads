@@ -998,3 +998,33 @@ export const ordersIcon = () => {
     </svg>
   );
 };
+
+export const searchIcon = () => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.584 14.5835L18.334 18.3335"
+        stroke="#B8B8B8"
+        stroke-width="1.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16.668 9.16687C16.668 5.02473 13.3101 1.66687 9.16797 1.66687C5.02583 1.66687 1.66797 5.02473 1.66797 9.16687C1.66797 13.309 5.02583 16.6669 9.16797 16.6669C13.3101 16.6669 16.668 13.309 16.668 9.16687Z"
+        stroke="#B8B8B8"
+        stroke-width="1.25"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
+
+// export const filterIcon = () => {
+
+// }
