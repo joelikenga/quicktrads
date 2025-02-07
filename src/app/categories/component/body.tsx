@@ -30,8 +30,8 @@ export const Body = () => {
   };
 
   return (
-    <div className=" md:px-10  lg:px-10  overflow-y-auto mt-[120px] ">
-      <div className="bg-background w-full max-w-7xl mx-auto flex justify-between  ">
+    <div className=" md:px-10  lg:px-10  overflow-y-auto mt-[70px] md:mt-[110px] h-full relative">
+      <div className="bg-background w-full max-w-7xl mx-auto flex justify-between sticky top-0 ">
         {/* ------- content ------- */}
         <div className="w-full">
           <div className="px-6 lg:px-2 flex justify-between w-full text-text_strong items-center py-8">
@@ -72,10 +72,12 @@ export const Body = () => {
             </div>
           </div>
 
-          <div className="flex gap-8 justify-between relative">
+          {/* gap-2 lg:gap-8  */}
+
+          <div className="flex gap-4   justify-between relative borde ">
             {/* filter section */}
             {showFilter && (
-              <div className=" min-w-[40%] md:min-w-[240px]  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative   top-0 bg-background md:h-full pt-12 md:pt-0 px-2 md:pr-6  md:block">
+              <div className=" pt-[110px]  min-w-[60%] md:min-w-[240px]  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative   top-0 bg-background md:h-full d:pt-12 md:pt-0 px-2 md:pr-6  md:block">
                 {selectedCategory === "collections" && (
                   <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
                     <div
@@ -347,7 +349,8 @@ export const Body = () => {
                     onClick={() => setShowGender(!showGender)}
                     className={`${
                       selectedCategory.startsWith("m-") ||
-                      selectedCategory.startsWith("w-")
+                      selectedCategory.startsWith("w-") ||
+                      selectedCategory.startsWith("u-")
                         ? "hidden"
                         : ""
                     } flex  w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4 `}
@@ -474,7 +477,8 @@ export const Body = () => {
             )}
 
             {/* ----- item display ----- */}
-            <div className="overflow-y-auto h-full">
+            {/* lg:h-[60vh] xl:h-[70vh] */}
+            <div className="overflow-y-auto border w-full max-h-full">
               <Items showFilter={showFilter} />
             </div>
           </div>

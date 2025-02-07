@@ -2,7 +2,7 @@ import { Navbar } from "../global/navbar";
 import { Sidenav } from "../global/sidenav";
 import { Body } from "./component/body";
 
-const Profile = () => {
+const Orders = () => {
   return (
     <div className="">
       <Navbar />
@@ -14,4 +14,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Orders;

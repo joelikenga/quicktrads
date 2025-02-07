@@ -18,7 +18,7 @@ export const Footer = () => {
   return (
     <div className="w-full mt-[102px] mb-12 pb-4 md:pb-0">
       {/* ----- instagram connect ----- */}
-      {pathname === "/cart" ? null : (
+      {pathname !== "/" ? null : (
         <div className="w-full max-w-[725px] mx-auto text-center items-center flex flex-col gap-8 mb-[77px]">
           <div className="flex flex-col gap-4 mx-auto w-full items-center">
             <p
