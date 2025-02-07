@@ -236,7 +236,7 @@ export const Navbar = () => {
         </div>
       </div>
       {/* ----- Navbar Desktop----- */}
-      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px]   items-center border-b border">
+      <nav className="hidden lg:flex w-full px-20 bg-background h-[72px]   items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
           {/* ----- search and currency ----- */}
           <div className="flex gap-6 items-center">
