@@ -12,6 +12,7 @@ import {
   map,
   nigeriaIcon,
   redCategoryicon,
+  redInfo,
   search,
   unChecked,
   USAIcon,
@@ -23,6 +24,7 @@ import Image from "next/image";
 import { useLogin } from "../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
+import { useRouter } from "next/navigation";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -36,6 +38,7 @@ export const Navbar = () => {
   const [categoryOptions, setCategoryOptions] = useState<boolean>(false);
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const [profileOption, setProfileOption] = useState<boolean>(false);
+  const [logoutModal, setLogoutModal] = useState<boolean>(false);
 
   // ----- for mobile -----
   const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
@@ -43,6 +46,21 @@ export const Navbar = () => {
   const [womenDropdown, setWomenDropdown] = useState<boolean>(false);
 
   const logout = useLogout();
+
+  const router = useRouter();
+  const handleNavigation = (item: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    localStorage.setItem("category", item); // Save item to localStorage
+
+    if (window.location.pathname === "/categories") {
+      // If already on the /categories page, just set the localStorage
+      window.location.reload();
+    } else {
+      // Navigate to the /categories page
+      router.push("/categories");
+    }
+  };
 
   const handleCollectionDropdown = () => {
     setCollectionDropdown(!collectionDropdown);
@@ -142,17 +160,59 @@ export const Navbar = () => {
     if (currencyOptions) setCurrencyOptions(false);
   };
 
-  const handleMouseLeaveCategory = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCategoryOptions(false);
-  };
+  // const handleMouseLeaveCategory = (event: React.MouseEvent) => {
+  //   event.stopPropagation();
+  //   setCategoryOptions(false);
+  // };
 
   const { isLoggedIn, userDetails } = useLogin();
 
   return (
-    <div className="w-full z-50">
+    <div className="w-full left-0 top-0 fixed z-50  ">
+      {/* ----- logout modal ----- */}
+      {logoutModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[60] flex justify-start flex-col pt-[120px] md:pt-0 md:justify-center items-center backdrop-blur px-4 md:px-0">
+          <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-8 rounded-lg ">
+            <div className="w-full flex flex-col justify-center items-center gap-4  text-center">
+              <div
+                className="cursor-pointer"
+                // onClick={() => setDeleteItem(false)}
+              >
+                {redInfo()}
+              </div>
+
+              <p
+                className={`${lora.className} text-text_strong text-lg md:text-[22px] font-normal`}
+              >
+                {`Are you sure you want to logout your account?`}
+              </p>
+
+              <p className="text-text_strong text-sm md:text-base font-normal">
+                {`This action will logout your account. If you're not to logout, you can cancel to continue shopping`}
+              </p>
+            </div>
+
+            {/* ----- button ----- */}
+            <div className="flex justify-end gap-4">
+              <button
+                className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
+                onClick={logout}
+              >
+                <p>Logout</p>
+              </button>
+              <button
+                className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
+                onClick={() => setLogoutModal(false)}
+              >
+                <p>Cancel</p>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ----- Quick contact ----- */}
-      <div className="hidden lg:flex w-full px-20  items-center bg-fill h-12">
+      <div className="hidden lg:flex w-full px-10  items-center bg-fill h-12">
         <div className="w-full max-w-7xl mx-auto flex justify-start items-center gap-6">
           {/* ----- map ----- */}
           <div className="flex justify-center items-center gap-1 font-medium">
@@ -176,7 +236,7 @@ export const Navbar = () => {
         </div>
       </div>
       {/* ----- Navbar Desktop----- */}
-      <nav className="hidden lg:flex w-full px-20 bg-background h-[72px] items-center border-b border">
+      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px]   items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
           {/* ----- search and currency ----- */}
           <div className="flex gap-6 items-center">
@@ -230,7 +290,7 @@ export const Navbar = () => {
               {/* ----- currency dropdown ----- */}
               {currencyOptions && (
                 <div
-                  onMouseLeave={handleCurrencyOptions}
+                  // onMouseLeave={handleCurrencyOptions}
                   className="flex flex-col gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
                 >
                   <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
@@ -253,7 +313,7 @@ export const Navbar = () => {
           </div>
 
           {/* ----- logo ----- */}
-          <Link href={``}>{logo()}</Link>
+          <Link href={`/`}>{logo()}</Link>
 
           {/*----- category cart login and signup ----- */}
           <div className="flex gap-6 items-center">
@@ -268,6 +328,160 @@ export const Navbar = () => {
                 {category()}
                 <p className="">Category</p>
               </div>
+
+              {/* ----- category drop down ----- */}
+              {categoryOptions && (
+                <div
+                  // onMouseLeave={handleMouseLeaveCategory}
+                  className="bg-text_strong bg-opacity-80 h-full w-full fixed left-0 top-[120px]  hidden lg:flex z-50"
+                >
+                  {/* ----- category content ----- */}
+                  <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
+                    {/* ----- card section ----- */}
+
+                    <div className="w-1/2 flex items-center">
+                      {/* ----- card ----- */}
+                      <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
+                        {redCategoryicon()}
+                        <div className="gap-2 flex flex-col items-start">
+                          <p
+                            className={`${lora.variable} font-medium text-[22px]`}
+                          >{`Shop quick with quicktads category`}</p>
+                          <p
+                            className={`font-normal text-base`}
+                          >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ----- category lists ----- */}
+
+                    <div className="w-1/2 items-start flex justify-between gap-8">
+                      {/* ----- Featured ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p className="text-base font-semibold cursor-pointer">
+                          Featured
+                        </p>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("trending", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trending
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("latestWear", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Latest wear
+                        </div>
+                      </div>
+
+                      {/* ----- Unisex ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p className="text-base font-semibold cursor-pointer">
+                          Unisex
+                        </p>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("u-Tops", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Tops
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("u-Trousers", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trousers
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("u-TwoPiece", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Two-piece
+                        </div>
+                      </div>
+
+                      {/* ----- men ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p
+                          className="text-base font-semibold cursor-pointer"
+                        >
+                          Men
+                        </p>
+                        <div
+                          onClick={(event) => handleNavigation("m-Tops", event)}
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Tops
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("m-Trousers", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trousers
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("m-TwoPiece", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Two-piece
+                        </div>
+                      </div>
+
+                      {/* ----- Women ----- */}
+                      <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
+                        <p
+                          className="text-base font-semibold cursor-pointer"
+                        >
+                          Women
+                        </p>
+                        <div
+                          onClick={(event) => handleNavigation("w-Bubu", event)}
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Bubu
+                        </div>
+                        <div
+                          onClick={(event) => handleNavigation("w-Tops", event)}
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Tops
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("w-Trouser", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Trousers
+                        </div>
+                        <div
+                          onClick={(event) =>
+                            handleNavigation("w-TwoPiece", event)
+                          }
+                          className="text-lg font-normal text-text_weak cursor-pointer"
+                        >
+                          Two-piece
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* ----- cart ----- */}
@@ -342,7 +556,7 @@ export const Navbar = () => {
                       Password
                     </Link>{" "}
                     <div
-                      onClick={logout}
+                      onClick={() => setLogoutModal(true)}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Logout
@@ -375,9 +589,9 @@ export const Navbar = () => {
       </nav>
 
       {/* ----- Navbar Mobile----- */}
-      <nav className="flex justify-between items-center lg:hidden w-full px-8 py-4  bg-background h-[72px] relative">
+      <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4  bg-background h-[72px] relative">
         <Link href={`/cart`}>{cart()}</Link>
-        <Link href={``}>{logo()}</Link>
+        <Link href={`/`}>{logo()}</Link>
         <div onClick={() => setMobileDropdown(!mobileDropdown)} className="">
           {humbuger()}
         </div>
@@ -651,7 +865,7 @@ export const Navbar = () => {
                           Password
                         </Link>{" "}
                         <div
-                          onClick={logout}
+                          onClick={() => setLogoutModal(true)}
                           className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Logout
@@ -660,7 +874,7 @@ export const Navbar = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="min-h-[10rem] flex flex-col gap-6 justify-end">
+                  <div className="min-h-[8rem] flex flex-col gap-6 justify-end">
                     {/* text */}
                     {/* <div className="font-base text-base text-text_weak">
                     If you already have an account, click Login to access your profile. If you’re a new user, click Sign up to create an account.
@@ -713,83 +927,6 @@ export const Navbar = () => {
           </div>
         )}
       </nav>
-
-      {/* ----- category drop down ----- */}
-      {categoryOptions && (
-        <div
-          onMouseLeave={handleMouseLeaveCategory}
-          className="bg-text_strong bg-opacity-80 h-full w-full fixed  hidden lg:flex"
-        >
-          {/* ----- category content ----- */}
-          <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
-            {/* ----- card section ----- */}
-
-            <div className="w-1/2 flex items-center">
-              {/* ----- card ----- */}
-              <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
-                {redCategoryicon()}
-                <div className="gap-2 flex flex-col items-start">
-                  <p
-                    className={`${lora.variable} font-medium text-[22px]`}
-                  >{`Shop quick with quicktads category`}</p>
-                  <p
-                    className={`font-normal text-base`}
-                  >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ----- category lists ----- */}
-
-            <div className="w-1/2 items-start flex justify-between gap-8">
-              {/* ----- collection ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p className="text-base font-medium">Collections</p>
-                <Link href={``} className="text-lg font-normal">
-                  Features
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Trending
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Latest wear
-                </Link>
-              </div>
-
-              {/* ----- men ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p className="text-base font-medium">Men</p>
-                <Link href={``} className="text-lg font-normal">
-                  Tops
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Trousers
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Two-piece
-                </Link>
-              </div>
-
-              {/* ----- Women ----- */}
-              <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                <p className="text-base font-medium">Women</p>
-                <Link href={``} className="text-lg font-normal">
-                  Buba
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Tops
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Trousers
-                </Link>
-                <Link href={``} className="text-lg font-normal">
-                  Two-piece
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

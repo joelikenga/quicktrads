@@ -40,7 +40,7 @@ const sizeMap = {
     font: 'text-base'
   },
   large: {
-    container: 'w-12 h-12',
+    container: 'w-16 h-16',
     font: 'text-lg'
   }
 };
