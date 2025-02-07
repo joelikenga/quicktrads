@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { analysis, arrowleft, plus, dashborad, info, logo, management, notification } from '../../global/svg'
+import { analysis, arrowleft, plus, dashborad, info, logo, management, notification } from '../../../global/svg'
 import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
 
@@ -33,7 +33,7 @@ function Page() {
     return (
         <>
             {/* // header for the management page */}
-            <div className="w-full z-50 border-b border-b-stroke_weak">
+            <div className="w-full z-50 border-b border-b-stroke_weak sticky top-0 bg-white">
                 {/* ----- management header ----- */}
                 <div className="flex w-full justify-between px-20 py-8 h-12 items-center">
                     {/* ----- logo ----- */}
@@ -46,7 +46,7 @@ function Page() {
                         {/* the links for navigation for the management page - desktop view */}
                         <div className='flex gap-6 items-center'>
                             <NavLink href={`/dashboard`}>{dashborad()} Dashboard</NavLink>
-                            <NavLink href={`/management/add-product`}>{management()} Management</NavLink>
+                            <NavLink href={`./management/add-product`}>{management()} Management</NavLink>
                             <NavLink href={`/analysis`}>{analysis()}Analysis</NavLink>
                             <NavLink href={`/notification`}>{notification()}Notification</NavLink>
                         </div>
@@ -63,20 +63,22 @@ function Page() {
             </div>
 
 
+
             {/* // management control area */}
             <div className=''>
-                <div className='flex flex-row gap-4 pt-8'>
+                <div className='flex flex-row gap-4'>
                     {/* side panel */}
-                    <aside className='flex flex-col w-[30svw] gap-4 pl-20 h-full'>
-                        <ManagentLink href={`/management/add-product`}>Products</ManagentLink>
+                    <aside className='flex flex-col sticky top-[16vh] w-[30svw] gap-4 pl-20 h-[90svh]'>
+                        <ManagentLink href={`./management/add-product`}>Products</ManagentLink>
                         <ManagentLink href={`/products`}>Orders</ManagentLink>
                         <ManagentLink href={`/products`}>Customers</ManagentLink>
                     </aside>
 
 
+
                     {/* main panel */}
-                    <div>
-                        <Link href={`/management`} className='flex text-lg items-center pb-6 gap-1'>{arrowleft()}Add product</Link>
+                    <div className="pt-8">
+                        <Link href={`./`} className='flex text-lg items-center pb-6 gap-1'>{arrowleft()}Add product</Link>
 
                         <div className='flex xl:gap-4 2xl:gap-[73px]'>
                             {/* the card sections where the images will be previewed and uploaded */}
