@@ -150,7 +150,7 @@ export const Navbar = () => {
   const { isLoggedIn, userDetails } = useLogin();
 
   return (
-    <div className="w-full z-50 ">
+    <div className="w-full z-50">
       {/* ----- Quick contact ----- */}
       <div className="hidden lg:flex w-full px-20  items-center bg-fill h-12">
         <div className="w-full max-w-7xl mx-auto flex justify-start items-center gap-6">
@@ -176,7 +176,7 @@ export const Navbar = () => {
         </div>
       </div>
       {/* ----- Navbar Desktop----- */}
-      <nav className="hidden lg:flex w-full px-20 bg-background h-[72px]   items-center border-b border">
+      <nav className="hidden lg:flex w-full px-20 bg-background h-[72px] items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
           {/* ----- search and currency ----- */}
           <div className="flex gap-6 items-center">
