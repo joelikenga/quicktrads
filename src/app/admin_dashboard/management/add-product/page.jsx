@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { analysis, arrowleft, plus, dashborad, info, logo, management, notification } from '../../../global/svg'
 import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import Sidebar from '../../../Component/sidebar'
 
 // component used to check if current page matches link and adds an active class to it
 const NavLink = ({ href, children, }) => {
@@ -68,16 +69,12 @@ function Page() {
             <div className=''>
                 <div className='flex flex-row gap-4'>
                     {/* side panel */}
-                    <aside className='flex flex-col sticky top-[16vh] w-[30svw] gap-4 pl-20 h-[90svh]'>
-                        <ManagentLink href={`./management/add-product`}>Products</ManagentLink>
-                        <ManagentLink href={`/products`}>Orders</ManagentLink>
-                        <ManagentLink href={`/products`}>Customers</ManagentLink>
-                    </aside>
+                 <Sidebar />
 
 
 
                     {/* main panel */}
-                    <div className="pt-8">
+                    <div className="pt-8 ml-[320px] h-full">
                         <Link href={`./`} className='flex text-lg items-center pb-6 gap-1'>{arrowleft()}Add product</Link>
 
                         <div className='flex xl:gap-4 2xl:gap-[73px]'>
@@ -117,7 +114,7 @@ function Page() {
                                 <div className='pb-4 w-full'>
                                     <label htmlFor="name">
                                         <p className='pb-2 text-sm'>Name</p>
-                                        <input type="text" name="name" id="name" autoComplete className='border w-auto border-stroke_strong rounded-md py-1 px-2' />
+                                        <input type="text" name="name" id="name" autoComplete className='border w-full border-stroke_strong rounded-md py-1 px-2' />
                                     </label>
                                 </div>
 
@@ -125,7 +122,7 @@ function Page() {
                                 <div className="pb-4 w-full">
                                     <label htmlFor="price">
                                         <p className='pb-2 text-sm'>Regular price</p>
-                                        <input type="text" list='currency' name="price" id="price" className='border w-auto border-stroke_strong placeholder:text-text_weak rounded-md py-1 px-2' />
+                                        <input type="text" list='currency' name="price" id="price" className='border w-full border-stroke_strong placeholder:text-text_weak rounded-md py-1 px-2' />
                                         <datalist id="currency">
                                             <option value="NGN ₦"></option>
                                             <option value="USD $"></option>
@@ -136,8 +133,8 @@ function Page() {
 
                                 <div className="pb-4 w-full">
                                     <label htmlFor="discount-price">
-                                        <p className='pb-2 text-sm'>Discount price <span className='text-sm w-auto text-text_weak'>(Optional)</span></p>
-                                        <input type="text" list='currency' name="discount-price" id="discount-price" className='border border-stroke_strong placeholder:text-text_weak rounded-md py-1 px-2' />
+                                        <p className='pb-2 text-sm'>Discount price <span className='text-sm  text-text_weak'>(Optional)</span></p>
+                                        <input type="text" list='currency' name="discount-price" id="discount-price" className='border w-full border-stroke_strong placeholder:text-text_weak rounded-md py-1 px-2' />
                                         <datalist id="currency">
                                             <option value="NGN ₦"></option>
                                             <option value="USD $"></option>
