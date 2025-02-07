@@ -16,7 +16,6 @@ const NavLink = ({ href, children, }) => {
     )
 }
 
-
 // component used to check if current page matches link and adds an active class to it - the left panel navigation
 const ManagentLink = ({ href, children, }) => {
     const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
@@ -30,13 +29,11 @@ const ManagentLink = ({ href, children, }) => {
 }
 
 
-
 function Page() {
     return (
         <>
-
             {/* // header for the management page */}
-            <div className="w-full z-50 border-b border-b-stroke_weak">
+            <div className="w-full z-50 border-b border-b-stroke_weak sticky top-0 bg-white">
                 {/* ----- management header ----- */}
                 <div className="flex w-full justify-between px-20 py-8 h-12 items-center">
                     {/* ----- logo ----- */}
@@ -66,32 +63,34 @@ function Page() {
             </div>
 
 
+  
             {/* // management control area */}
-            
             <div className=''>
-            <div className='flex flex-row gap-4 pt-8'>
-            {/* side panel */}
-                <aside className='flex flex-col w-[30svw] gap-4 pl-20 h-[90svh]'>
-                    <ManagentLink href={`./management`}>Products</ManagentLink>
-                    <ManagentLink href={`/products`}>Orders</ManagentLink>
-                    <ManagentLink href={`/products`}>Customers</ManagentLink>
-                </aside>
+                <div className='flex flex-row gap-4'>
+                    {/* side panel */}
+                    <aside className='flex flex-col sticky top-[16vh] w-[30svw] gap-4 pl-20 h-[90svh]'>
+                        <ManagentLink href={`./management`}>Products</ManagentLink>
+                        <ManagentLink href={`/products`}>Orders</ManagentLink>
+                        <ManagentLink href={`/products`}>Customers</ManagentLink>
+                    </aside>
 
 
-                {/* main panel */}
-                <div>
-                    <p className="text-lg font-[500]">Product</p>
+ 
+ 
+                    {/* main panel */}
+                    <div className='pt-8'>
+                        <p className="text-lg font-[500]">Product</p>
 
-                    <div className="h-full flex justify-center items-center w-[70svw]">
-                        <div className='flex flex-col w-full justify-center items-center'>
-                            <div>{noproducts()}</div>
-                            <h3 className='text-text_strong text-lg'>There are currently no products!</h3>
-                            <p className='text-text_weak text-sm text-center pb-4 '>It looks like there are currently no products<div>available at the moment</div></p>
-                            <Link href={`./management/add-product`} className='bg-text_strong text-white rounded-full py-2 px-6 hover:bg-text_weak hover:text-white ease-in-out transition-all'>Add product</Link>
+                        <div className="h-full flex justify-center items-center w-[70svw]">
+                            <div className='flex flex-col w-full justify-center items-center'>
+                                <div>{noproducts()}</div>
+                                <h3 className='text-text_strong text-lg'>There are currently no products!</h3>
+                                <p className='text-text_weak text-sm text-center pb-4 '>It looks like there are currently no products<div>available at the moment</div></p>
+                                <Link href={`./management/add-product`} className='bg-text_strong text-white rounded-full py-2 px-6 hover:bg-text_weak hover:text-white ease-in-out transition-all'>Add product</Link>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             </div>
         </>

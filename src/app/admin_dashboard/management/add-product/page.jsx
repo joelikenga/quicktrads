@@ -63,17 +63,17 @@ function Page() {
             </div>
 
 
-{/* susushs */}
 
             {/* // management control area */}
             <div className=''>
                 <div className='flex flex-row gap-4'>
                     {/* side panel */}
-                    <aside className='flex flex-col sticky top-[16vh]  w-[30svw] gap-4 pl-20 h-full'>
+                    <aside className='flex flex-col sticky top-[16vh] w-[30svw] gap-4 pl-20 h-[90svh]'>
                         <ManagentLink href={`./management/add-product`}>Products</ManagentLink>
                         <ManagentLink href={`/products`}>Orders</ManagentLink>
                         <ManagentLink href={`/products`}>Customers</ManagentLink>
                     </aside>
+
 
 
                     {/* main panel */}
