@@ -838,7 +838,6 @@ export const dashborad = () => {
   )
 }
 
-
 export const management = () => {
   return (
     <>
@@ -877,7 +876,6 @@ export const notification = () => {
   )
 }
 
-
 export const noproducts = () => {
   return (
     <>
@@ -887,6 +885,43 @@ export const noproducts = () => {
         <path fill-rule="evenodd" clip-rule="evenodd" d="M11.0375 14.3341C10.1166 14.0412 9.12893 13.5727 7.92119 12.9998L3.77168 11.034C2.80535 10.5763 1.95332 10.1727 1.35388 9.77632C0.753695 9.37942 0 8.72844 0 7.66737C0 6.6063 0.753695 5.95532 1.35388 5.55843C1.95333 5.16202 2.80536 4.75847 3.77171 4.30077L4.92835 3.7528L6.21102 5.97446L4.99247 6.55173C3.91155 7.0638 3.23436 7.38822 2.8099 7.66879C3.23436 7.94937 3.91155 8.27378 4.99247 8.78586L6.42492 9.46446L7.82912 8.77709L11.0375 14.3341Z" fill="#DC1827" />
         <path fill-rule="evenodd" clip-rule="evenodd" d="M18.6374 27.4976C18.2363 27.6681 17.8254 27.8417 17.4078 28.0181C15.5158 28.818 14.2961 29.3336 13 29.3336C11.7039 29.3336 10.4842 28.818 8.59217 28.0181C6.06804 26.9518 3.78896 25.9891 2.43111 25.1743C1.08979 24.3694 0 23.3759 0 21.882L0 7.66695C0 7.41316 0.0945437 7.18145 0.250332 7.00512L4.64186 9.13726L8.5368 11.022C8.82864 11.1632 9.0995 11.2939 9.35191 11.4146L18.6374 27.4976ZM4.10579 14.5529C4.35278 14.0589 4.95345 13.8587 5.44743 14.1057L8.1141 15.439C8.60808 15.686 8.8083 16.2867 8.56131 16.7807C8.31432 17.2747 7.71365 17.4749 7.21967 17.2279L4.55301 15.8946C4.05903 15.6476 3.8588 15.0469 4.10579 14.5529Z" fill="#DC1827" />
       </svg>
+    </>
+  )
+}
+
+export const arrowleft = () => {
+  return (
+    <>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.16406 10.0002L16.6641 9.99998" stroke="#B8B8B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M7.4987 5.8335L3.92129 9.41091C3.64351 9.68868 3.50462 9.82757 3.50462 10.0002C3.50462 10.1728 3.64351 10.3116 3.92129 10.5894L7.4987 14.1668" stroke="#B8B8B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+    </>
+  )
+}
+
+
+export const info = () => {
+  return (
+    <>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10.0013" cy="10.0001" r="8.33333" stroke="#B8B8B8" stroke-width="1.25" />
+        <path d="M8.33594 7.50016C8.33594 6.57969 9.08213 5.8335 10.0026 5.8335C10.9231 5.8335 11.6693 6.57969 11.6693 7.50016C11.6693 7.83196 11.5723 8.1411 11.4052 8.40082C10.9071 9.17489 10.0026 9.91302 10.0026 10.8335V11.2502" stroke="#B8B8B8" stroke-width="1.25" stroke-linecap="round" />
+        <path d="M9.99593 14.1668H10.0034" stroke="#B8B8B8" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </>
+  )
+}
+
+export const plus = () => {
+  return (
+    <>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10.0039 3.33331V16.6666" stroke="#B8B8B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M3.33594 10H16.6693" stroke="#B8B8B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
     </>
   )
 }

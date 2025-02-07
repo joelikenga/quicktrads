@@ -23,7 +23,7 @@ const ManagentLink = ({ href, children, }) => {
     const isActive = pathname === href;//used to check if the domain url matches to the link url
 
     return (
-        <Link href={href} className={isActive ? "py-2 pl-6 pr-12 ease-in-out rounded-full text-center bg-stroke_weak w-max text-black" : "text-text_weak pr-12 rounded-full hover:bg-stroke_weak/60 ease-in-out  text-center py-2 pl-6 w-max"}>
+        <Link href={href} className={isActive ? "py-2 pl-6 pr-12 ease-in-out transition-all rounded-full text-center bg-stroke_weak w-max text-black" : "text-text_weak pr-12 rounded-full hover:bg-stroke_weak/60 ease-in-out transition-all  text-center py-2 pl-6 w-max"}>
             {children}
         </Link>
     )
@@ -56,7 +56,7 @@ function Page() {
 
                         {/* user info */}
                         <div className='flex gap-3 items-center'>
-                            <div className='w-6 h-6 bg-red flex justify-center items-center rounded-full'>F</div>
+                            <div className='w-6 h-6 bg-brand_red text-white p-4 flex justify-center items-center rounded-full'>F</div>
                             <div>Frank Emeka</div>
                         </div>
                     </div>
@@ -86,8 +86,8 @@ function Page() {
                         <div className='flex flex-col w-full justify-center items-center'>
                             <div>{noproducts()}</div>
                             <h3 className='text-text_strong text-lg'>There are currently no products!</h3>
-                            <p className='text-text_weak text-sm text-center pb-4 '>It looks like there are currently no products<div />available at the moment</p>
-                            <Link href={``} className='bg-text_strong text-white rounded-full py-2 px-6'>Add product</Link>
+                            <p className='text-text_weak text-sm text-center pb-4 '>It looks like there are currently no products<div>available at the moment</div></p>
+                            <Link href={`/management/add-product`} className='bg-text_strong text-white rounded-full py-2 px-6 hover:bg-text_weak hover:text-white ease-in-out transition-all'>Add product</Link>
                         </div>
                     </div>
                 </div>
