@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { analysis, arrowleft, plus, dashborad, info, logo, management, notification } from '../../../global/svg'
+import { analysis, arrowleft, alertIcn, plus, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin, uploadIcon } from '../../../global/svg'
 import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Sidebar from '../../../Component/sidebar'
@@ -55,7 +55,7 @@ function Page() {
                         {/* user info */}
                         <div className='flex gap-3 items-center'>
                             <div className='w-6 h-6 bg-brand_primary bg-brand_red text-white p-4 flex justify-center items-center rounded-full'>F</div>
-                            <div>Frank Emeka</div>
+                            <div className="flex items-center gap-2">Frank Emeka {arrowDown()}</div>
                         </div>
                     </div>
 
@@ -67,9 +67,9 @@ function Page() {
 
             {/* // management control area */}
             <div className=''>
-                <div className='flex flex-row gap-4'>
+                <div className='w-screen'>
                     {/* side panel */}
-                 <Sidebar />
+                    <Sidebar />
 
 
 
@@ -85,9 +85,14 @@ function Page() {
                                 <div className='pt-2'>
                                     <p className='flex items-center gap-1 text-sm text-text_weak'>{info()}The first image will be your cover image (Note: you can move or drag image)</p>
 
+
                                     {/*  */}
+                                    <div className="w-full h-11 flex justify-start items-center border-l-4 rounded-l-xl bg-fill border-error_1 px-2 gap-2">{alertIcn()}Image upload failed. <Link href={`/`} className="underline text-text_strong font-[400] text-sm">Try again</Link></div>
+
+                                    <div className="w-full h-11 flex justify-start items-center border-l-4 rounded-l-xl bg-fill border-error_1 px-2 gap-2">{success()}Image uploaded</div>
+                                    {/* the images panel */}
                                     <div className='flex gap-6 pt-2'>
-                                        {/*  */}
+                                        {/* side images */}
                                         <div className='flex flex-col gap-4'>
                                             <div className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak border-dashed">
                                                 {plus()}
@@ -95,14 +100,24 @@ function Page() {
                                             <div className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak border-dashed">
                                                 {plus()}
                                             </div>
-                                            <div className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak border-dashed">
+
+                                            <div className="w-[100px] relative flex justify-center items-center h-[120px] border border-text_weak border-dashed">
                                                 {plus()}
+                                                <span className="absolute right-[-12px] top-[-12px]">{removeBin()}</span>
+                                            </div>
+
+                                            <div className="w-[100px] flex justify-center items-center h-[120px] border border-error_1 border-dashed">
+                                                {imageadd()}
                                             </div>
                                         </div>
 
-                                        {/*  */}
+                                        {/* the main image */}
                                         <div>
-                                            <div className='w-[492px] h-[600px] border border-dashed border-text_weak'></div>
+                                            <div className='w-[492px] h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak'>
+
+                                                <span>{imageadd()}</span>
+                                                <p className='w-[240px] leading-[24px] text-text_weak text-sm'><span className='underline font-[400] text-text_strong'>Click to upload </span>or drag and drop PNG or JPG(max. 500x600px)</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -110,35 +125,50 @@ function Page() {
 
 
                             {/* product options */}
-                            <section>
+                            <section className='w-[323px] h-[972px]'>
+                                {/* name */}
                                 <div className='pb-4 w-full'>
                                     <label htmlFor="name">
                                         <p className='pb-2 text-sm'>Name</p>
-                                        <input type="text" name="name" id="name" autoComplete className='border w-full border-stroke_strong rounded-md py-1 px-2' />
+                                        <input type="text" name="name" id="name" autoComplete className='border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4' />
                                     </label>
                                 </div>
 
-
-                                <div className="pb-4 w-full">
+                                {/* regular price */}
+                                <div className="pb-4 w-full relative">
                                     <label htmlFor="price">
                                         <p className='pb-2 text-sm'>Regular price</p>
-                                        <input type="text" list='currency' name="price" id="price" className='border w-full border-stroke_strong placeholder:text-text_weak rounded-md py-1 px-2' />
-                                        <datalist id="currency">
-                                            <option value="NGN ₦"></option>
-                                            <option value="USD $"></option>
-                                        </datalist>
+                                        <input type="text" name="price" id="price" className='border  w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24' />
+                                        {/* price list */}
+                                        <div className="absolute top-[38px] left-4">
+                                            <p className="flex items-center text-sm text-text_weak gap-1">NGN ₦ <span>{arrowDown()}</span></p>
+                                        </div>
+
+
+                                        {/* dropdown */}
+                                        <div className='bg-white border-stroke_strong w-40 p-1 rounded-lg shadow-custom'>
+                                            <div className='bg-stroke_weak font-[400] text-base py-[10px] px-6'>NGN ₦ </div>
+                                            <div className='font-[400] text-base py-[10px] px-6'>USA $</div>
+                                        </div>
                                     </label>
                                 </div>
 
-
-                                <div className="pb-4 w-full">
+                                {/* discount price */}
+                                <div className="pb-4 w-full relative">
                                     <label htmlFor="discount-price">
                                         <p className='pb-2 text-sm'>Discount price <span className='text-sm  text-text_weak'>(Optional)</span></p>
-                                        <input type="text" list='currency' name="discount-price" id="discount-price" className='border w-full border-stroke_strong placeholder:text-text_weak rounded-md py-1 px-2' />
-                                        <datalist id="currency">
-                                            <option value="NGN ₦"></option>
-                                            <option value="USD $"></option>
-                                        </datalist>
+                                        <input type="text" name="discount-price" id="discount-price" className='border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24' />
+                                        {/* price list */}
+                                        <div className="absolute top-[38px] left-4">
+                                            <p className="flex items-center text-sm text-text_weak gap-1">NGN ₦ <span>{arrowDown()}</span></p>
+                                        </div>
+
+
+                                        {/* dropdown */}
+                                        <div className='bg-white border-stroke_strong w-40 p-1 rounded-lg shadow-custom'>
+                                            <div className='bg-stroke_weak font-[400] text-base py-[10px] px-6'>NGN ₦ </div>
+                                            <div className='font-[400] text-base py-[10px] px-6'>USA $</div>
+                                        </div>
                                     </label>
                                 </div>
 
@@ -186,7 +216,7 @@ function Page() {
 
                                     {/* category */}
                                     <div className='pt-3'>
-                                        <p className="text-[12px] pb-2">category</p>
+                                        <p className="text-sm pb-2">category</p>
 
                                         <p className='flex gap-1 text-sm text-text_weak pb-2 items-center'>{info()}Select all product category below</p>
 

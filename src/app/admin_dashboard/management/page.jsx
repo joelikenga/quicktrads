@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { analysis, dashborad, logo, management, noproducts, notification } from '../../global/svg'
+import { analysis, dashborad, arrowDown, logo, management, noproducts, notification } from '../../global/svg'
 import React from 'react'
 import Sidebar from '../../Component/sidebar'
 import { usePathname } from 'next/navigation'
@@ -46,7 +46,7 @@ function Page() {
                         {/* user info */}
                         <div className='flex gap-3 items-center'>
                             <div className='w-6 h-6 bg-brand_red text-white p-4 flex justify-center items-center rounded-full'>F</div>
-                            <div>Frank Emeka</div>
+                             <div className="flex items-center gap-2">Frank Emeka {arrowDown()}</div>
                         </div>
                     </div>
 
@@ -70,9 +70,9 @@ function Page() {
                             <div className="flex justify-center items-center h-[calc(100svh-190px)]">
                                 <div className='flex flex-col w-full justify-center items-center'>
                                     <div>{noproducts()}</div>
-                                    <h3 className='text-text_strong text-lg'>There are currently no products!</h3>
-                                    <p className='text-text_weak text-sm text-center pb-4 w-52'>It looks like there are currently no products available at the moment</p>
-                                    <Link href={`./management/add-product`} className='bg-text_strong text-white rounded-full py-2 px-6 hover:bg-text_weak hover:text-white ease-in-out transition-all'>Add product</Link>
+                                    <h3 className='text-text_strong font-[500] text-lg'>There are currently no products!</h3>
+                                    <p className='text-text_weak text-sm pt-2 text-center pb-4 w-[290px]'>It looks like there are currently no products available at the moment</p>
+                                    <Link href={`./management/add-product`} className='bg-text_strong text-white rounded-full py-[10px] px-[38.5px] hover:bg-text_weak hover:text-white ease-in-out transition-all'>Add product</Link>
                                 </div>
                             </div>
                     </div>
