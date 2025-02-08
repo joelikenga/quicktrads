@@ -532,29 +532,33 @@ export const Navbar = () => {
                 {profileOption && (
                   <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background  h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
                     <Link
-                      href={``}
+                      href={`/profile`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Profile
-                    </Link>{" "}
+                    </Link>
+
                     <Link
-                      href={``}
+                      href={`/orders`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Orders
-                    </Link>{" "}
+                    </Link>
+
                     <Link
-                      href={``}
+                      href={`/address`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Address
-                    </Link>{" "}
+                    </Link>
+
                     <Link
-                      href={``}
+                      href={`/password`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Password
-                    </Link>{" "}
+                    </Link>
+                    
                     <div
                       onClick={() => setLogoutModal(true)}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
