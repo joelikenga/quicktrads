@@ -1,5 +1,4 @@
-import { ProfileAvatar } from "@/app/global/profileGenerator";
-import { arrowDown, redInfoSmall, uploadIcon } from "@/app/global/svg";
+
 
 export const Body = () => {
   return (

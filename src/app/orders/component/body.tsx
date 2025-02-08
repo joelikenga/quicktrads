@@ -162,7 +162,7 @@ export const Body = () => {
                     <div className="flex gap-1">
                       {
                       [1,2,3,4,5,6,7,8,9].map((num) => (
-                        <div className="h-10 w-10 flex items-center rounded-full border justify-center">{num}</div>
+                        <div key={num} className="h-10 w-10 flex items-center rounded-full border justify-center">{num}</div>
                       ))
 
                       }
