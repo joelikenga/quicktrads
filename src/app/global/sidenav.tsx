@@ -37,18 +37,18 @@ export const Sidenav = () => {
           </Link>
 
           <Link
-            href={``}
+            href={`/address`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "/" ? "bg-stroke_weak" : ""
+              pathname === "/address" ? "bg-stroke_weak" : ""
             } w-full`}
           >
             Address
           </Link>
 
           <Link
-            href={``}
+            href={`/password`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "/" ? "bg-stroke_weak" : ""
+              pathname === "/password" ? "bg-stroke_weak" : ""
             } w-full`}
           >
             Password
