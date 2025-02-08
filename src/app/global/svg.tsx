@@ -1329,8 +1329,8 @@ export const arrowleft = () => {
   return (
     <>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10.0039 3.33337V16.6667" stroke="#B8B8B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path d="M3.33594 10H16.6693" stroke="#B8B8B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M4.16406 10.0002L16.6641 9.99998" stroke="#B8B8B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M7.4987 5.8335L3.92129 9.41091C3.64351 9.68868 3.50462 9.82757 3.50462 10.0002C3.50462 10.1728 3.64351 10.3116 3.92129 10.5894L7.4987 14.1668" stroke="#B8B8B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </>
   )
