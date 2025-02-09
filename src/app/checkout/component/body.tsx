@@ -29,7 +29,7 @@ export const Body = () => {
   const [failed, setFailed] = useState<boolean>(false);
 
   return (
-    <div className="w-full mt-8 px-20">
+    <div className="w-full mt-8 px-10">
       {/* payment successful */}
       {success && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
