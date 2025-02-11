@@ -49,10 +49,10 @@ export const Footer = () => {
               {logo()}
             </i>
             <div className="flex flex-row flex-wrap justify-center gap-6  font-medium">
-              <Link href={``}>
+              <Link href={`/about`}>
                 <p className="text-text_strong text-base">About us</p>
               </Link>
-              <Link href={``}>
+              <Link href={`/contact`}>
                 <p className="text-text_strong text-base">Contact us</p>
               </Link>
 
