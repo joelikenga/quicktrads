@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '../global/navbar'
-import { Footer } from '../Component/footer'
+import { Footer } from '../component/footer'
 import Image from 'next/image'
 function Page() {
 
