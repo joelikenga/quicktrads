@@ -1545,3 +1545,106 @@ export const failedIcon = () => {
     </svg>
   );
 };
+
+export const leftCarousel = () => {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_b_133_2034)">
+        <circle
+          cx="24"
+          cy="24"
+          r="20"
+          transform="rotate(180 24 24)"
+          fill="white"
+          fill-opacity="0.48"
+        />
+      </g>
+      <path
+        d="M27 32C27 32 21 26.1081 21 23.9999C21 21.8918 27 16 27 16"
+        stroke="white"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <defs>
+        <filter
+          id="filter0_b_133_2034"
+          x="-64"
+          y="-64"
+          width="176"
+          height="176"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feGaussianBlur in="BackgroundImageFix" stdDeviation="34" />
+          <feComposite
+            in2="SourceAlpha"
+            operator="in"
+            result="effect1_backgroundBlur_133_2034"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_backgroundBlur_133_2034"
+            result="shape"
+          />
+        </filter>
+      </defs>
+    </svg>
+  );
+};
+
+export const rightCarousel = () => {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_b_133_2038)">
+        <circle cx="24" cy="24" r="20" fill="white" fill-opacity="0.48" />
+      </g>
+      <path
+        d="M21 16C21 16 27 21.8919 27 24.0001C27 26.1082 21 32 21 32"
+        stroke="white"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <defs>
+        <filter
+          id="filter0_b_133_2038"
+          x="-64"
+          y="-64"
+          width="176"
+          height="176"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feGaussianBlur in="BackgroundImageFix" stdDeviation="34" />
+          <feComposite
+            in2="SourceAlpha"
+            operator="in"
+            result="effect1_backgroundBlur_133_2038"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_backgroundBlur_133_2038"
+            result="shape"
+          />
+        </filter>
+      </defs>
+    </svg>
+  );
+};
