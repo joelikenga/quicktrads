@@ -1,36 +1,36 @@
 'use client'
 import Link from 'next/link'
-import { analysis, arrowleft, alertIcn, plus, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin, uploadIcon } from '../../../global/svg'
+import { analysis, arrowleft, alertIcn, plus, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin, uploadIcon } from '@/app/global/svg'
 import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import Sidebar from '../../../Component/sidebar'
+import Sidebar from '@/app/Component/sidebar'
 
-// component used to check if current page matches link and adds an active class to it
-const NavLink = ({ href, children, }) => {
-    const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
-    const isActive = pathname === href;//used to check if the domain url matches to the link url
+export default function body() {
 
-    return (
-        <Link href={href} className={isActive ? "flex gap-1 items-center relative before:w-full before:h-[2px] before:rounded-lg before:mx-auto before:absolute before:left- before:bottom-[-22px] before:bg-text_strong" : "flex gap-1 text-text_weak items-center"}>
-            {children}
-        </Link>
-    )
-}
+    // component used to check if current page matches link and adds an active class to it
+    const NavLink = ({ href, children }: { href: string, children: React.ReactNode }) => {
+        const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
+        const isActive = pathname === href;//used to check if the domain url matches to the link url
 
-// component used to check if current page matches link and adds an active class to it - the left panel navigation
-const ManagentLink = ({ href, children, }) => {
-    const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
-    const isActive = pathname === href;//used to check if the domain url matches to the link url
+        return (
+            <Link href={href} className={isActive ? "flex gap-1 items-center relative before:w-full before:h-[2px] before:rounded-lg before:mx-auto before:absolute before:left- before:bottom-[-22px] before:bg-text_strong" : "flex gap-1 text-text_weak items-center"}>
+                {children}
+            </Link>
+        )
+    }
 
-    return (
-        <Link href={href} className={isActive ? "py-2 pl-6 pr-12 ease-in-out rounded-full text-center transition-all bg-stroke_weak w-max text-black" : "text-text_weak pr-12 rounded-full transition-all hover:bg-stroke_weak/60 ease-in-out  text-center py-2 pl-6 w-max"}>
-            {children}
-        </Link>
-    )
-}
+    // component used to check if current page matches link and adds an active class to it - the left panel navigation
+    const ManagentLink = ({ href, children }: { href: string, children: React.ReactNode }) => {
+        const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
+        const isActive = pathname === href;//used to check if the domain url matches to the link url
 
+        return (
+            <Link href={href} className={isActive ? "py-2 pl-6 pr-12 ease-in-out rounded-full text-center transition-all bg-stroke_weak w-max text-black" : "text-text_weak pr-12 rounded-full transition-all hover:bg-stroke_weak/60 ease-in-out  text-center py-2 pl-6 w-max"}>
+                {children}
+            </Link>
+        )
+    }
 
-function Page() {
     return (
         <>
             {/* // header for the management page */}
@@ -130,7 +130,7 @@ function Page() {
                                 <div className='pb-4 w-full'>
                                     <label htmlFor="name">
                                         <p className='pb-2 text-sm'>Name</p>
-                                        <input type="text" name="name" id="name" autoComplete className='border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4' />
+                                        <input type="text" name="name" id="name" autoComplete="on" className='border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4' />
                                     </label>
                                 </div>
 
@@ -254,8 +254,7 @@ function Page() {
                 </div>
             </div>
 
+
         </>
     )
 }
-
-export default Page

@@ -1362,3 +1362,13 @@ export const plus = () => {
     </>
   )
 }
+
+
+export const arrowUp = () => {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.1992 15.5998C19.1992 15.5998 13.8965 8.39992 11.9992 8.3999C10.1018 8.39989 4.79922 15.5999 4.79922 15.5999" stroke="#525252" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+
+  )
+}

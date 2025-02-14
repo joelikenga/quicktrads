@@ -7,7 +7,9 @@ import { usePathname } from 'next/navigation'
 
 
 // component used to check if current page matches link and adds an active class to it
-const NavLink = ({ href, children, }) => {
+import { ReactNode } from 'react';
+
+const NavLink = ({ href, children }: { href: string, children: ReactNode }) => {
     const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
     const isActive = pathname === href;//used to check if the domain url matches to the link url
 

@@ -1,10 +1,11 @@
 'use client'
 import Link from 'next/link'
 import React, { useState } from 'react'
-import { eyeOpen, eyeClose, logo, redInfoSmall } from '../../global/svg'
+import { eyeOpen, eyeClose, logo, redInfoSmall } from '../../../global/svg'
 
-function Page() {
+export default function body() {
     const [showPassword, setShowPassword] = useState(false);
+
     return (
         <>
             <section className="w-full sm:w-[483px] flex flex-col justify-between relative h-[100svh] mx-auto">
@@ -69,9 +70,6 @@ function Page() {
                 </div>
             </section>
 
-
         </>
     )
 }
-
-export default Page
