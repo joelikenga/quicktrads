@@ -115,7 +115,11 @@ export const Body = () => {
             </div>
           </div>
 
-          {/* details */}
+          {/* details container*/}
+
+          <div className="max-w-[504px] w-full flex-col flex gap-6">
+
+          </div>
 
           <div className="w-[504px] h-fit flex flex-col gap-6">
             {/* name and price */}
