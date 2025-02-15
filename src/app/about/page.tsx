@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from '../global/navbar'
-import { Footer } from '../component/footer'
+import { Footer } from '../Component/footer'
 import Image from 'next/image'
 function Page() {
 
@@ -100,7 +100,7 @@ function Page() {
                                             src={vm.image}
                                             height={400}
                                             width={628}
-                                            id={vm.key}
+                                            id={vm}
                                             className="w-full px-2 md:px-4 object-cover lg:px-10 md:w-[628px]"
                                             alt={vm.alt}
                                         />

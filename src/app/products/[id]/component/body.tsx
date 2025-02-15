@@ -100,9 +100,13 @@ export const Body = () => {
             </div>
           </div>
 
-          {/* details */}
+          {/* details container*/}
 
-              
+          <div className="max-w-[504px] w-full flex-col flex gap-6">
+
+          </div>
+
+
 
         </div>
       </div>
