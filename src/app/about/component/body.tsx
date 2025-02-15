@@ -1,9 +1,9 @@
-import React from 'react'
-import { Navbar } from '../global/navbar'
-import { Footer } from '../component/footer'
+import { Footer } from '@/app/Component/footer'
+import { Navbar } from '@/app/global/navbar'
 import Image from 'next/image'
-function Page() {
+import React from 'react'
 
+export default function body() {
     // mission and vision images
     const vision_mission = [
         {
@@ -42,8 +42,10 @@ function Page() {
         }
     ]
 
+    
     return (
         <>
+
             <Navbar />
 
             {/* hero  */}
@@ -90,7 +92,7 @@ function Page() {
             {/* mission and vision */}
             <section className="pt-20 lg:w-max mx-auto">
                 <h2 className="text-2xl text-text_strong px-2 pb-6 lg:px-10">Mission & vision</h2>
-                <div className="flex flex-col md:flex-row gap-7">
+                <div className="flex flex-col md:flex-row md:justify-between gap-7">
                     {
                         vision_mission.map((vm, key) => {
                             return (
@@ -100,7 +102,6 @@ function Page() {
                                             src={vm.image}
                                             height={400}
                                             width={628}
-                                            id={vm.key}
                                             className="w-full px-2 md:px-4 object-cover lg:px-10 md:w-[628px]"
                                             alt={vm.alt}
                                         />
@@ -123,7 +124,7 @@ function Page() {
                 <h2 className="text-2xl text-text_strong pb-6">What we offer</h2>
 
 
-                <div className="flex flex-col gap-4 md:flex-row">
+                <div className="flex flex-col gap-4 md:justify-between md:flex-row">
                     {
                         offers.map((offer, key) => {
                             return (
@@ -132,7 +133,6 @@ function Page() {
                                         src={offer.image}
                                         height={400}
                                         width={410}
-                                        id={offer.key}
                                         className="w-full object-cover lg:w-[628px]"
                                         alt={offer.alt}
                                     />
@@ -147,8 +147,7 @@ function Page() {
 
             {/* footer */}
             <Footer />
+
         </>
     )
 }
-
-export default Page
