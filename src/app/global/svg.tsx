@@ -1442,7 +1442,188 @@ export const imageadd = () => {
   );
 };
 
-export const plus = () => {
+export const successIcon = () => {
+  return (
+    <svg
+      width="60"
+      height="60"
+      viewBox="0 0 60 60"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M3.12305 30.001C3.12305 44.8436 15.1554 56.876 29.998 56.876C44.8407 56.876 56.873 44.8436 56.873 30.001C56.873 15.1583 44.8407 3.12598 29.998 3.12598C15.1554 3.12598 3.12305 15.1583 3.12305 30.001ZM41.6883 20.6581C42.7061 21.5911 42.7749 23.1725 41.8419 24.1903L28.0919 39.1903C27.6311 39.693 26.9851 39.9856 26.3033 40.0004C25.6216 40.0152 24.9634 39.7509 24.4813 39.2688L18.2313 33.0188C17.2549 32.0424 17.2549 30.4595 18.2313 29.4832C19.2076 28.5069 20.7905 28.5069 21.7668 29.4832L26.1705 33.8869L38.1561 20.8117C39.0891 19.7939 40.6705 19.7251 41.6883 20.6581Z"
+        fill="#86FBD5"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M23.2501 3.97998C11.6736 6.97352 3.12305 17.4886 3.12305 30.0008C3.12305 44.8434 15.1554 56.8758 29.998 56.8758C32.4799 56.8758 34.8831 56.5394 37.1647 55.9097L31.6458 35.3131L28.0919 39.1901C27.6311 39.6928 26.9851 39.9854 26.3033 40.0002C25.6216 40.015 24.9634 39.7507 24.4813 39.2686L18.2313 33.0186C17.2549 32.0422 17.2549 30.4593 18.2313 29.483C19.2076 28.5067 20.7905 28.5067 21.7668 29.483L26.1705 33.8867L30.1116 29.5873L23.2501 3.97998Z"
+        fill="#109368"
+      />
+    </svg>
+  );
+};
+
+export const pendingIcon = () => {
+  return (
+    <svg
+      width="60"
+      height="60"
+      viewBox="0 0 60 60"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M10 2.5C8.61929 2.5 7.5 3.61929 7.5 5C7.5 6.38071 8.61929 7.5 10 7.5H10.625V12.7841C10.625 20.3685 15.1136 26.92 21.6161 30C15.1136 33.08 10.625 39.6315 10.625 47.2159V52.5H10C8.61929 52.5 7.5 53.6193 7.5 55C7.5 56.3807 8.61929 57.5 10 57.5H50C51.3807 57.5 52.5 56.3807 52.5 55C52.5 53.6193 51.3807 52.5 50 52.5H49.375V47.2159C49.375 39.6315 44.8864 33.08 38.3839 30C44.8864 26.92 49.375 20.3685 49.375 12.7841V7.5H50C51.3807 7.5 52.5 6.38071 52.5 5C52.5 3.61929 51.3807 2.5 50 2.5H10ZM44.5312 7.5H15.4688V12.7841C15.4688 20.6918 21.9746 27.1023 30 27.1023C38.0254 27.1023 44.5312 20.6918 44.5312 12.7841V7.5Z"
+        fill="#FCDF77"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M24.1216 2.5H10C8.61929 2.5 7.5 3.61929 7.5 5C7.5 6.38071 8.61929 7.5 10 7.5H10.625V12.7841C10.625 20.3685 15.1136 26.92 21.6161 30C15.1136 33.08 10.625 39.6315 10.625 47.2159V52.5H10C8.61929 52.5 7.5 53.6193 7.5 55C7.5 56.3807 8.61929 57.5 10 57.5H38.8588L30.7092 27.0855C30.4742 27.0966 30.2378 27.1023 30 27.1023C21.9746 27.1023 15.4688 20.6918 15.4688 12.7841V7.5H25.4613L24.1216 2.5Z"
+        fill="#BA8603"
+      />
+    </svg>
+  );
+};
+
+export const failedIcon = () => {
+  return (
+    <svg
+      width="60"
+      height="60"
+      viewBox="0 0 60 60"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M29.998 56.8726C15.1554 56.8726 3.12305 44.8402 3.12305 29.9976C3.12305 15.1549 15.1554 3.12256 29.998 3.12256C44.8407 3.12256 56.873 15.1549 56.873 29.9976C56.873 44.8402 44.8407 56.8726 29.998 56.8726ZM39.2658 24.2659C40.2421 23.2896 40.2422 21.7067 39.2659 20.7303C38.2896 19.754 36.7067 19.7539 35.7303 20.7302L29.9976 26.4626L24.2658 20.7312C23.2894 19.7549 21.7065 19.755 20.7302 20.7313C19.7539 21.7077 19.754 23.2906 20.7303 24.2669L26.4619 29.998L20.7303 35.7292C19.754 36.7055 19.7539 38.2884 20.7302 39.2648C21.7065 40.2411 23.2894 40.2412 24.2658 39.2649L29.9976 33.5335L35.7303 39.2659C36.7067 40.2421 38.2896 40.2421 39.2659 39.2658C40.2422 38.2894 40.2421 36.7065 39.2658 35.7302L33.5332 29.998L39.2658 24.2659Z"
+        fill="#F88C94"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M23.2494 3.97705C11.6732 6.97086 3.12305 17.4858 3.12305 29.9977C3.12305 44.8403 15.1554 56.8727 29.998 56.8727C32.4796 56.8727 34.8826 56.5363 37.1639 55.9068L31.5977 35.1336L29.9976 33.5336L24.2658 39.265C23.2894 40.2413 21.7065 40.2412 20.7302 39.2649C19.7539 38.2885 19.754 36.7056 20.7303 35.7293L26.4619 29.9981L20.7303 24.2669C19.754 23.2907 19.7539 21.7078 20.7302 20.7314C21.7065 19.7551 23.2894 19.755 24.2658 20.7313L29.0097 25.4749L23.2494 3.97705Z"
+        fill="#DC1827"
+      />
+    </svg>
+  );
+};
+
+export const leftCarousel = () => {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_b_133_2034)">
+        <circle
+          cx="24"
+          cy="24"
+          r="20"
+          transform="rotate(180 24 24)"
+          fill="white"
+          fill-opacity="0.48"
+        />
+      </g>
+      <path
+        d="M27 32C27 32 21 26.1081 21 23.9999C21 21.8918 27 16 27 16"
+        stroke="white"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <defs>
+        <filter
+          id="filter0_b_133_2034"
+          x="-64"
+          y="-64"
+          width="176"
+          height="176"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feGaussianBlur in="BackgroundImageFix" stdDeviation="34" />
+          <feComposite
+            in2="SourceAlpha"
+            operator="in"
+            result="effect1_backgroundBlur_133_2034"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_backgroundBlur_133_2034"
+            result="shape"
+          />
+        </filter>
+      </defs>
+    </svg>
+  );
+};
+
+export const rightCarousel = () => {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_b_133_2038)">
+        <circle cx="24" cy="24" r="20" fill="white" fill-opacity="0.48" />
+      </g>
+      <path
+        d="M21 16C21 16 27 21.8919 27 24.0001C27 26.1082 21 32 21 32"
+        stroke="white"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <defs>
+        <filter
+          id="filter0_b_133_2038"
+          x="-64"
+          y="-64"
+          width="176"
+          height="176"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feGaussianBlur in="BackgroundImageFix" stdDeviation="34" />
+          <feComposite
+            in2="SourceAlpha"
+            operator="in"
+            result="effect1_backgroundBlur_133_2038"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_backgroundBlur_133_2038"
+            result="shape"
+          />
+        </filter>
+      </defs>
+    </svg>
+  );
+};
+  )
+}
+
+
+export const arrowUp = () => {
   return (
     <>
       <svg
@@ -1467,6 +1648,20 @@ export const plus = () => {
           stroke-linejoin="round"
         />
       </svg>
+
+    </>
+  )
+}
+
+
+export const arrowUp = () => {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.1992 15.5998C19.1992 15.5998 13.8965 8.39992 11.9992 8.3999C10.1018 8.39989 4.79922 15.5999 4.79922 15.5999" stroke="#525252" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+
+  )
+}
     </>
   );
 };

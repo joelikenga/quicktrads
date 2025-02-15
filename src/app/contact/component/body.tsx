@@ -1,12 +1,11 @@
-import React from 'react'
-import { Navbar } from '../global/navbar'
+import { Footer } from '@/app/Component/footer'
+import { Navbar } from '@/app/global/navbar'
 import Image from 'next/image'
-import { Footer } from '../component/footer'
-
-
-function Page() {
-    return (
-        <div className="w-full">
+import React from 'react'
+export default function body() {
+  return (
+  <>
+   <div className="w-full">
             <div className="mx-auto">
 
                 <Navbar />
@@ -80,7 +79,7 @@ function Page() {
                 <Footer />
             </div>
         </div>
-    )
-}
 
-export default Page
+  </>
+  )
+}
