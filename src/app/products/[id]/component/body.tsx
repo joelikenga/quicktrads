@@ -4,9 +4,14 @@ import {
   cart,
   deliveryIcon,
   info,
+  instagram,
   leftCarousel,
+  linkIcon,
+  msgIcon,
   returnIcon,
+  review_0,
   rightCarousel,
+  whatsapp,
 } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
@@ -116,10 +121,6 @@ export const Body = () => {
           </div>
 
           {/* details container*/}
-
-          <div className="max-w-[504px] w-full flex-col flex gap-6">
-
-          </div>
 
           <div className="w-[504px] h-fit flex flex-col gap-6">
             {/* name and price */}
@@ -261,7 +262,7 @@ export const Body = () => {
 
                         <div className="flex flex-col">
                           <p className="font-medium text-base text-text_strong">
-                          Return policy
+                            Return policy
                           </p>
                           <p className="">
                             {`10 days from the date of delivery. We ask you make sure the items have not been worn, washed, or damaged, and that you ship the item(s) back in their original packaging and box`}
@@ -275,6 +276,102 @@ export const Body = () => {
                     </div>
                   </div>
                 }
+              </div>
+
+              {/*Reviews */}
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between w-full cursor-pointer items-center">
+                  <p className="text-text_strong text-base font-medium">
+                    Reviews(1)
+                  </p>
+                  <i className={`duration-300 ${true && "rotate-180"}`}>
+                    {arrowDown()}
+                  </i>
+                </div>
+
+                {/* no reviews */}
+                {
+                  <div className=" w-full text-text_weak">
+                    <div className="w-full font-normal text-base flex flex-col gap-6">
+                      <div className="flex justify-start items-center gap-2">
+                        <p
+                          className={`${lora.className} font-normal text-[32px] text-text_strong`}
+                        >
+                          0
+                        </p>
+                        <i>{review_0()}</i>
+                      </div>
+
+                      {false && (
+                        <div className="flex-col flex items-center gap-4">
+                          <i>{msgIcon()}</i>
+
+                          <div className="max-w-[290px] ">
+                            <p className="font-medium text-[18px] text-text_strong">
+                              There are currently no review!
+                            </p>
+                            <p className="text-text_weak text-sm font-normal">
+                              It looks like there are currently no reviews
+                              available at the moment
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      <Link href={``} className="font-medium underline pb-6">
+                        Write a review
+                      </Link>
+                    </div>
+                  </div>
+                }
+                {/* review given */}
+                {
+                  <div className="w-full font-normal text-base flex flex-col gap-2">
+                    <p className="text-base font-medium">Emeka</p>
+                    <div className="flex justify-start items-center gap-2">
+                      <i>{review_0()}</i>
+                      <p className={`font-normal text-[16px] text-text_weak`}>
+                        12/1/2024
+                      </p>
+                    </div>
+                    <p className="font-normal text-base text-text_weak">
+                      {`10 days from the date of delivery. We ask you make sure
+                      the items have not been worn, washed, or damaged, and that
+                      you ship the item(s) back in their original packaging and
+                      box`}
+                    </p>
+
+                    <Link
+                      href={``}
+                      className="font-medium underline py-6 text-text_weak"
+                    >
+                      Explore reviews
+                    </Link>
+                  </div>
+                }
+              </div>
+
+              {/* share product */}
+              <div className="flex flex-col gap-4">
+                <p className="text-text_strong text-base font-medium">
+                  Share product
+                </p>
+                <div className="flex gap-12 justify-start items-center">
+                  <div className="flex gap-2 items-center text-text_strong font-medium text-sm">
+                    <i>{linkIcon()}</i>
+                    <p>Copy link</p>
+                  </div>
+
+                  <div className="flex gap-2 items-center text-text_strong font-medium text-sm">
+                    <i>{whatsapp()}</i>
+                    <p>Whatsapp</p>
+                  </div>
+
+                  <div className="flex gap-2 items-center text-text_strong font-medium text-sm">
+                    <i>{instagram()}</i>
+                    <p>Instagram</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
