@@ -16,7 +16,7 @@ import {
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+// import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const lora = Lora({
@@ -31,7 +31,7 @@ const images = [
 ];
 
 export const Body = () => {
-  const { id } = useParams() as { id: string };
+  // const { id } = useParams() as { id: string };
 
   const [currentImage, setCurrentImage] = useState(images[0]);
   const [index, setIndex] = useState(0);
@@ -71,7 +71,7 @@ export const Body = () => {
           <div className="w-fit h-full flex justify-between gap-6">
             {/* 3 images */}
             <div className="flex flex-col gap-4">
-              {images.map((item, idx) => (
+              {images.map((item) => (
                 <div
                   key={item}
                   className="w-fit h-fit cursor-pointer"

@@ -1,23 +1,26 @@
 "use client";
 
-import { arrowDown, check, filterIcon } from "@/app/global/svg";
-import { Lora } from "next/font/google";
+// import { arrowDown, check, filterIcon } from "@/app/global/svg";
+// import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
-import { Items } from "../../products/component/items";
+// import { Items } from "../../products/component/items";
 import Products from "@/app/products/page";
 import { SideCategory } from "./sideCategory";
 
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-});
+// const lora = Lora({
+//   variable: "--font-lora",
+//   subsets: ["latin"],
+// });
 
 export const Body = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [showFilter, setShowFilter] = useState<boolean>(false);
-  const [showGender, setShowGender] = useState<boolean>(false);
-  const [showSize, setShowSize] = useState<boolean>(false);
-  const [showPrice, setShowPrice] = useState<boolean>(false);
+// let showFilter = false;
+
+
+setShowFilter(false);
+
+console.log('selectedCategory', selectedCategory);
 
   useEffect(() => {
     const savedItem = localStorage.getItem("category"); // Get item from localStorage
@@ -26,10 +29,10 @@ export const Body = () => {
     }
   }, []);
 
-  const handleClick = (item: string) => {
-    localStorage.setItem("category", item);
-    setSelectedCategory(item);
-  };
+  // const handleClick = (item: string) => {
+  //   localStorage.setItem("category", item);
+  //   setSelectedCategory(item);
+  // };
 
   return (
     <div className=" md:px-10  lg:px-10  overflow-y-auto mt-[70px] md:mt-[110px] h-full relative">

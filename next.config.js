@@ -1,3 +1,13 @@
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   images: {
+//     domains: ['res.cloudinary.com'],
+//   },
+// }
+
+// module.exports = nextConfig
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -5,8 +15,13 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
-        pathname: '/dtjf6sic8/**',
+        // pathname: '/dtjf6sic8/**',
       },
+      // {
+      //   protocol: 'https',
+      //   hostname: 'res.cloudinary.com',
+      //   pathname: '/dymkfk58k/**',
+      // },
     ],
   },
 }

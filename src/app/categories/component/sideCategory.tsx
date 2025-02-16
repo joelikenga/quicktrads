@@ -1,12 +1,12 @@
 "use client";
 
-import { arrowDown, check, filterIcon } from "@/app/global/svg";
+import { arrowDown, check, } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
 
-interface ItemsProps {
-  showFilter: boolean;
-}
+// interface ItemsProps {
+//   showFilter: boolean;
+// }
 // { showFilter }: ItemsProps
 
 const lora = Lora({
@@ -14,7 +14,7 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
-export const SideCategory = ({ showFilter }: ItemsProps) => {
+export const SideCategory = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [showGender, setShowGender] = useState<boolean>(false);
   const [showSize, setShowSize] = useState<boolean>(false);

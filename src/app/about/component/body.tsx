@@ -64,7 +64,7 @@ export default function body() {
             height={600}
             width={1280}
             src={
-              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739189874/hero_hvzlma.png"
+              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739190791/journey_pwwiqc.png"
             }
             className="h-[600px] w-full object-cover md:object-contain bg-center"
             alt="hero image"
@@ -106,16 +106,16 @@ export default function body() {
           Mission & vision
         </h2>
         <div className="flex flex-col md:flex-row md:justify-between gap-7">
-          {vision_mission.map((vm, key) => {
+          {vision_mission.map((vm, index) => {
             return (
-              <div className="">
+              <div key={index} className="">
                 <div>
                   <Image
                     src={vm.image}
                     height={400}
                     width={628}
                     className="w-full px-2 md:px-4 object-cover lg:px-10 md:w-[628px]"
-                    alt={vm.alt}
+                    alt="mission"
                   />
                 </div>
 
@@ -138,9 +138,9 @@ export default function body() {
         <h2 className="text-2xl text-text_strong pb-6">What we offer</h2>
 
         <div className="flex flex-col gap-4 md:justify-between md:flex-row">
-          {offers.map((offer, key) => {
+          {offers.map((offer, index) => {
             return (
-              <div className="w-full md:w-[410px]">
+              <div key={index} className="w-full md:w-[410px]">
                 <Image
                   src={offer.image}
                   height={400}

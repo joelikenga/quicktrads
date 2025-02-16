@@ -28,6 +28,10 @@ export const Body = () => {
   const [pending, setPending] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
 
+console.log(
+  setSuccess(false), setPending(false), setFailed(false)
+
+)
   return (
     <div className="w-full mt-8 px-10">
       {/* payment successful */}
