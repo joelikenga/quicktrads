@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Privacy() {
+export const Privacy = () => {
     return (
         <div>
             <p className="py-6">Date of last revision: Jan 29th, 2025</p>
