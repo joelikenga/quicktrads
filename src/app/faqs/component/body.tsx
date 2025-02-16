@@ -9,10 +9,6 @@ import { Footer } from '@/app/Component/footer';
 export const Body = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    interface FAQ {
-        question: string;
-        answer: string;
-    }
 
     const toggleFAQ = (index: number): void => {
         setOpenIndex(openIndex === index ? null : index);

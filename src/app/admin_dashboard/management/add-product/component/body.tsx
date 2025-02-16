@@ -1,10 +1,6 @@
 'use client'
 import Link from 'next/link'
-<<<<<<< HEAD
-import { analysis, arrowleft, alertIcn, plus, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin } from '@/app/global/svg'
-=======
 import { analysis, arrowleft, alertIcn, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin } from '@/app/global/svg'
->>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import Sidebar from '@/app/Component/sidebar'
@@ -23,8 +19,6 @@ export default function body() {
         )
     }
 
-<<<<<<< HEAD
-=======
     // component used to check if current page matches link and adds an active class to it - the left panel navigation
     // const ManagentLink = ({ href, children }: { href: string, children: React.ReactNode }) => {
     //     const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
@@ -36,7 +30,6 @@ export default function body() {
     //         </Link>
     //     )
     // }
->>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 
     return (
         <>

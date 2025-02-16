@@ -33,10 +33,10 @@ export default function body() {
                 <div className="w-10 h-10 rounded-lg border-error_1 border flex justify-center items-center">0</div>
             </div>
             {/* didn't get code error */}
-            <p className="text-[12px] flex items-center gap-1 pb-[30px] mx-auto text-center w-max text-text_weak">{redInfoSmall()} Didn't get the code? <span className="underline cursor-pointer text-black">Resend</span></p>
+            <p className="text-[12px] flex items-center gap-1 pb-[30px] mx-auto text-center w-max text-text_weak">{redInfoSmall()} Didn`&apos;`t get the code? <span className="underline cursor-pointer text-black">Resend</span></p>
 
             {/* didn't get the code - success */}
-            <p className="text-[12px] flex items-center gap-1 pb-[30px] mx-auto text-center w-max text-text_weak">{success()} Didn't get the code? <span className="text-black">05:34</span></p>
+            <p className="text-[12px] flex items-center gap-1 pb-[30px] mx-auto text-center w-max text-text_weak">{success()} Didn`&apos;`t get the code? <span className="text-black">05:34</span></p>
 
 
             {/* proceed */}

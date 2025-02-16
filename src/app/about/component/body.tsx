@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-import { Footer } from '@/app/Component/footer'
-import { Navbar } from '@/app/global/navbar'
-import { Lora } from 'next/font/google'
-import Image from 'next/image'
-import React from 'react'
-
-
-
-
-const lora = Lora({
-    variable: "--font-lora",
-    subsets: ["latin"],
-  });
-
-export const Body = () => {
-    // mission and vision images
-    const vision_mission = [
-        {
-            image: "https://res.cloudinary.com/dymkfk58k/image/upload/v1739193954/mission_pl2sqy.png",
-            title: "Mission",
-            body: "To celebrate and preserve Africa’s textile heritage through high-quality, accessible fashion",
-            alt: "mission1"
-        },
-        {
-            image: "https://res.cloudinary.com/dymkfk58k/image/upload/v1739194407/mission2_asfkra.png",
-            title: "Vision",
-            body: "To be a global leader in African-inspired fashion, connecting cultures and empowering artisans",
-            alt: "mission2"
-        }
-    ]
-=======
 import { Footer } from "@/app/Component/footer";
 import { Navbar } from "@/app/global/navbar";
 import Image from "next/image";
@@ -53,7 +21,6 @@ export default function body() {
       alt: "mission2",
     },
   ];
->>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 
   // what we offer
   const offers = [
@@ -80,15 +47,9 @@ export default function body() {
     },
   ];
 
-<<<<<<< HEAD
-
-    return (
-        <>
-=======
   return (
     <>
       <Navbar />
->>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 
       {/* hero  */}
       <section className="z-[10000000] mt-[152px]">
@@ -158,16 +119,6 @@ export default function body() {
                   />
                 </div>
 
-<<<<<<< HEAD
-
-                <div className="w-full md:w-[432px] md:flex md:items-center md:justify-left">
-                    <div className="h-[364px] px-2 lg:pr-10">
-                        <h3 className="pb-2 text-text_weak py-3 text-sm">Our journey</h3>
-                        <p className={`${lora.className} text-[22px] text-text_strong leading-[28px]`}>
-                            At Quicktrads, we’re proud to bring Africa’s rich textile heritage to life. From handcrafted adire to timeless garments, we cater to both men and women, delivering authentic African fashion to local and international audiences
-                        </p>
-                    </div>
-=======
                 <div className="px-2 lg:px-10 md:w-[314px] lg:w-[628px]">
                   <h3 className="text-base text-text_weak pt-4 pb-2">
                     {vm.title}
@@ -175,7 +126,6 @@ export default function body() {
                   <p className="text-2xl font-[400] text-text_strong w-full">
                     {vm.body}
                   </p>
->>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
                 </div>
               </div>
             );
@@ -183,71 +133,6 @@ export default function body() {
         </div>
       </section>
 
-<<<<<<< HEAD
-            {/* mission and vision */}
-            <section className="pt-20 lg:w-max mx-auto">
-                <h2 className="text-2xl text-text_strong px-2 pb-6 lg:px-10">Mission & vision</h2>
-                <div className="flex flex-col md:flex-row md:justify-between gap-7">
-                    {
-                        vision_mission.map((vm, key) => {
-                            return (
-                                <div className="">
-                                    <div>
-                                        <Image
-                                            src={vm.image}
-                                            height={400}
-                                            width={628}
-                                            id={key.toString()}
-                                            className="w-full px-2 md:px-4 object-cover lg:px-10 md:w-[628px]"
-                                            alt={vm.alt}
-                                        />
-                                    </div>
-
-                                    <div className="px-2 lg:px-10 md:w-[314px] lg:w-[628px]">
-                                        <h3 className="text-base text-text_weak pt-4 pb-2">{vm.title}</h3>
-                                        <p className={`${lora.className} text-2xl font-[400] text-text_strong w-full`}>{vm.body}</p>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-
-            </section>
-
-            {/* what we offer */}
-            <section className="pt-20 w-full lg:w-max lg:mx-auto px-2 lg:px-10">
-                <h2 className="text-2xl text-text_strong pb-6">What we offer</h2>
-
-
-                <div className="flex flex-col gap-4 md:justify-between md:flex-row">
-                    {
-                        offers.map((offer, key) => {
-                            return (
-                                <div className="w-full md:w-[410px]">
-                                    <Image
-                                        src={offer.image}
-                                        height={400}
-                                        width={410}
-                                        id={key.toString()}
-                                        className="w-full object-cover lg:w-[628px]"
-                                        alt={offer.alt}
-                                    />
-                                    <h3 className="text-base text-text_weak pt-4 pb-2">{offer.title}</h3>
-                                    <p className={`${lora.className} text-2xl text-text_strong`}>{offer.body}</p>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-            </section>
-
-            {/* footer */}
-            <Footer />
-
-        </>
-    )
-=======
       {/* what we offer */}
       <section className="pt-20 w-full lg:w-max lg:mx-auto px-2 lg:px-10">
         <h2 className="text-2xl text-text_strong pb-6">What we offer</h2>
@@ -277,5 +162,4 @@ export default function body() {
       <Footer />
     </>
   );
->>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 }
