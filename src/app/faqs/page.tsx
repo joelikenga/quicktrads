@@ -1,5 +1,5 @@
 import React from 'react'
-import Body from './component/body'
+import { Body } from '../Component/body'
 
 export default function page() {
     return (

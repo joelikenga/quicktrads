@@ -1,5 +1,6 @@
 import { Footer } from '@/app/Component/footer'
 import { Navbar } from '@/app/global/navbar'
+import { Lora } from 'next/font/google'
 import Image from 'next/image'
 import React from 'react'
 
@@ -42,7 +43,14 @@ export default function body() {
         }
     ]
 
-    
+
+    const lora = Lora({
+        variable: "--font-lora",
+        subsets: ["latin"],
+      });
+
+
+
     return (
         <>
 
@@ -82,7 +90,7 @@ export default function body() {
                 <div className="w-full md:w-[432px] md:flex md:items-center md:justify-left">
                     <div className="h-[364px] px-2 lg:pr-10">
                         <h3 className="pb-2 text-text_weak py-3 text-sm">Our journey</h3>
-                        <p className="text-[22px] text-text_strong leading-[28px]">
+                        <p className={`${lora.className} text-[22px] text-text_strong leading-[28px]`}>
                             At Quicktrads, we’re proud to bring Africa’s rich textile heritage to life. From handcrafted adire to timeless garments, we cater to both men and women, delivering authentic African fashion to local and international audiences
                         </p>
                     </div>
@@ -109,7 +117,7 @@ export default function body() {
 
                                     <div className="px-2 lg:px-10 md:w-[314px] lg:w-[628px]">
                                         <h3 className="text-base text-text_weak pt-4 pb-2">{vm.title}</h3>
-                                        <p className="text-2xl font-[400] text-text_strong w-full">{vm.body}</p>
+                                        <p className={`${lora.className} text-2xl font-[400] text-text_strong w-full`}>{vm.body}</p>
                                     </div>
                                 </div>
                             )
@@ -137,7 +145,7 @@ export default function body() {
                                         alt={offer.alt}
                                     />
                                     <h3 className="text-base text-text_weak pt-4 pb-2">{offer.title}</h3>
-                                    <p className="text-2xl text-text_strong">{offer.body}</p>
+                                    <p className={`${lora.className} text-2xl text-text_strong`}>{offer.body}</p>
                                 </div>
                             )
                         })

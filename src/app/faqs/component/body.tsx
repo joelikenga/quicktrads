@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { Footer } from '@/app/Component/footer';
 
 
-export default function body() {
+export const body = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     interface FAQ {
@@ -56,9 +56,9 @@ export default function body() {
         <>
             <Navbar />
 
-            <div className="mt-[152px] px-2 lg:px-10 lg:w-[800px] lg:mx-auto lg:max-w-full">
-            <p className="text-xl text-text_weak pb-2 w-max mx-auto">FAQs</p>
-            <h1 className="w-full sm:w-[550px] text-3xl text-text_strong text-center sm:mx-auto pb-6">Quick answers to common questions</h1>
+            <div className="mt-[152px] px-2 lg:px-10">
+                <p className="text-xl text-text_weak pb-2 w-max mx-auto">FAQs</p>
+                <h1 className="w-full sm:w-[550px] text-3xl text-text_strong text-center sm:mx-auto pb-6">Quick answers to common questions</h1>
 
                 {/* searchbar */}
                 <div className="flex items-center gap-2 font-medium text-sm  bg-fill border-stroke_strong px-4 rounded-full border lg:w-[440px] lg:mx-auto w-full   text-text_strong">
@@ -67,27 +67,24 @@ export default function body() {
                         type="text"
                         placeholder="Search"
                         className="outline-none h-8 w-full bg-inherit"
-                        // value={""}
+                    // value={""}
                     // onChange={""}
                     />
                 </div>
 
                 {/* faq section */}
-                <div className="space-y-4 pb-[48px]">
+                <div className="py-[48px] max-w-full w-[800px] mx-auto">
                     {faqs.map((faq, index) => (
-                        <div key={index} className="bg-white p-6 border-b-2 border-blue">
-                            <button
-                                className="w-full text-left flex justify-between outline-none items-center border-none focus:border-none focus:outline-none transition-all duration-300"
-                                onClick={() => toggleFAQ(index)}
-                            >
-                                <h3 className="font-[400] text-base">{faq.question}</h3>
+                        <div key={index} className="bg-white border-b border-b-stroke_weaky">
+                            <button className="w-full text-left flex justify-between outline-none items-center border-none focus:border-none focus:outline-none transition-all duration-300"
+                                onClick={() => toggleFAQ(index)}>
+                                <h3 className="font-[400] text-base text-text_strong py-6">{faq.question}</h3>
                                 <span className="transform transition-transform duration-300">
-                                    {openIndex === index ? arrowUp() : arrowDown()}
-
+                                    {openIndex === index ? arrowUp() : <span className="rotate-180 transition-all">{arrowDown()}</span>}
                                 </span>
                             </button>
-                            <div className={`mt-2 ${openIndex === index ? '' : 'hidden'}`}>
-                                <p className="text-text_weak">{faq.answer}</p>
+                            <div className={`${openIndex === index ? '' : 'hidden'}`}>
+                                <p className="text-text_weak pb-3">{faq.answer}</p>
                             </div>
                         </div>
                     ))}

@@ -26,7 +26,7 @@ export default function body() {
                                 <div>
                                     <label htmlFor="fullname">
                                         <p className="text-sm text-text_strong pb-2">Full name</p>
-                                        <input type="text" id="" className="w-full border outline-none foucs:border-text_strong px-[12px] border-stroke_strong h-10 rounded-[8px]" />
+                                        <input type="text" id="" className="w-full border outline-none foucs:border-text_strong px-[12px] border-[#d6d6d6] h-10 rounded-[8px]" />
                                     </label>
                                 </div>
                             </div>
@@ -36,7 +36,7 @@ export default function body() {
                                 {/* email */}
                                 <label htmlFor="email">
                                     <p className="text-sm text-text_strong pb-2">Email</p>
-                                    <input type="email" id="" className="w-full border outline-none foucs:border-text_strong px-[12px] border-stroke_strong h-10 rounded-[8px]" />
+                                    <input type="email" id="" className="w-full border outline-none foucs:border-text_strong px-[12px] border-[#d6d6d6] h-10 rounded-[8px]" />
                                 </label>
                             </div>
 
@@ -45,7 +45,7 @@ export default function body() {
                                 <div>
                                     <label htmlFor="subject">
                                         <p className="text-sm text-text_strong pb-2">Subject</p>
-                                        <input type="text" id="" className="w-full border outline-none foucs:border-text_strong px-[12px] border-stroke_strong h-10 rounded-[8px]" />
+                                        <input type="text" id="" className="w-full border outline-none foucs:border- px-[12px] border-[#d6d6d6] h-10 rounded-[8px]" />
                                     </label>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@ export default function body() {
                                 <div>
                                     <label htmlFor="subject">
                                         <p className="text-sm text-text_strong pb-2">Message</p>
-                                        <input type="textarea" id="" className="w-full h-[88px] border outline-none foucs:border-text_strong px-[12px] border-stroke_strong rounded-[8px]" />
+                                        <textarea id="" className="w-full h-[88px] border outline-none foucs:border-text_strong px-[12px] border-[#d6d6d6] rounded-[8px]" />
                                     </label>
                                 </div>
                             </div>
