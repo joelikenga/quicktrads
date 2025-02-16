@@ -1,6 +1,10 @@
 'use client'
 import Link from 'next/link'
+<<<<<<< HEAD
 import { analysis, arrowleft, alertIcn, plus, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin } from '@/app/global/svg'
+=======
+import { analysis, arrowleft, alertIcn, dashborad, info, success, logo, management, notification, arrowDown, imageadd, removeBin } from '@/app/global/svg'
+>>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import Sidebar from '@/app/Component/sidebar'
@@ -19,6 +23,20 @@ export default function body() {
         )
     }
 
+<<<<<<< HEAD
+=======
+    // component used to check if current page matches link and adds an active class to it - the left panel navigation
+    // const ManagentLink = ({ href, children }: { href: string, children: React.ReactNode }) => {
+    //     const pathname = usePathname(); //using the usepathname to check the current pathname and storing in this variable
+    //     const isActive = pathname === href;//used to check if the domain url matches to the link url
+
+    //     return (
+    //         <Link href={href} className={isActive ? "py-2 pl-6 pr-12 ease-in-out rounded-full text-center transition-all bg-stroke_weak w-max text-black" : "text-text_weak pr-12 rounded-full transition-all hover:bg-stroke_weak/60 ease-in-out  text-center py-2 pl-6 w-max"}>
+    //             {children}
+    //         </Link>
+    //     )
+    // }
+>>>>>>> a2fca0cf3d1ff11f4a27ff7094c009228636037e
 
     return (
         <>
@@ -84,14 +102,14 @@ export default function body() {
                                         {/* side images */}
                                         <div className='flex flex-col gap-4'>
                                             <div className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak border-dashed">
-                                                {plus()}
+                                                {/* {plus()} */}
                                             </div>
                                             <div className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak border-dashed">
-                                                {plus()}
+                                                {/* {plus()} */}
                                             </div>
 
                                             <div className="w-[100px] relative flex justify-center items-center h-[120px] border border-text_weak border-dashed">
-                                                {plus()}
+                                                {/* {plus()} */}
                                                 <span className="absolute right-[-12px] top-[-12px]">{removeBin()}</span>
                                             </div>
 
