@@ -6,8 +6,8 @@ import Terms from './terms'
 import Modal from './modal'
 import { Privacy } from './privacy'
 
-export default function body() {
-    const [newPage, setnewPage] = useState<String>("terms");
+export const Body = () => {
+    const [newPage, setnewPage] = useState<string>("terms");
 
     const updateModal = () => {
         if (newPage === "terms") {
@@ -19,7 +19,7 @@ export default function body() {
     }
 
 
-    const activeModal = (type: String): void => {
+    const activeModal = (type: string): void => {
         setnewPage(type);
     }
     return (

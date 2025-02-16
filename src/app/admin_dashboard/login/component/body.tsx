@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { eyeOpen, eyeClose, logo, redInfoSmall } from '../../../global/svg'
 
-export default function body() {
+export const Body = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (

@@ -4,7 +4,15 @@ import { Lora } from 'next/font/google'
 import Image from 'next/image'
 import React from 'react'
 
-export default function body() {
+
+
+
+const lora = Lora({
+    variable: "--font-lora",
+    subsets: ["latin"],
+  });
+
+export const Body = () => {
     // mission and vision images
     const vision_mission = [
         {
@@ -42,13 +50,6 @@ export default function body() {
             alt: "mission2"
         }
     ]
-
-
-    const lora = Lora({
-        variable: "--font-lora",
-        subsets: ["latin"],
-      });
-
 
 
     return (
@@ -110,6 +111,7 @@ export default function body() {
                                             src={vm.image}
                                             height={400}
                                             width={628}
+                                            id={key.toString()}
                                             className="w-full px-2 md:px-4 object-cover lg:px-10 md:w-[628px]"
                                             alt={vm.alt}
                                         />
@@ -141,6 +143,7 @@ export default function body() {
                                         src={offer.image}
                                         height={400}
                                         width={410}
+                                        id={key.toString()}
                                         className="w-full object-cover lg:w-[628px]"
                                         alt={offer.alt}
                                     />

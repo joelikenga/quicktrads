@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { Footer } from '@/app/Component/footer';
 
 
-export const body = () => {
+export const Body = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     interface FAQ {
