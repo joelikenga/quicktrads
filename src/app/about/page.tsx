@@ -1,15 +1,18 @@
-import React from 'react'
-import Body from './component/body'
+import React from "react";
+import Body from "./component/body";
 
-function Page() {
+const About = () => {
+  return (
+    <div>
+      <Body />
+    </div>
+  );
+};
 
+// Add this line to mark it as a Next.js page
+export const metadata = {
+  title: 'About - Quicktrads',
+  description: 'About Quicktrads',
+};
 
-
-    return (
-        <>
-            <Body />
-        </>
-    )
-}
-
-export default Page
+export default About;
