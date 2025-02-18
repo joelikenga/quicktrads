@@ -29,7 +29,7 @@ function Sidebar() {
             pathname === "/customers" ? "bg-stroke_weak" : ""
           }`}
         >
-          Products
+          Customers
         </Link>
       </aside>
     </>

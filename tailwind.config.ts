@@ -20,9 +20,13 @@ export default {
         text_strong: "#141414",
         text_weak: "#525252",
         stroke_strong: "#7A7A7A",
-        stroke_weak: "#E0E0E0",
+        stroke_weak: "#F5F5F5",
         fill: "#FAFAFA",
         background: "#FFFFFF",
+      },
+
+      boxShadow: {
+        'custom': '0px 8px 24px 0px rgba(20, 20, 20, 0.08)',
       },
     },
   },
