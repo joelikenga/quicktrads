@@ -4,13 +4,13 @@ import { Navbar } from '@/app/global/navbar'
 import { arrowUp, arrowDown } from '@/app/global/svg';
 import React, { useState } from 'react'
 
-export default function body() {
+export const Body = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    interface FAQ {
-        question: string;
-        answer: string;
-    }
+    // interface FAQ {
+    //     question: string;
+    //     answer: string;
+    // }
 
     const toggleFAQ = (index: number): void => {
         setOpenIndex(openIndex === index ? null : index);

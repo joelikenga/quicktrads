@@ -6,13 +6,13 @@ import React, { useState } from 'react'
 import { Footer } from '@/app/Component/footer';
 
 
-export default function body() {
+export const Body = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    interface FAQ {
-        question: string;
-        answer: string;
-    }
+    // interface FAQ {
+    //     question: string;
+    //     answer: string;
+    // }
 
     const toggleFAQ = (index: number): void => {
         setOpenIndex(openIndex === index ? null : index);

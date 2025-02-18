@@ -14,11 +14,11 @@ import { SideCategory } from "./sideCategory";
 
 export const Body = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [showFilter, setShowFilter] = useState<boolean>(false);
+  // const [showFilter, setShowFilter] = useState<boolean>(false);
 // let showFilter = false;
 
 
-setShowFilter(false);
+// setShowFilter(false);
 
 console.log('selectedCategory', selectedCategory);
 
@@ -39,7 +39,7 @@ console.log('selectedCategory', selectedCategory);
       <div className="bg-background w-full max-w-7xl mx-auto flex justify-between sticky top-0 ">
         {/* ------- content ------- */}
         <div className="w-full">
-          <SideCategory showFilter={showFilter} />
+          <SideCategory  />
 
           <Products />
         </div>
