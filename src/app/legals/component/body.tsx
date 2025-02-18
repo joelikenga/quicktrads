@@ -1,13 +1,13 @@
 'use client'
-import React, { useState, JSX } from 'react'
+import React, { useState } from 'react'
 import { Footer } from '@/app/Component/footer'
 import { Navbar } from '@/app/global/navbar'
 import Terms from './terms'
 import Privacy from './privacy'
 import Modal from './modal'
 
-export default function body() {
-    const [newPage, setnewPage] = useState<String>("terms");
+export const Body = () => {
+    const [newPage, setnewPage] = useState<string>("terms");
 
     const updateModal = () => {
         if (newPage === "terms") {
@@ -19,7 +19,7 @@ export default function body() {
     }
 
 
-    const activeModal = (type: String): void => {
+    const activeModal = (type: string): void => {
         setnewPage(type);
     }
     return (
