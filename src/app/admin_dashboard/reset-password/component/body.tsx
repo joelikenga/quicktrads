@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { eyeOpen, eyeClose, logo, redInfoSmall } from '@/app/global/svg'
 
 
-export default function body() {
+export const Body = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showPassword1, setShowPassword1] = useState<boolean>(false);
     return (

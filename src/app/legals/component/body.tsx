@@ -1,5 +1,5 @@
 'use client'
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 import { Footer } from '@/app/Component/footer'
 import { Navbar } from '@/app/global/navbar'
 import Terms from './terms'

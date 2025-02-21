@@ -28,10 +28,22 @@ export const Body = () => {
   const [pending, setPending] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
 
-console.log(
-  setSuccess(false), setPending(false), setFailed(false)
+  const handlePayment = () => {
+    setPending(true); // Show pending state first
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      setPending(false);
+      // Randomly succeed or fail for demo purposes
+      const isSuccessful = Math.random() > 0.5;
+      if (isSuccessful) {
+        setSuccess(true);
+      } else {
+        setFailed(true);
+      }
+    }, 2000);
+  };
 
-)
   return (
     <div className="w-full mt-8 px-10">
       {/* payment successful */}
@@ -496,7 +508,10 @@ console.log(
               </div>
 
               {/* button */}
-              <button className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6">
+              <button 
+                onClick={handlePayment}
+                className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6"
+              >
                 Pay now
               </button>
             </div>
