@@ -25,5 +25,38 @@ export const createProduct = async (data: ProductData) => {
 
 
 
+// export const updateProduct = async (data: ProductData) => {
+//   try {
+//     const response = await axios$.put("/product", data);
+//     return response;
+//   } catch (error: unknown) {
+//     throw error;
+//   }
+// };
 
+// export const deleteProduct = async (productId: string) => {
+//   try {
+//     const response = await axios$.delete(`/product/${productId}`);
+//     return response;
+//   } catch (error: unknown) {
+//     throw error;
+//   }
+// }
 
+export const fetchAllProducts = async (page:number,size:number) => {
+  try {
+    const response = await axios$.get(`/product/admin?page=${page}&size=${size}`);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+}
+
+export const fetchProduct = async (productId: any) => {
+  try {
+    const response = await axios$.get(`/product/${productId}`);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+}
