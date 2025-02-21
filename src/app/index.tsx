@@ -1,4 +1,4 @@
 import axiosInstance from "./utils/axios/axiosConfig";
-import { UserAuth } from "./utils/api";
+import { UserAuth, AdminAuth, AdminProduct } from "./utils/api";
 
-export { axiosInstance as axios$, UserAuth };
+export { axiosInstance as axios$, UserAuth, AdminAuth, AdminProduct };
