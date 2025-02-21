@@ -26,6 +26,7 @@ interface LoginResponse {
   user: {
     id: string;
     fullName: string;
+    role: string;
   };
 }
 
@@ -66,7 +67,12 @@ export const Body = () => {
         data
       )) as AxiosResponse<LoginResponse>;
       const loginData = res.data;
-      const { accessToken, refreshToken } = loginData;
+      const { accessToken, refreshToken, user } = loginData;
+
+      // Check if user is admin
+      if (user.role !== "user") {
+        throw new Error("Unauthorized Access");
+      }
 
       // Set cookies using nookies
       nookies.set(null, "accessToken", accessToken, {
@@ -188,7 +194,11 @@ export const Body = () => {
                   type="submit"
                   className="bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"
                 >
-                  {loading ? <i className="animate-spin ">{spinner()} </i>: <p>Login</p>}
+                  {loading ? (
+                    <i className="animate-spin ">{spinner()} </i>
+                  ) : (
+                    <p>Login</p>
+                  )}
                 </button>
 
                 <div className="w-full flex justify-center text-sm mt-8">
