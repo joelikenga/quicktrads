@@ -35,56 +35,182 @@ const images = [
 ];
 
 interface BodyProps {
-  id: any;
+  productId: string;
 }
 
-export const Body = (id: BodyProps) => {
-  const [currentImage, setCurrentImage] = useState(images[0]);
+interface ProductDetails {
+  addToInventory: boolean;
+  category: string;
+  createdAt: string;
+  currency: string;
+  currencyConvert: string;
+  description: string;
+  id: string;
+  images: string[];
+  isFeatured: boolean;
+  isPaid: boolean;
+  isReviewed: boolean;
+  name: string;
+  ordersCount: number;
+  paidAt: string;
+  price: number;
+  priceConvert: number;
+  priceDiscount: number | null;
+  priceDiscountConvert: number | null;
+  size: string;
+  stars: number;
+  status: string;
+  subCategory: string;
+  updatedAt: string;
+}
+
+export const Body = ({ productId }: BodyProps) => {
+  const [currentImage, setCurrentImage] = useState('');
   const [index, setIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [data, setData] = useState<ProductDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Update carousel images when data changes
+  useEffect(() => {
+    if (data && data.images && data.images.length > 0) {
+      setCurrentImage(data.images[0]);
+    }
+  }, [data]);
 
   useEffect(() => {
-    if (!isHovered) {
+    if (!isHovered && data && data.images && data.images.length > 0) {
       const interval = setInterval(() => {
-        setIndex((prevIndex) => (prevIndex + 1) % images.length);
+        setIndex((prevIndex) => (prevIndex + 1) % data.images.length);
       }, 3000);
       return () => clearInterval(interval);
     }
-  }, [images.length, isHovered]);
+  }, [isHovered, data]);
 
   useEffect(() => {
-    setCurrentImage(images[index]);
-  }, [index, images]);
+    if (data?.images && data.images.length > 0) {
+      setCurrentImage(data.images[index]);
+    }
+  }, [index, data]);
 
   const handleImageClick = (image: string) => {
     setCurrentImage(image);
-    setIndex(images.indexOf(image));
+    setIndex(data?.images?.indexOf(image) ?? 0);
   };
 
   const handlePrevClick = () => {
-    setIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    if (data?.images?.length) {
+      setIndex((prevIndex) => (prevIndex - 1 + data.images.length) % data.images.length);
+    }
   };
 
   const handleNextClick = () => {
-    setIndex((prevIndex) => (prevIndex + 1) % images.length);
+    if (data?.images?.length) {
+      setIndex((prevIndex) => (prevIndex + 1) % data.images.length);
+    }
   };
 
   const getProduct = async () => {
     try {
-      const response = await fetchProduct(id);
-      console.log(response);
-    } catch (error: unknown) {
-      throw error;
+      setIsLoading(true);
+      const response = await fetchProduct(productId);
+      if (response?.data) {
+        setData(response.data);
+      }
+      console.log("Product data:", response.data);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    getProduct();
-  }, []);
+    if (productId) {
+      getProduct();
+    }
+  }, [productId]);
+
+  // Loading skeleton component
+  const LoadingSkeleton = () => (
+    <div className="px-10 mt-[120px] ml-[240px]">
+      <div className="mx-auto max-w-7xl w-full">
+        {/* Header skeleton */}
+        <div className="w-full flex items-center justify-between mb-6">
+          <div className="h-[24px] w-[120px] bg-gray-200 animate-pulse rounded"></div>
+          <div className="flex gap-4">
+            <div className="h-[24px] w-[80px] bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-[24px] w-[80px] bg-gray-200 animate-pulse rounded"></div>
+          </div>
+        </div>
+
+        <div className="w-full flex justify-start gap-8">
+          {/* Image section skeleton */}
+          <div className="w-fit h-full flex justify-between gap-6">
+            <div className="flex flex-col gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-[100px] h-[120px] bg-gray-200 animate-pulse rounded"></div>
+              ))}
+            </div>
+            <div className="w-[420px] h-[520px] bg-gray-200 animate-pulse rounded"></div>
+          </div>
+
+          {/* Details section skeleton */}
+          <div className="w-[504px] h-fit flex flex-col gap-6">
+            {/* Title and price skeleton */}
+            <div className="flex flex-col gap-4">
+              <div className="h-[28px] w-3/4 bg-gray-200 animate-pulse rounded"></div>
+              <div className="flex gap-4">
+                <div className="h-[24px] w-[100px] bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-[24px] w-[100px] bg-gray-200 animate-pulse rounded"></div>
+              </div>
+            </div>
+
+            {/* Size section skeleton */}
+            <div className="flex flex-col gap-4">
+              <div className="h-[20px] w-[60px] bg-gray-200 animate-pulse rounded"></div>
+              <div className="grid grid-cols-5 gap-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-[88px] w-full bg-gray-200 animate-pulse rounded"></div>
+                ))}
+              </div>
+            </div>
+
+            {/* About section skeleton */}
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between">
+                <div className="h-[24px] w-[120px] bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-[24px] w-[24px] bg-gray-200 animate-pulse rounded"></div>
+              </div>
+              <div className="h-[200px] w-full bg-gray-200 animate-pulse rounded"></div>
+            </div>
+
+            {/* Reviews section skeleton */}
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between">
+                <div className="h-[24px] w-[80px] bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-[24px] w-[24px] bg-gray-200 animate-pulse rounded"></div>
+              </div>
+              <div className="h-[100px] w-full bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (!data) {
+    return <div>No product data found</div>;
+  }
 
   return (
     <div className="px-10 mt-[120px] ml-[240px]">
       <div className="mx-auto max-w-7xl w-full">
+        {/* Header */}
         <div className="w-full flex items-center justify-between">
           <div
             onClick={() => history.back()}
@@ -93,61 +219,49 @@ export const Body = (id: BodyProps) => {
             <i>{arrowleft()}</i>
             Products
           </div>
-
-          <div className="flex gap-4 items-center">
-            <div className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2">
-              <i>{editIcon()}</i>
-              Edit
-            </div>
-
-            <div className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2">
-              <i>{trash()}</i>
-              Deactivate
-            </div>
+          <div className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2">
+            <i>{trash()}</i>
+            Deactivate
           </div>
         </div>
         <div className="w-full flex justify-start gap-8">
-          {/* image container */}
+          {/* Image container */}
           <div className="w-fit h-full flex justify-between gap-6">
-            {/* 3 images */}
             <div className="flex flex-col gap-4">
-              {images.map((item) => (
+              {data.images.map((item) => (
                 <div
                   key={item}
                   className="w-fit h-fit cursor-pointer"
                   onClick={() => handleImageClick(item)}
                 >
-                  <div className="w-fit h-fit">
-                    <Image
-                      width={100}
-                      height={120}
-                      src={item}
-                      priority
-                      alt=""
-                      className={`w-[100px] h-[120px] ${
-                        currentImage === item ? "border-2 border-blue-500" : ""
-                      }`}
-                    />
-                  </div>
+                  <Image
+                    width={100}
+                    height={120}
+                    src={item}
+                    alt={data.name}
+                    className={`w-[100px] h-[120px] ${
+                      currentImage === item ? "border-2 border-blue-500" : ""
+                    }`}
+                  />
                 </div>
               ))}
             </div>
 
-            {/* image carousel */}
+            {/* Main image carousel */}
             <div
               className="h-fit relative"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
-              <Image
-                width={520}
-                height={620}
-                src={currentImage}
-                priority
-                alt=""
-                className="w-[420px] h-[520px]"
-              />
-
+              {currentImage && (
+                <Image
+                  width={520}
+                  height={620}
+                  src={currentImage}
+                  alt={data.name}
+                  className="w-[420px] h-[520px] object-cover"
+                />
+              )}
               <div className="absolute top-1/2 w-full flex justify-between px-4">
                 <button onClick={handlePrevClick} className="  rounded-full">
                   {leftCarousel()}
@@ -160,8 +274,7 @@ export const Body = (id: BodyProps) => {
             </div>
           </div>
 
-          {/* details container*/}
-
+          {/* Product details */}
           <div className="w-[504px] h-fit flex flex-col gap-6">
             {/* name and price */}
 
@@ -169,12 +282,16 @@ export const Body = (id: BodyProps) => {
               <p
                 className={`${lora.className} text-[22px] font-normal text-text_strong`}
               >
-                Quicktrads yellow couture wear
+                {data?.name}
               </p>
 
               <div className="flex justify-start items-center w-full font-medium text-lg gap-2">
-                <p className=" text-text_strong">$120</p>
-                <p className=" text-text_weak line-through">$150</p>
+                <p className="text-text_strong">₦{data?.price.toLocaleString()}</p>
+                {data?.priceDiscount && (
+                  <p className="text-text_weak line-through">
+                    ₦{data?.priceDiscount.toLocaleString()}
+                  </p>
+                )}
               </div>
             </div>
 

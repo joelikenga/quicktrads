@@ -310,6 +310,8 @@ export const BodyContent = () => {
   const getAllproducts = async () => {
     try {
       const response = await fetchAllProducts(1, 1000); // Get all products at once
+
+      console.log("All products response:", response);
       
       const transformedProducts = response?.data?.map((product: any) => ({
         id: product.id,
