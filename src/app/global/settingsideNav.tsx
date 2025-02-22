@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 //   content: ReactNode;
 // }
 
-export const Sidenav = () => {
+export const SettingsideNav = () => {
   const pathname = usePathname();
 
   return (
@@ -19,39 +19,39 @@ export const Sidenav = () => {
         {/* navs */}
         <div className="flex flex-col w-full gap-2 flex-grow">
           <Link
-            href={`/profile`}
+            href={`./profile`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "/profile" ? "bg-stroke_weak" : ""
+              pathname === "./profile" ? "bg-stroke_weak" : ""
             } w-full`}
           >
             Profile
           </Link>
 
           <Link
-            href={`/orders`}
+            href={`./password`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "/orders" ? "bg-stroke_weak" : ""
-            } w-full`}
-          >
-            Orders
-          </Link>
-
-          <Link
-            href={`/address`}
-            className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "/address" ? "bg-stroke_weak" : ""
-            } w-full`}
-          >
-            Address
-          </Link>
-
-          <Link
-            href={`/password`}
-            className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "/password" ? "bg-stroke_weak" : ""
+              pathname === "./password" ? "bg-stroke_weak" : ""
             } w-full`}
           >
             Password
+          </Link>
+
+          <Link
+            href={`./notify`}
+            className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
+              pathname === "./notify" ? "bg-stroke_weak" : ""
+            } w-full`}
+          >
+            Notification
+          </Link>
+
+          <Link
+            href={`./password`}
+            className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
+              pathname === "./password" ? "bg-stroke_weak" : ""
+            } w-full`}
+          >
+            Content
           </Link>
         </div>
         {/* logout */}

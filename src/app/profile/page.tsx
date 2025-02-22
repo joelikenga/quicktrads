@@ -7,8 +7,8 @@ const Profile = () => {
     <div className="">
       <Navbar />
       <div className="w-full max-w-7xl mx-auto">
-      <Sidenav />
-      <Body />
+        <Sidenav />
+        <Body />
       </div>
     </div>
   );

@@ -23,6 +23,8 @@ export default {
         stroke_weak: "#F5F5F5",
         fill: "#FAFAFA",
         background: "#FFFFFF",
+        switch_on: "#DDF8F0",
+        text_weaker: "#B8B8B8"
       },
 
       boxShadow: {
