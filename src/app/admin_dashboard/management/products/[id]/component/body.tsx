@@ -2,19 +2,12 @@
 import {
   arrowDown,
   arrowleft,
-  cart,
-  deliveryIcon,
   editIcon,
-  info,
-  instagram,
   leftCarousel,
-  linkIcon,
   msgIcon,
-  returnIcon,
   review_0,
   rightCarousel,
   trash,
-  whatsapp,
 } from "@/app/global/svg";
 import { fetchProduct } from "@/app/utils/api/admin/products";
 import { Lora } from "next/font/google";
@@ -22,7 +15,6 @@ import Image from "next/image";
 import Link from "next/link";
 // import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { set } from "zod";
 
 interface ProductDetails {
   data: {
@@ -58,7 +50,7 @@ const lora = Lora({
 });
 
 interface BodyProps {
-  id: any;
+  id: string;
 }
 
 export const Body = ({ id }: BodyProps) => {

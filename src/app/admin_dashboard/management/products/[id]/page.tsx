@@ -4,8 +4,10 @@ import { useParams } from "next/navigation";
 import { Body } from "./component/body";
 import { Navbar } from "@/app/admin_dashboard/component/navbar";
 import { SideNav } from "../../component/sideNav";
+
 const ProductDetail = () => {
-  const { id } = useParams();
+  const params = useParams();
+  const id = typeof params.id === 'string' ? params.id : '';
 
   return (
     <div>

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  arrowDown,
   arrowleft,
   editIcon,
   imageadd,
@@ -10,11 +9,10 @@ import {
   noproducts,
   previousIcon,
   review_1,
-  search,
   searchIcon,
   trash,
 } from "@/app/global/svg";
-import { useState, useRef, use, useEffect } from "react";
+import { useState, useRef,  useEffect } from "react";
 import Image from "next/image";
 import {
   createProduct,
@@ -22,15 +20,15 @@ import {
 } from "@/app/utils/api/admin/products";
 import { useRouter } from "next/navigation"; // Add this at the top with other imports
 
-interface ProductData {
-  name: string;
-  regularPrice: number;
-  discountPrice?: number;
-  sizes: string[];
-  category: string;
-  about: string;
-  images: string[];
-}
+// interface ProductData {
+//   name: string;
+//   regularPrice: number;
+//   discountPrice?: number;
+//   sizes: string[];
+//   category: string;
+//   about: string;
+//   images: string[];
+// }
 
 // Add interface for pagination
 interface PaginationData {
@@ -39,6 +37,35 @@ interface PaginationData {
   page: number;
   size: number;
   totalCount: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  priceDiscount?: number;
+  category: string;
+  subCategory: string;
+  status: string;
+  images: string[];
+  stars: number;
+  ordersCount: number;
+  isFeatured: boolean;
+  description: string;
+}
+
+interface TransformedProduct {
+  id: string;
+  images: string;
+  name: string;
+  price: number;
+  discountPrice?: number;
+  category: string;
+  subCategory: string;
+  rating: number;
+  status: string;
+  ordersCount: number;
+  isFeatured: boolean;
 }
 
 export const BodyContent = () => {
@@ -68,11 +95,14 @@ export const BodyContent = () => {
   };
 
   const [addProduct, setAddProduct] = useState<boolean>(false);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<TransformedProduct[]>([]);
 
   const [page, setPage] = useState<number>(1);
   // const [size] = useState<number>(10);  // Remove setSize as it's now fixed
   const [searchQuery, setSearchQuery] = useState("");
+
+
+  console.log("upload error", uploadError);
 
   const [paginationData, setPaginationData] = useState<PaginationData>({
     hasPreviousPage: false,
@@ -82,7 +112,7 @@ export const BodyContent = () => {
     totalCount: 0,
   });
 
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<TransformedProduct[]>([]);
   const ITEMS_PER_PAGE = 7;
 
   // Update subcategory when main category changes
@@ -133,7 +163,9 @@ export const BodyContent = () => {
   const handleDeleteImage = (index: number) => {
     setImages((prev) => {
       const newImages = prev.filter((_, i) => i !== index);
-      prev[index].preview && URL.revokeObjectURL(prev[index].preview);
+      if (prev[index].preview) {
+        URL.revokeObjectURL(prev[index].preview);
+      }
       return newImages;
     });
   };
@@ -313,7 +345,7 @@ export const BodyContent = () => {
 
       console.log("All products response:", response);
       
-      const transformedProducts = response?.data?.map((product: any) => ({
+      const transformedProducts = response?.data?.map((product: Product): TransformedProduct => ({
         id: product.id,
         images: product.images[0],
         name: product.name,
@@ -323,7 +355,8 @@ export const BodyContent = () => {
         subCategory: product.subCategory,
         rating: product.stars,
         status: product.status,
-        ordersCount: product.ordersCount
+        ordersCount: product.ordersCount,
+        isFeatured: product.isFeatured
       })) || [];
 
       setAllProducts(transformedProducts);
@@ -381,7 +414,7 @@ export const BodyContent = () => {
   };
 
   // Update getFilteredProducts to work with allProducts
-  const getFilteredProducts = (productsToFilter: any[] = allProducts) => {
+  const getFilteredProducts = (productsToFilter: TransformedProduct[] = allProducts) => {
     if (!searchQuery) return productsToFilter;
 
     const searchTerm = searchQuery.toLowerCase();
@@ -987,7 +1020,7 @@ export const BodyContent = () => {
                         <td className="px-6 py-4">
                           <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
                             <p>₦{product.price.toLocaleString()}</p>
-                            {product.discountPrice > 0 && (
+                            {product.discountPrice && product.discountPrice > 0 && (
                               <p className="line-through text-text_weak">
                                 ₦{product.price.toLocaleString()}
                               </p>
