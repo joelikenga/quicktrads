@@ -52,11 +52,20 @@ export const fetchAllProducts = async (page:number,size:number) => {
   }
 }
 
-export const fetchProduct = async (productId: any) => {
+export const fetchProduct = async (productId: string) => {
   try {
+    // console.log("Fetching product with ID:", productId);
     const response = await axios$.get(`/product/${productId}`);
+    // console.log("Raw API response:", response);
+    
+    // Add validation for response structure
+    if (!response?.data) {
+      throw new Error("Invalid response structure");
+    }
+    
     return response;
   } catch (error: unknown) {
+    console.error("API error:", error);
     throw error;
   }
-}
+};
