@@ -47,26 +47,26 @@ export const Body = () => {
             <Navbar />
 
 
-            <div className="mt-[152px] px-2 lg:px-10 lg:w-[800px] lg:mx-auto lg:max-w-full">
+            <div className="mt-[152px] px-2 lg:px-10">
                 <p className="text-xl text-text_weak pb-2 w-max mx-auto">Shipping & Delivery</p>
                 <h1 className="w-full sm:w-[507px] text-3xl text-text_strong text-center sm:mx-auto pb-6">Fast and reliable delivery straight to your doorstep</h1>
 
 
-                <div className="space-y-4">
+                <div className="py-[48px] max-w-full w-[800px] mx-auto">
                     {faqs.map((faq, index) => (
-                        <div key={index} className="bg-white p-6 border-b-2 border-blue">
+                        <div key={index} className="bg-white border-b border-b-stroke_weak">
                             <button
                                 className="w-full text-left flex justify-between outline-none items-center border-none focus:border-none focus:outline-none transition-all duration-300"
                                 onClick={() => toggleFAQ(index)}
                             >
-                                <h3 className="font-[400] text-base">{faq.question}</h3>
+                                <h3 className="font-[400] text-base text-text_strong py-6">{faq.question}</h3>
                                 <span className="transform transition-transform duration-300">
                                     {openIndex === index ? arrowUp() : arrowDown()}
 
                                 </span>
                             </button>
                             <div className={`mt-2 ${openIndex === index ? '' : 'hidden'}`}>
-                                <p className="text-text_weak">{faq.answer}</p>
+                                <p className="text-text_weak pb-3">{faq.answer}</p>
                             </div>
                         </div>
                     ))}
