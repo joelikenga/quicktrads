@@ -5,7 +5,6 @@ import {
   eyeClose,
   eyeOpen,
   logo,
-  redInfoSmall,
   spinner,
 } from "@/app/global/svg";
 import { Lora } from "next/font/google";
