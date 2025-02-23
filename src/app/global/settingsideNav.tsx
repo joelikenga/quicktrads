@@ -14,41 +14,49 @@ export const SettingsideNav = () => {
   const pathname = usePathname();
 
   return (
-    <div className="h-[calc(100vh-9.5rem)] ml-[60px] w-full max-w-[160px] fixed top-[150px] transform scale-100 ">
+    <div className="h-[calc(100vh-8rem)] ml-[60px w-full max-w-[160px] fixed top-[120px] transform scale-100 ">
       <div className=" h-full w-full flex flex-col justify-between text-start gap-[200px fixed h-full top-2 ">
         {/* navs */}
         <div className="flex flex-col w-full gap-2 flex-grow">
           <Link
-            href={`./profile`}
+            href={`/admin_dashboard/settings/profile`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "./profile" ? "bg-stroke_weak" : ""
+              pathname === "/admin_dashboard/settings/profile"
+                ? "bg-stroke_weak"
+                : ""
             } w-full`}
           >
             Profile
           </Link>
 
           <Link
-            href={`./password`}
+            href={`/admin_dashboard/settings/password`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "./password" ? "bg-stroke_weak" : ""
+              pathname === "/admin_dashboard/settings/password"
+                ? "bg-stroke_weak"
+                : ""
             } w-full`}
           >
             Password
           </Link>
 
           <Link
-            href={`./notify`}
+            href={`/admin_dashboard/settings/notification`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "./notify" ? "bg-stroke_weak" : ""
+              pathname === "/admin_dashboard/settings/notification"
+                ? "bg-stroke_weak"
+                : ""
             } w-full`}
           >
             Notification
           </Link>
 
           <Link
-            href={`./password`}
+            href={`/admin_dashboard/settings/content`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-              pathname === "./password" ? "bg-stroke_weak" : ""
+              pathname === "/admin_dashboard/settings/content"
+                ? "bg-stroke_weak"
+                : ""
             } w-full`}
           >
             Content
