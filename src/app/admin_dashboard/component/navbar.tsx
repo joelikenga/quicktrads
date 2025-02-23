@@ -17,8 +17,7 @@ import { useState } from "react";
 export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-
-  const logout = useLogoutAdmin();
+  const handleLogout = useLogoutAdmin(); // Store the logout function
   const [profileOption, setProfileOption] = useState<boolean>(false);
 
   return (
@@ -111,7 +110,7 @@ export const Navbar = () => {
                 </Link>
 
                 <div
-                  onClick={()=>logout}
+                  onClick={handleLogout} // Use the stored function
                   className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                 >
                   Logout
