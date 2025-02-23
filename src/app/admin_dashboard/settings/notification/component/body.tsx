@@ -37,7 +37,7 @@ export const Body = () => {
 
     return (
         <>
-            <div className=" ml-[280px] mt-[150px]">
+            <div className=" ml-[280px] mt-[120px]">
                 <div>
                     <p className="text-lg text-text_strong">Notification</p>
                     <p className="text-base text-text_weak pt-1">Manage your notification</p>
