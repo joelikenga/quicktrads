@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { arrowleft, alertIcn, info, success, arrowDown, imageadd, removeBin } from '@/app/global/svg'
 import React from 'react'
 import { SideNav } from '../../component/sideNav'
-import  AdminNavbar  from '@/app/global/adminNavbar'
+import { Navbar } from "@/app/admin_dashboard/component/navbar";
 
 export default function body() {
 
@@ -22,7 +22,7 @@ export default function body() {
 
     return (
         <>
-            <AdminNavbar />
+            <Navbar />
 
 
 
