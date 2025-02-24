@@ -24,7 +24,8 @@ export default {
         fill: "#FAFAFA",
         background: "#FFFFFF",
         switch_on: "#DDF8F0",
-        text_weaker: "#B8B8B8"
+        text_weaker: "#B8B8B8",
+        promotion_bg: "#DFDACF"
       },
 
       boxShadow: {

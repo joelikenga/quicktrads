@@ -18,10 +18,10 @@ export const Body = () => {
         }
     }
 
-
     const activeModal = (type: string): void => {
         setnewPage(type);
     }
+
     return (
         <>
             <Navbar />

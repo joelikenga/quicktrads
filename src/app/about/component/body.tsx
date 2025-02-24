@@ -52,7 +52,7 @@ export default function body() {
       <Navbar />
 
       {/* hero  */}
-      <section className="z-[10000000] mt-[152px]">
+      <section className="mt-[152px]">
         <h3 className="text-center text-text_weak text-lg pb-2">About Us</h3>
         <h1 className="text-[32px] leading-[38px] mx-4 w-[280px] text-center sm:mx-auto sm:w-[524px]">
           Celebrating African heritage through timeless fashion

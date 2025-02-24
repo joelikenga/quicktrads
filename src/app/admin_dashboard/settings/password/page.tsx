@@ -1,17 +1,18 @@
 'use client'
-import AdminNavbar from "@/app/global/adminNavbar";
 import React from 'react';
 import { SettingsideNav } from "@/app/global/settingsideNav";
 import Body from "./component/body";
+import { Navbar } from '../../component/navbar';
 
 
 const Password = () => {
     return (
         <>
-            <AdminNavbar />
-            <div className="w-full max-w-7xl mx-auto">
-                <SettingsideNav />
-                <Body />
+            <Navbar /><div className="w-full px-10">
+                <div className="w-full max-w-7xl mx-auto">
+                    <SettingsideNav />
+                    <Body />
+                </div>
             </div>
         </>
     )
