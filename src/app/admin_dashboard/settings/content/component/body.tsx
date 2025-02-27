@@ -21,7 +21,10 @@ const Body = () => {
             case 'promotion-content':
                 return <PromoteContent onClick={() => activeModal('hero-default')} />;
             case 'hero-default':
-                return <Body />;
+                return <Content 
+                onReturn={() => activeModal('hero-content')}         // Returns to original
+                onPromote={() => activeModal('promotion-content')} // Moves to PromoteContent
+                />;
             default:
                 return null; // Fallback for invalid page
         }

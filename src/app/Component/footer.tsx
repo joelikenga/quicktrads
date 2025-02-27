@@ -56,21 +56,21 @@ export const Footer = () => {
                 <p className="text-text_strong text-base">Contact us</p>
               </Link>
 
-              <Link href={``}>
+              <Link href={`/sizing-guide`}>
                 <p className="text-text_strong text-base">Sizing guide</p>
               </Link>
 
-              <Link href={``}>
+              <Link href={`/shopping_&_delivery`}>
                 <p className="text-text_strong text-base">
                   Shipping & delivery
                 </p>
               </Link>
 
-              <Link href={``}>
+              <Link href={`/legals`}>
                 <p className="text-text_strong text-base">Legals</p>
               </Link>
 
-              <Link href={``}>
+              <Link href={`/faqs`}>
                 <p className="text-text_strong text-base">FAQs</p>
               </Link>
             </div>

@@ -1,5 +1,6 @@
 import { arrowleft, info } from '@/app/global/svg';
 import { Lora } from 'next/font/google';
+import Image from 'next/image';
 import React, { useState } from 'react';
 
 
@@ -39,7 +40,14 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                         <div>
                             <p className="text-[14px] text-text_strong font-[400]">Image</p>
                             <div className="w-[420px] h-[320px] border-dotted border stroke-stroke_weak"
-                                style={{ backgroundColor: selectedColor }} />
+                                style={{ backgroundColor: selectedColor }} >
+                                <Image
+                                    width={423}
+                                    height={1000}
+                                    src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740665591/image_iumukx.png"
+                                    alt="lady"
+                                />
+                            </div>
                         </div>
 
                         {/* Color Selector */}
@@ -50,7 +58,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                                 {colors.map((color) => (
                                     <div
                                         key={color}
-                                        className="w-[32px] h-[32px] p-1 rounded-full border-white cursor-pointer border-2"
+                                        className="w-[32px] h-[32px] p-1 rounded-full border-white  focus:border-black cursor-pointer border-2"
                                         style={{ backgroundColor: color }}
                                         onClick={() => handleColorChange(color)}
                                     />
@@ -108,19 +116,26 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                     </div>
 
                     {/* preview screens */}
-                    <div className=" w-[790px] 2xl:w-[980px] mb-[48px] mt-[16px] bg-brand_yellow"
-                    style={{ backgroundColor: selectedColor }}>
+                    <div className=" w-[790px] 2xl:w-[980px] mb-[48px] mt-[16px] flex bg-brand_yellow"
+                        style={{ backgroundColor: selectedColor }}>
                         <div className="py-[76.67px] pl-[61.34px]">
-                            <h1 className={`${lora.className} w-[540px] font-[400] pb-[12px] text-[46px]`}>Shine brighter with Africa wears</h1>
+                            <h1 className={`${lora.className} w-[372px] h-[102px] leading-[50.6px] font-[400] pb-[12px] text-[46px]`}>Shine brighter with Africa wears</h1>
 
                             <p className="text-[12.27px] leading-[16.87px] text-text_weak">The light you need to showcase you are made of black</p>
 
                             <div className="w-[94px] h-[30.67px] mt-[24px] flex justify items-center text-white bg-black py-[6px] px-[18px] rounded-full cursor-pointer selection:no-underline">
                                 <p className="text-[12.27px]">Shop now</p>
-                                </div>
+                            </div>
                         </div>
 
-                        <div></div>
+                        <div>
+                            <Image
+                                width={499}
+                                height={337}
+                                src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740666686/image_ogsxr3.png"
+                                alt="lady2"
+                            />
+                        </div>
                     </div>
 
                     <div className="flex gap-4 items-center mb-[14px]">
