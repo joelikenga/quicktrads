@@ -64,7 +64,7 @@ export default function body() {
             height={600}
             width={1280}
             src={
-              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739190791/journey_pwwiqc.png"
+              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739189874/hero_hvzlma.png"
             }
             className="h-[600px] w-full object-cover md:object-contain bg-center"
             alt="hero image"

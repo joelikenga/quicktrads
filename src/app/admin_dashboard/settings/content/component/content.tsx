@@ -1,8 +1,8 @@
 'use client'
 import { editIcon, info } from '@/app/global/svg';
 import { Lora } from 'next/font/google';
+import Image from 'next/image';
 import React, { useState } from 'react'
-
 
 const lora = Lora({
     variable: "--font-lora",
@@ -48,7 +48,7 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
                         <p onClick={addHero} className="flex items-center selection:bg-none gap-[1px] cursor-pointer"><span>{editIcon()}</span>Edit</p>
                     </div>
 
-                    <div className="h-[280px] relative bg-brand_yellow">
+                    <div className="h-[280px] flex relative bg-brand_yellow">
                         <div className="py-[64px] pl-[50.91px] selection:no-underline">
                             <h1 className={`${lora.className} text-[38.18px] font-[400] leading-[42px] w-[309px] pb-[12px]]`}>Shine brighter with Africa wears</h1>
                             <p className="text-[10px] text-text_weak leading-[14px]">The light you need to showcase you are made of black</p>
@@ -64,7 +64,14 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
                                 </div>
                             }
                         </div>
-                        <div></div>
+                        <div>
+                            <Image
+                            width={413}
+                            height={620}
+                            src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740665591/image_iumukx.png"
+                            alt="lady"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -80,7 +87,7 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
                         <p onClick={addPromotion} className="flex items-center selection:bg-none gap-[1px] cursor-pointer"><span>{editIcon()}</span>Edit</p>
                     </div>
 
-                    <div className="h-[280px] relative bg-promotion_bg">
+                    <div className="h-[280px] relative flex justify-between bg-promotion_bg">
                         <div className="py-[64px] pl-[50.91px] selection:no-underline">
                             <h1 className={`${lora.className} text-[32px] font-[400] leading-[42px] w-[361.33px] pb-[12px]]`}>Move around with your essentials needs</h1>
                             <p className="text-[10px] text-text_weak leading-[14px]">Inspired by the African women’s tote bag for anyone ready to showcase black</p>
@@ -96,7 +103,14 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
                                 </div>
                             }
                         </div>
-                        <div></div>
+                        <div>
+                        <Image
+                            width={239}
+                            height={260}
+                            src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740665611/image_copy_rziblo.png"
+                            alt="lady"
+                            />
+                        </div>
                     </div>
                 </div>
 

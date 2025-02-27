@@ -1,7 +1,7 @@
 import { arrowleft, info } from '@/app/global/svg';
 import { Lora } from 'next/font/google';
+// import Image from 'next/image';
 import React, { useState } from 'react';
-
 
 interface EditContentProps {
     onClick: () => void;
@@ -39,7 +39,15 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
                         <div>
                             <p className="text-[14px] text-text_strong font-[400]">Image</p>
                             <div className="w-[420px] h-[320px] border-dotted border stroke-stroke_weak"
-                                style={{ backgroundColor: selectedColor }} />
+                                style={{ backgroundColor: selectedColor }} >
+
+                                {/* <Image
+                                    width={420}
+                                    height={137}
+                                    src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740665611/image_copy_rziblo.png"
+                                    alt="lady2"
+                                /> */}
+                            </div>
                         </div>
 
                         {/* Color Selector */}
