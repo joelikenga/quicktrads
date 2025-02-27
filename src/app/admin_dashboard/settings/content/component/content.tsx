@@ -32,7 +32,7 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
 
 
     return (
-        <div>
+        <div className="w-auto">
             <h3 className="text-[18px] leading-[28px] pb-1 text-text_black font-[500]">Content</h3>
             <p className="text-base text-text_weak font-[400]">Manage web banners</p>
 
@@ -42,13 +42,13 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
                     <p className="text-base leading-[22px] pb-1 text-text_black font-[500]">Hero section banner</p>
 
                     {/* edit row */}
-                    <div className="flex justify-between pb-4 items-center w-[840px]">
+                    <div className="flex justify-between pb-4 items-center">
                         <p className="text-base text-text_weak font-[400] flex items-center gap-2"><span>{info()}</span>Keep your hero section fresh and aligned with your latest campaigns</p>
 
                         <p onClick={addHero} className="flex items-center selection:bg-none gap-[1px] cursor-pointer"><span>{editIcon()}</span>Edit</p>
                     </div>
 
-                    <div className="w-[840px] h-[280px] relative bg-brand_yellow">
+                    <div className="h-[280px] relative bg-brand_yellow">
                         <div className="py-[64px] pl-[50.91px] selection:no-underline">
                             <h1 className={`${lora.className} text-[38.18px] font-[400] leading-[42px] w-[309px] pb-[12px]]`}>Shine brighter with Africa wears</h1>
                             <p className="text-[10px] text-text_weak leading-[14px]">The light you need to showcase you are made of black</p>
@@ -70,19 +70,19 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
 
 
                 {/* promotion section */}
-                <div className="mt-[48px]">
+                <div className="mt-[48px] mb-[110px]">
                     <p className="text-base leading-[22px] pb-1 text-text_black font-[500]">Promotion section banner</p>
 
                     {/* edit row */}
-                    <div className="flex justify-between pb-4 items-center w-[840px]">
+                    <div className="flex justify-between pb-4 items-center">
                         <p className="text-base text-text_weak font-[400] flex items-center gap-2"><span>{info()}</span>Keep your promotion section fresh and aligned with your promotions</p>
 
                         <p onClick={addPromotion} className="flex items-center selection:bg-none gap-[1px] cursor-pointer"><span>{editIcon()}</span>Edit</p>
                     </div>
 
-                    <div className="w-[840px] h-[280px] relative bg-promotion_bg">
+                    <div className="h-[280px] relative bg-promotion_bg">
                         <div className="py-[64px] pl-[50.91px] selection:no-underline">
-                            <h1 className={`${lora.className} text-[38.18px] font-[400] leading-[42px] w-[361px] pb-[12px]]`}>Move around with your essentials needs</h1>
+                            <h1 className={`${lora.className} text-[32px] font-[400] leading-[42px] w-[361.33px] pb-[12px]]`}>Move around with your essentials needs</h1>
                             <p className="text-[10px] text-text_weak leading-[14px]">Inspired by the African women’s tote bag for anyone ready to showcase black</p>
 
                             <p className="mt-[20.26px] py-[5.73px] w-[78.55px] h-[25.45px] text-[10px] selection:no-underline cursor-pointer px-[15.27px] bg-black text-white rounded-full">Shop now</p>
@@ -101,7 +101,6 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
                 </div>
 
             </section>
-
         </div>
     )
 }

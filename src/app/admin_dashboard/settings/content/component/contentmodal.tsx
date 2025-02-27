@@ -11,7 +11,7 @@ const ContentModal = ({ content, isActive }: ModalProps) => {
         <>Error</>
     )
     return (
-        <div className="w-full lg:w-[800px] lg:mx-auto h-max">
+        <div className="w-full lg:w-[800px] h-max">
             {content}
         </div>
     )

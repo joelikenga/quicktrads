@@ -50,7 +50,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                                 {colors.map((color) => (
                                     <div
                                         key={color}
-                                        className="w-[32px] h-[32px] p-1 rounded-full border-white cursor-pointer border-2"
+                                        className="w-[32px] h-[32px] p-1 rounded-full border-white  focus:border-black cursor-pointer border-2"
                                         style={{ backgroundColor: color }}
                                         onClick={() => handleColorChange(color)}
                                     />
@@ -111,7 +111,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                     <div className=" w-[790px] 2xl:w-[980px] mb-[48px] mt-[16px] bg-brand_yellow"
                     style={{ backgroundColor: selectedColor }}>
                         <div className="py-[76.67px] pl-[61.34px]">
-                            <h1 className={`${lora.className} w-[540px] font-[400] pb-[12px] text-[46px]`}>Shine brighter with Africa wears</h1>
+                            <h1 className={`${lora.className} w-[372px] h-[102px] leading-[50.6px] font-[400] pb-[12px] text-[46px]`}>Shine brighter with Africa wears</h1>
 
                             <p className="text-[12.27px] leading-[16.87px] text-text_weak">The light you need to showcase you are made of black</p>
 

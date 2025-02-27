@@ -65,9 +65,9 @@ export const Navbar = () => {
           </div>
 
           <div
-            onClick={() => router.push("/admin_dashboard/notification")}
+            onClick={() => router.push("/admin_dashboard/settings/notification")}
             className={` ${
-              pathname.includes("admin_dashboard/notification")
+              pathname.includes("admin_dashboard/settings/notification")
                 ? " border-b-2  border-text_strong text-text_weak"
                 : "text-text_strong"
             } flex gap-2 items-center h-full cursor-pointer`}
