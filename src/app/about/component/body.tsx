@@ -52,7 +52,7 @@ export default function body() {
       <Navbar />
 
       {/* hero  */}
-      <section className="z-[10000000] mt-[152px]">
+      <section className="mt-[152px]">
         <h3 className="text-center text-text_weak text-lg pb-2">About Us</h3>
         <h1 className="text-[32px] leading-[38px] mx-4 w-[280px] text-center sm:mx-auto sm:w-[524px]">
           Celebrating African heritage through timeless fashion
@@ -64,7 +64,7 @@ export default function body() {
             height={600}
             width={1280}
             src={
-              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739190791/journey_pwwiqc.png"
+              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739189874/hero_hvzlma.png"
             }
             className="h-[600px] w-full object-cover md:object-contain bg-center"
             alt="hero image"

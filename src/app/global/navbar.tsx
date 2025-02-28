@@ -631,7 +631,7 @@ export const Navbar = () => {
                       className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1`}
                     >
                       {nigeriaIcon()}
-                      <p className="">NGN ₦</p>
+                      <p className="selection:bg-none">NGN ₦</p>
                     </div>
                     {/*  */}
                     <i
@@ -649,14 +649,14 @@ export const Navbar = () => {
                       <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
                         <div className="gap-2 flex">
                           {nigeriaIcon()}
-                          <p className="">NGN ₦</p>
+                          <p className="selection:bg-none">NGN ₦</p>
                         </div>
                         {checked()}
                       </div>
                       <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
                         <div className="gap-2 flex">
                           {USAIcon()}
-                          <p className="">USA $</p>
+                          <p className="selection:bg-none">USA $</p>
                         </div>
                         {unChecked()}
                       </div>
@@ -674,7 +674,7 @@ export const Navbar = () => {
                       className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                     >
                       {category()}
-                      <p className="">Category</p>
+                      <p className="selection:bg-none">Category</p>
                     </div>
                     {/*  */}
                     <i
@@ -701,7 +701,7 @@ export const Navbar = () => {
                             <div
                               className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                             >
-                              <p className="">Collections</p>
+                              <p className="selection:bg-none">Collections</p>
                             </div>
                             {/*  */}
                             <i
@@ -715,13 +715,13 @@ export const Navbar = () => {
                           {/* ----- collections dropdown ----- */}
                           {collectionDropdown && (
                             <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Features
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Trending
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Latest wear
                               </Link>
                             </div>
@@ -740,7 +740,7 @@ export const Navbar = () => {
                             <div
                               className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                             >
-                              <p className="">Men</p>
+                              <p className="selection:bg-none">Men</p>
                             </div>
                             {/*  */}
                             <i
@@ -754,13 +754,13 @@ export const Navbar = () => {
                           {/* ----- Men dropdown ----- */}
                           {menDropdown && (
                             <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Features
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Trending
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Latest wear
                               </Link>
                             </div>
@@ -793,13 +793,13 @@ export const Navbar = () => {
                           {/* ----- Women dropdown ----- */}
                           {womenDropdown && (
                             <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Features
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Trending
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Latest wear
                               </Link>
                             </div>
@@ -841,31 +841,31 @@ export const Navbar = () => {
                       <div className="flex flex-col gap-4 ">
                         <Link
                           href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Profile
                         </Link>{" "}
                         <Link
                           href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Orders
                         </Link>{" "}
                         <Link
                           href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Address
                         </Link>{" "}
                         <Link
                           href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Password
                         </Link>{" "}
                         <div
                           onClick={() => setLogoutModal(true)}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
                         >
                           Logout
                         </div>{" "}
@@ -884,14 +884,14 @@ export const Navbar = () => {
                         href={`/login`}
                         className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer bg-text_strong text-background"
                       >
-                        <p className="">Signup</p>
+                        <p className=" selection:bg-none">Signup</p>
                       </Link>
 
                       <Link
                         href={`/login`}
                         className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer border"
                       >
-                        <p className="">Login</p>
+                        <p className="selection:bg-none">Login</p>
                       </Link>
                     </div>
                   </div>
@@ -902,7 +902,7 @@ export const Navbar = () => {
             </div>
 
             {/*------------ socials ----------*/}
-            <div className="w-full bg-[red] flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
+            <div className="w-full bg-[red] selection:bg-none flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
               {/* ----- map ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{map()}</i>
@@ -914,13 +914,13 @@ export const Navbar = () => {
               {/* ----- whatsapp ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{whatsapp()}</i>
-                <p className="text-sm text-text_strong">+234 704 451 4049</p>
+                <p className="text-sm selection:bg-none text-text_strong">+234 704 451 4049</p>
               </div>
 
               {/* ----- instagram ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{instagram()}</i>
-                <p className="text-sm text-text_strong">Quicktrads</p>
+                <p className="text-sm selection:bg-none text-text_strong">Quicktrads</p>
               </div>
             </div>
           </div>
