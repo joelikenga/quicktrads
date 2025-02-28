@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Items } from "./component/items";
 import { SideCategory } from "../categories/component/sideCategory";
 
@@ -12,12 +12,14 @@ const Products = () => {
     priceRange: ''
   });
 
-  const handleFilterChange = (filterType: string, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-  };
+  const handleFilterChange = useCallback((filterType: string, value: any) => {
+    setTimeout(() => {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: value
+      }));
+    }, 0);
+  }, []);
 
   return (
     <>

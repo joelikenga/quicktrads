@@ -31,7 +31,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     return '';
   };
 
-  // Split the useEffect into two parts
+  // Initial setup only - no onFilterChange dependency
   useEffect(() => {
     const savedItem = localStorage.getItem("category");
     if (savedItem) {
@@ -43,16 +43,14 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     }
   }, []);
 
-  // Separate useEffect for filter updates
+  // Handle filter updates - only when selectedCategory changes
   useEffect(() => {
-    if (selectedCategory) {
-      onFilterChange('category', selectedCategory);
-      const genderFromCategory = getGenderFromCategory(selectedCategory);
-      if (genderFromCategory) {
-        onFilterChange('gender', [genderFromCategory]);
-      }
+    const genderFromCategory = getGenderFromCategory(selectedCategory);
+    onFilterChange('category', selectedCategory);
+    if (genderFromCategory) {
+      onFilterChange('gender', [genderFromCategory]);
     }
-  }, [selectedCategory, onFilterChange]);
+  }, [selectedCategory]);
 
   const handleClick = (item: string) => {
     localStorage.setItem("category", item);
