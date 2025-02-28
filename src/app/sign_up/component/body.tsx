@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { signup_Step_1, signup_Step_2 } from "@/app/validationSchemas";
 import { useEffect, useState } from "react";
-import { resendOTP, userSignup, verifyOtp } from "@/app/utils/api/user/auth";
+import { resendOTP, userSignup, verifyOtp } from "../../../../utils/api/user/auth";
 // import { set } from "zod";
 
 type step_1 = {

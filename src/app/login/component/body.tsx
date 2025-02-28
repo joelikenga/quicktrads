@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
-import { userLogin } from "@/app/utils/api/user/auth";
+import { userLogin } from "../../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

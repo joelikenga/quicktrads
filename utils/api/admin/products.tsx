@@ -1,4 +1,4 @@
-import { axios$ } from "../../..";
+import { axios$ } from "../../../src/app";
 
 interface ProductData {
   addToInventory: boolean;
@@ -25,27 +25,38 @@ export const createProduct = async (data: ProductData) => {
 
 
 
-// export const updateProduct = async (data: ProductData) => {
-//   try {
-//     const response = await axios$.put("/product", data);
-//     return response;
-//   } catch (error: unknown) {
-//     throw error;
-//   }
-// };
+export const updateProduct = async (id:string,data:ProductData) => {
+  try {
+    const response = await axios$.patch(`/product/${id}`,data);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
 
-// export const deleteProduct = async (productId: string) => {
-//   try {
-//     const response = await axios$.delete(`/product/${productId}`);
-//     return response;
-//   } catch (error: unknown) {
-//     throw error;
-//   }
-// }
+export const updateProductStatus = async (id:string,status:string) => {
+  try {
+    const response = await axios$.patch(`/product/status/${id}`,status);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const deleteProduct = async (id: string) => {
+  try {
+    const response = await axios$.delete(`/product/${id}`);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+}
 
 export const fetchAllProducts = async (page:number,size:number) => {
   try {
     const response = await axios$.get(`/product/admin?page=${page}&size=${size}`);
+    console.log("Raw API response:", response);
+
     return response;
   } catch (error: unknown) {
     throw error;

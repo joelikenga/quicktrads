@@ -15,7 +15,7 @@ import { AxiosResponse } from "axios";
 import nookies from "nookies";
 // import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { adminLogin } from "@/app/utils/api/admin/auth";
+import { adminLogin } from "../../../../../utils/api/admin/auth";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -68,6 +68,7 @@ const Body = () => {
       const loginData = res.data;
       const { accessToken, refreshToken, user } = loginData;
 
+      console.log(res);
       // Check if user is admin
       if (user.role !== 'super_admin') {
         throw new Error('Unauthorized: Access restricted to admin users only');

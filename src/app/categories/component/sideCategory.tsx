@@ -1,39 +1,117 @@
 "use client";
 
-import { arrowDown, check, } from "@/app/global/svg";
+import { arrowDown, check } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
 
-// interface ItemsProps {
-//   showFilter: boolean;
-// }
-// { showFilter }: ItemsProps
+interface SideCategoryProps {
+  visible?: boolean;
+  onFilterChange: (filterType: string, value: any) => void;
+}
 
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
 });
 
-export const SideCategory = () => {
+export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [showGender, setShowGender] = useState<boolean>(false);
-  const [showSize, setShowSize] = useState<boolean>(false);
+  const [showSubCategory, setShowSubCategory] = useState<boolean>(false);
   const [showPrice, setShowPrice] = useState<boolean>(false);
+  const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
 
+  // Add helper function to get gender from category prefix
+  const getGenderFromCategory = (category: string) => {
+    if (category.startsWith('m-')) return 'Men';
+    if (category.startsWith('w-')) return 'Women';
+    if (category.startsWith('u-')) return 'Unisex';
+    return '';
+  };
+
+  // Update useEffect to handle initial category and gender
   useEffect(() => {
-    const savedItem = localStorage.getItem("category"); // Get item from localStorage
+    const savedItem = localStorage.getItem("category");
     if (savedItem) {
       setSelectedCategory(savedItem);
+      const genderFromCategory = getGenderFromCategory(savedItem);
+      if (genderFromCategory) {
+        setSelectedGenders([genderFromCategory]);
+        onFilterChange('gender', [genderFromCategory]);
+      }
     }
   }, []);
 
   const handleClick = (item: string) => {
     localStorage.setItem("category", item);
     setSelectedCategory(item);
+    onFilterChange('category', item);
+
+    const genderFromCategory = getGenderFromCategory(item);
+    if (genderFromCategory) {
+      setSelectedGenders([genderFromCategory]);
+      onFilterChange('gender', [genderFromCategory]);
+    }
   };
 
+  const handleGenderChange = (gender: string) => {
+    setSelectedGenders(prev => {
+      const newGenders = prev.includes(gender) 
+        ? prev.filter(g => g !== gender)
+        : [...prev, gender];
+      onFilterChange('gender', newGenders);
+      return newGenders;
+    });
+  };
+
+  const handleSubCategoryChange = (subCategory: string) => {
+    setSelectedSubCategories(prev => {
+      const newSubCategories = prev.includes(subCategory) 
+        ? prev.filter(s => s !== subCategory)
+        : [...prev, subCategory];
+      onFilterChange('subCategory', newSubCategories);
+      return newSubCategories;
+    });
+  };
+
+  const handlePriceRangeChange = (range: string) => {
+    setSelectedPriceRange(range);
+    onFilterChange('priceRange', range);
+  };
+
+  // Update isSelected to consider category prefix
+  const isSelected = (type: 'gender' | 'subCategory' | 'price', value: string) => {
+    switch(type) {
+      case 'gender':
+        const categoryGender = getGenderFromCategory(selectedCategory);
+        return selectedGenders.includes(value) || (categoryGender === value);
+      case 'subCategory':
+        return selectedSubCategories.includes(value);
+      case 'price':
+        return selectedPriceRange === value;
+      default:
+        return false;
+    }
+  };
+
+  // Update visibility logic for gender section
+  const shouldShowGenderSection = !selectedCategory.startsWith("m-") && 
+    !selectedCategory.startsWith("w-") && 
+    !selectedCategory.startsWith("u-");
+
   return (
-    <div className="  max-w-[240px] w-full   h-[calc(100vh-7.5rem)] fixed top-[120px]  overflow-hidden">
+    <div 
+      className={`
+        max-w-[240px] w-full h-[calc(100vh-7.5rem)] fixed top-[120px]
+        transform transition-all duration-300 ease-in-out
+        ${visible 
+          ? 'translate-x-0 opacity-100 visible' 
+          : '-translate-x-full opacity-0 invisible '
+        }
+      `}
+    >
       <div className="px-6 lg:px-2  w-full text-text_strong items-center py-8">
         {selectedCategory.startsWith("trending") && (
           <p className="font-normal text-[22px]">{`Trending (${100})`}</p>
@@ -322,19 +400,12 @@ export const SideCategory = () => {
         )}
 
         {/* ---------------------- gender ---------------------- */}
-
-        {
-          <div
-            onClick={() => setShowGender(!showGender)}
-            className={`${
-              selectedCategory.startsWith("m-") ||
-              selectedCategory.startsWith("w-") ||
-              selectedCategory.startsWith("u-")
-                ? "hidden"
-                : ""
-            } flex  w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4 `}
-          >
-            <div className="flex justify-between w-full cursor-pointer">
+        {shouldShowGenderSection && (
+          <div className="flex w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
+            <div
+              onClick={() => setShowGender(!showGender)}
+              className="flex justify-between w-full cursor-pointer"
+            >
               <p className="text-text_strong text-base font-normal">Gender</p>
               <i className={`duration-300 ${showGender && "rotate-180"}`}>
                 {arrowDown()}
@@ -342,64 +413,55 @@ export const SideCategory = () => {
             </div>
             {showGender && (
               <div className="flex justify-items-start items-start flex-col gap-4 text-text_weak text-base font-normal mb-4 cursor-pointer">
-                {/* ----- men ----- */}
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-4  border border-text_wea rounded flex items-center ">
-                    {check()}
-                  </span>
-                  <p className="">Men</p>
-                </div>
-
-                {/* ----- women ----- */}
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-4  border border-text_wea rounded flex items-center ">
-                    {check()}
-                  </span>
-                  <p className="">Women</p>
-                </div>
+                {['Men', 'Women', 'Unisex'].map((gender) => (
+                  <div 
+                    key={gender}
+                    className="flex items-center gap-2" 
+                    onClick={() => handleGenderChange(gender)}
+                  >
+                    <span className={`w-4 h-4 border border-text_wea rounded flex items-center justify-center
+                      ${isSelected('gender', gender) ? 'bg-black' : ''}`}
+                    >
+                      {isSelected('gender', gender) && check()}
+                    </span>
+                    <p className="">{gender}</p>
+                  </div>
+                ))}
               </div>
             )}
           </div>
-        }
+        )}
 
-        {/* ---------------------- Size ---------------------- */}
+        {/* ---------------------- SubCategory ---------------------- */}
 
         <div className="flex  w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
           <div
-            onClick={() => setShowSize(!showSize)}
+            onClick={() => setShowSubCategory(!showSubCategory)}
             className="flex justify-between w-full cursor-pointer"
           >
-            <p className="text-text_strong text-base font-normal">Size</p>
-            <i className={`duration-300 ${showSize && "rotate-180"}`}>
+            <p className="text-text_strong text-base font-normal">SubCategory</p>
+            <i className={`duration-300 ${showSubCategory && "rotate-180"}`}>
               {arrowDown()}
             </i>
           </div>
-          {showSize && (
+          {showSubCategory && (
             <div className="w-full grid grid-cols-2 gap-4 text-xs">
-              <span className="col-span-1 border  px-3 h-[57px] justify-center cursor-pointer text-text_strong flex flex-col items-center text-center rounded-lg ">
-                <p className="text-sm">XS</p>
-                <p className="">Extra small</p>
-              </span>
-
-              <span className="col-span-1 border  px-3 h-[57px] justify-center cursor-pointer text-text_strong flex flex-col items-center text-center rounded-lg ">
-                <p className="text-sm">S</p>
-                <p className="">Small</p>
-              </span>
-
-              <span className="col-span-1 border  px-3 h-[57px] justify-center cursor-pointer text-text_strong flex flex-col items-center text-center rounded-lg ">
-                <p className="text-sm">M</p>
-                <p className="">Medium</p>
-              </span>
-
-              <span className="col-span-1 border  px-3 h-[57px] justify-center cursor-pointer text-text_strong flex flex-col items-center text-center rounded-lg ">
-                <p className="text-sm">L</p>
-                <p className="">Large</p>
-              </span>
-
-              <span className="col-span-1 border  px-3 h-[57px] justify-center cursor-pointer text-text_strong flex flex-col items-center text-center rounded-lg ">
-                <p className="text-sm">XL</p>
-                <p className="">Extra large</p>
-              </span>
+              {[
+                { value: 'tops', label: 'Tops' },
+                { value: 'trousers', label: 'Trousers' },
+                { value: 'two-piece', label: 'Two-piece' },
+                { value: 'bubu', label: 'Bubu' },
+              ].map(({ value, label }) => (
+                <span 
+                  key={value}
+                  onClick={() => handleSubCategoryChange(value)}
+                  className={`col-span-1 border px-3 h-[57px] justify-center cursor-pointer 
+                    text-text_strong flex flex-col items-center text-center rounded-lg
+                    ${isSelected('subCategory', value) ? 'bg-black text-white' : ''}`}
+                >
+                  <p className="text-sm">{label}</p>
+                </span>
+              ))}
             </div>
           )}
         </div>
@@ -418,29 +480,24 @@ export const SideCategory = () => {
           </div>
           {showPrice && (
             <div className="flex justify-items-start items-start flex-col gap-4 text-text_weak text-base font-normal cursor-pointer">
-              {/* -----  ----- */}
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4  border border-text_wea rounded flex items-center ">
-                  {check()}
-                </span>
-                <p className="">{`$1 - $20`}</p>
-              </div>
-
-              {/* ----- women ----- */}
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4  border border-text_wea rounded flex items-center ">
-                  {check()}
-                </span>
-                <p className="">{`$21 - $50`}</p>
-              </div>
-
-              {/* ----- women ----- */}
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-4  border border-text_wea rounded flex items-center ">
-                  {check()}
-                </span>
-                <p className="">{`$51 - $100+`}</p>
-              </div>
+              {[
+                '$1 - $20',
+                '$21 - $50',
+                '$51 - $100+'
+              ].map((range) => (
+                <div 
+                  key={range}
+                  className="flex items-center gap-2" 
+                  onClick={() => handlePriceRangeChange(range)}
+                >
+                  <span className={`w-4 h-4 border border-text_wea rounded flex items-center justify-center
+                   `}
+                  >
+                    {isSelected('price', range) && check()}
+                  </span>
+                  <p className="">{range}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>

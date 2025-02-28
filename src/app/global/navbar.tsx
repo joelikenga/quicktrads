@@ -21,7 +21,7 @@ import {
 import { Lora } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useLogin } from "../utils/hooks/useLogin";
+import { useLogin } from "../../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
@@ -165,7 +165,7 @@ export const Navbar = () => {
   //   setCategoryOptions(false);
   // };
 
-  const { isLoggedIn, userDetails } = useLogin();
+  const { isLoggedIn, isAuthorized, userDetails } = useLogin("user");
 
   return (
     <div className="w-full left-0 top-0 fixed z-50  ">
@@ -386,9 +386,7 @@ export const Navbar = () => {
                           Unisex
                         </p>
                         <div
-                          onClick={(event) =>
-                            handleNavigation("u-Tops", event)
-                          }
+                          onClick={(event) => handleNavigation("u-Tops", event)}
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
                           Tops
@@ -413,9 +411,7 @@ export const Navbar = () => {
 
                       {/* ----- men ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                        <p
-                          className="text-base font-semibold cursor-pointer"
-                        >
+                        <p className="text-base font-semibold cursor-pointer">
                           Men
                         </p>
                         <div
@@ -444,9 +440,7 @@ export const Navbar = () => {
 
                       {/* ----- Women ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                        <p
-                          className="text-base font-semibold cursor-pointer"
-                        >
+                        <p className="text-base font-semibold cursor-pointer">
                           Women
                         </p>
                         <div
@@ -487,10 +481,15 @@ export const Navbar = () => {
             {/* ----- cart ----- */}
             <Link
               href={`/cart`}
-              className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1"
+              className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1 relative"
             >
               {cart()}
               <p className="">Cart</p>
+              {1 > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {0}
+                </span>
+              )}
             </Link>
 
             {/* ----- profile----- */}
@@ -537,28 +536,24 @@ export const Navbar = () => {
                     >
                       Profile
                     </Link>
-
                     <Link
                       href={`/orders`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Orders
                     </Link>
-
                     <Link
                       href={`/address`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Address
                     </Link>
-
                     <Link
                       href={`/password`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Password
                     </Link>
-                    
                     <div
                       onClick={() => setLogoutModal(true)}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
@@ -815,7 +810,7 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* -----profile----- */}
-                {isLoggedIn && userDetails != null ? (
+                {userDetails?.data.avatar === "" ? (
                   <div
                     ref={profileWrapperRef}
                     className="w-full gap-6 flex flex-col  border-b pb-6"

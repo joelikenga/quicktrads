@@ -1,4 +1,4 @@
-import { axios$ } from "../../..";
+import { axios$ } from "../../../src/app";
 
 interface UserRegistrationData {
   fullName: string;

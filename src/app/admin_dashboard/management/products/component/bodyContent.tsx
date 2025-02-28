@@ -16,8 +16,9 @@ import { useState, useRef,  useEffect } from "react";
 import Image from "next/image";
 import {
   createProduct,
+  deleteProduct,
   fetchAllProducts,
-} from "@/app/utils/api/admin/products";
+} from "../../../../../../utils/api/admin/products";
 import { useRouter } from "next/navigation"; // Add this at the top with other imports
 
 // interface ProductData {
@@ -217,66 +218,66 @@ export const BodyContent = () => {
     });
   };
 
-  const handleProductUpload = async () => {
-    if (isSaving) return; // Prevent upload if saving
-    try {
-      setIsUploading(true);
-      setUploadError(null);
+    const handleProductUpload = async () => {
+      if (isSaving) return; // Prevent upload if saving
+      try {
+        setIsUploading(true);
+        setUploadError(null);
 
-      if (
-        !productName ||
-        !price ||
-        images.length === 0 ||
-        !selectedSubCategory
-      ) {
-        setUploadError(
-          "Please fill in all required fields including subcategory"
+        if (
+          !productName ||
+          !price ||
+          images.length === 0 ||
+          !selectedSubCategory
+        ) {
+          setUploadError(
+            "Please fill in all required fields including subcategory"
+          );
+          return;
+        }
+
+        // Upload all images to Cloudinary
+        const uploadedImageUrls = await Promise.all(
+          images.map(async (image) => {
+            const base64 = await convertFileToBase64(image.file);
+            const cloudinaryUrl = await uploadImageToCloudinary(base64);
+            return cloudinaryUrl;
+          })
         );
-        return;
+
+        // Create product data object matching the interface
+        const productData = {
+          addToInventory: true,
+          category: selectedCategory,
+          currency: currency,
+          description: description,
+          images: uploadedImageUrls,
+          isFeatured: false,
+          name: productName,
+          price: Number(price),
+          priceDiscount: discountPrice ? Number(discountPrice) : undefined,
+          size: selectedSizes.join(","),
+          subCategory: selectedSubCategory, // Add selected subcategory
+        };
+
+        // Send to backend using the createProduct function
+        const response = await createProduct(productData);
+        console.log("Product uploaded successfully:", response);
+
+        // Clear form after successful upload
+        setImages([]);
+        setProductName("");
+        setPrice("");
+        setDiscountPrice("");
+        setDescription("");
+        setSelectedSizes([]);
+      } catch (error) {
+        console.error("Error uploading product:", error);
+        setUploadError("Failed to upload product. Please try again.");
+      } finally {
+        setIsUploading(false);
       }
-
-      // Upload all images to Cloudinary
-      const uploadedImageUrls = await Promise.all(
-        images.map(async (image) => {
-          const base64 = await convertFileToBase64(image.file);
-          const cloudinaryUrl = await uploadImageToCloudinary(base64);
-          return cloudinaryUrl;
-        })
-      );
-
-      // Create product data object matching the interface
-      const productData = {
-        addToInventory: true,
-        category: selectedCategory,
-        currency: currency,
-        description: description,
-        images: uploadedImageUrls,
-        isFeatured: false,
-        name: productName,
-        price: Number(price),
-        priceDiscount: discountPrice ? Number(discountPrice) : undefined,
-        size: selectedSizes.join(","),
-        subCategory: selectedSubCategory, // Add selected subcategory
-      };
-
-      // Send to backend using the createProduct function
-      const response = await createProduct(productData);
-      console.log("Product uploaded successfully:", response);
-
-      // Clear form after successful upload
-      setImages([]);
-      setProductName("");
-      setPrice("");
-      setDiscountPrice("");
-      setDescription("");
-      setSelectedSizes([]);
-    } catch (error) {
-      console.error("Error uploading product:", error);
-      setUploadError("Failed to upload product. Please try again.");
-    } finally {
-      setIsUploading(false);
-    }
-  };
+    };
 
   const handleSaveToDraft = async () => {
     if (isUploading) return; // Prevent saving if uploading
@@ -487,10 +488,34 @@ export const BodyContent = () => {
     router.push(`/admin_dashboard/management/products/${productId}`);
   };
 
+  // Add function to handle edit click
+  const handleEditClick = (e: React.MouseEvent, productId: string) => {
+    e.stopPropagation(); // Prevent row click event from firing
+    router.push(`/admin_dashboard/management/products/${productId}?edit=true`);
+  };
+
+  const handleDeleteClick = async (e: React.MouseEvent, productId: string) => {
+    e.stopPropagation(); // Prevent row click event from firing
+
+      try {
+        // Call the deleteProduct function from your API utility
+        await deleteProduct(productId);
+        console.log("Product deleted successfully");
+
+        // Refresh the product list after deletion
+        getAllproducts();
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        alert("Failed to delete product. Please try again.");
+      }
+  };
+
+  
+
   return (
     <div className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
       {/* Show no products view when products array is empty */}
-      {products.length === 0 ? (
+      {  products.length === 0  ? (
         <div className="w-full flex flex-col">
           <div className="w-full flex items-center justify-start">
             <div className="flex items-center text-[18px] font-medium text-text_strong">
@@ -1078,13 +1103,14 @@ export const BodyContent = () => {
                           <div className="text-text_strong text-sm font-normal text-nowrap flex gap-4">
                             <i
                               className="cursor-pointer"
-                              // onClick={() => handleEditProduct(product.id)}
+                              onClick={(e) => handleEditClick(e, product.id)}
                             >
                               {editIcon()}
                             </i>
                             <i
+                              onClick={(e) => handleDeleteClick(e, product.id)}
+
                               className="cursor-pointer"
-                              // onClick={() => handleDeleteProduct(product.id)}
                             >
                               {trash()}
                             </i>
