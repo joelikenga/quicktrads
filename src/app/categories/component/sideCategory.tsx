@@ -31,6 +31,15 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     return '';
   };
 
+  // Add helper function to get subcategory from category
+  const getSubCategoryFromSelection = (category: string) => {
+    if (category.includes('-Tops')) return 'Tops';
+    if (category.includes('-Trousers')) return 'Trousers';
+    if (category.includes('-TwoPiece')) return 'Two-piece';
+    if (category.includes('-Bubu')) return 'Bubu';
+    return '';
+  };
+
   // Initial setup only - no onFilterChange dependency
   useEffect(() => {
     const savedItem = localStorage.getItem("category");
@@ -59,6 +68,16 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     const genderFromCategory = getGenderFromCategory(item);
     if (genderFromCategory) {
       setSelectedGenders([genderFromCategory]);
+    }
+
+    // Set subcategory when a specific category is selected
+    const subCategory = getSubCategoryFromSelection(item);
+    if (subCategory) {
+      setSelectedSizes([subCategory]);
+      onFilterChange('size', [subCategory]);
+    } else {
+      setSelectedSizes([]); // Clear subcategory filter if parent category selected
+      onFilterChange('size', []);
     }
   };
 
@@ -464,7 +483,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
                   onClick={() => handleSizeChange(value)}
                   className={`col-span-1 border px-3 h-[57px] justify-center cursor-pointer 
                     text-text_strong flex flex-col items-center text-center rounded-lg
-                    ${isSelected('size', value) ? 'bg-black text-white' : ''}`}
+                    ${isSelected('size', value) ? 'border-black' : ''}`}
                 >
                   <p className="text-sm">{value}</p>
                   <p className="">{label}</p>

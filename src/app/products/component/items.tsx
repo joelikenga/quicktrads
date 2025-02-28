@@ -96,9 +96,17 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
       const matchesGender = filters.gender.length === 0 || 
         filters.gender.some(gender => product.category.toLowerCase() === gender.toLowerCase());
 
-      // Size filter (replacing SubCategory filter)
+      // Updated Size/SubCategory filter
       const matchesSize = filters.size.length === 0 ||
-        filters.size.some(size => product.subCategory.includes(size));
+        filters.size.some(size => {
+          const normalizedSize = size.toLowerCase();
+          const normalizedSubCategory = product.subCategory.toLowerCase();
+          return (
+            normalizedSubCategory.includes(normalizedSize) ||
+            normalizedSubCategory === normalizedSize ||
+            (normalizedSize === 'two-piece' && normalizedSubCategory.includes('twopiece'))
+          );
+        });
 
       // Price filter
       const matchesPrice = !filters.priceRange || (() => {
