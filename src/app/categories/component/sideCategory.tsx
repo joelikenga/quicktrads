@@ -20,7 +20,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
   const [showSubCategory, setShowSubCategory] = useState<boolean>(false);
   const [showPrice, setShowPrice] = useState<boolean>(false);
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);  // rename from selectedSubCategories
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
 
   // Add helper function to get gender from category prefix
@@ -31,7 +31,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     return '';
   };
 
-  // Update useEffect to handle initial category and gender
+  // Split the useEffect into two parts
   useEffect(() => {
     const savedItem = localStorage.getItem("category");
     if (savedItem) {
@@ -39,20 +39,28 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
       const genderFromCategory = getGenderFromCategory(savedItem);
       if (genderFromCategory) {
         setSelectedGenders([genderFromCategory]);
-        onFilterChange('gender', [genderFromCategory]);
       }
     }
   }, []);
 
+  // Separate useEffect for filter updates
+  useEffect(() => {
+    if (selectedCategory) {
+      onFilterChange('category', selectedCategory);
+      const genderFromCategory = getGenderFromCategory(selectedCategory);
+      if (genderFromCategory) {
+        onFilterChange('gender', [genderFromCategory]);
+      }
+    }
+  }, [selectedCategory, onFilterChange]);
+
   const handleClick = (item: string) => {
     localStorage.setItem("category", item);
     setSelectedCategory(item);
-    onFilterChange('category', item);
-
+    
     const genderFromCategory = getGenderFromCategory(item);
     if (genderFromCategory) {
       setSelectedGenders([genderFromCategory]);
-      onFilterChange('gender', [genderFromCategory]);
     }
   };
 
@@ -66,13 +74,13 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     });
   };
 
-  const handleSubCategoryChange = (subCategory: string) => {
-    setSelectedSubCategories(prev => {
-      const newSubCategories = prev.includes(subCategory) 
-        ? prev.filter(s => s !== subCategory)
-        : [...prev, subCategory];
-      onFilterChange('subCategory', newSubCategories);
-      return newSubCategories;
+  const handleSizeChange = (size: string) => {     // rename from handleSubCategoryChange
+    setSelectedSizes(prev => {
+      const newSizes = prev.includes(size) 
+        ? prev.filter(s => s !== size)
+        : [...prev, size];
+      onFilterChange('size', newSizes);    // change 'subCategory' to 'size'
+      return newSizes;
     });
   };
 
@@ -82,13 +90,13 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
   };
 
   // Update isSelected to consider category prefix
-  const isSelected = (type: 'gender' | 'subCategory' | 'price', value: string) => {
+  const isSelected = (type: 'gender' | 'size' | 'price', value: string) => {  // change 'subCategory' to 'size'
     switch(type) {
       case 'gender':
         const categoryGender = getGenderFromCategory(selectedCategory);
         return selectedGenders.includes(value) || (categoryGender === value);
-      case 'subCategory':
-        return selectedSubCategories.includes(value);
+      case 'size':                           // change from 'subCategory'
+        return selectedSizes.includes(value); // change from selectedSubCategories
       case 'price':
         return selectedPriceRange === value;
       default:
@@ -183,7 +191,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
             </div>
             <div
               onClick={() => handleClick("u-TwoPiece")}
-              className="cursor-pointer"
+              className="cursor-pointer text-nowrap"
             >
               Two-piece
             </div>
@@ -206,7 +214,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
             </div>
             <div
               onClick={() => handleClick("m-TwoPiece")}
-              className="cursor-pointer"
+              className="cursor-pointer text-nowrap"
             >
               Two-piece
             </div>
@@ -235,7 +243,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
             </div>
             <div
               onClick={() => handleClick("w-TwoPiece")}
-              className="cursor-pointer"
+              className="cursor-pointer text-nowrap"
             >
               Two-piece
             </div>
@@ -385,15 +393,15 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
 
         {selectedCategory === "w-TwoPiece" && (
           <div className="flex flex-col w-fit gap-1 text-text_strong">
-            <div className="flex  gap-6 text-base font-normal">
+            <div className="flex  gap-5 text-base font-normal">
               <p
                 onClick={() => handleClick("women")}
                 className="text-text_weak"
               >
-                Collctions
+                Women
               </p>
               <i className="-rotate-90">{arrowDown()}</i>
-              <p className={`cursor-pointer`}>Two-piece</p>
+              <p className={`cursor-pointer text-nowrap`}>Two-piece</p>
             </div>
             <p className={`text-[22px] ${lora.className}`}>Two-piece</p>
           </div>
@@ -432,14 +440,14 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
           </div>
         )}
 
-        {/* ---------------------- SubCategory ---------------------- */}
+        {/* ---------------------- Size ---------------------- */}
 
-        <div className="flex  w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
+        <div className="flex w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
           <div
             onClick={() => setShowSubCategory(!showSubCategory)}
             className="flex justify-between w-full cursor-pointer"
           >
-            <p className="text-text_strong text-base font-normal">SubCategory</p>
+            <p className="text-text_strong text-base font-normal">Size</p>
             <i className={`duration-300 ${showSubCategory && "rotate-180"}`}>
               {arrowDown()}
             </i>
@@ -447,19 +455,21 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
           {showSubCategory && (
             <div className="w-full grid grid-cols-2 gap-4 text-xs">
               {[
-                { value: 'tops', label: 'Tops' },
-                { value: 'trousers', label: 'Trousers' },
-                { value: 'two-piece', label: 'Two-piece' },
-                { value: 'bubu', label: 'Bubu' },
+                { value: 'XS', label: 'Extra Small' },
+                { value: 'S', label: 'Small' },
+                { value: 'M', label: 'Medium' },
+                { value: 'L', label: 'Large' },
+                { value: 'XL', label: 'Extra Large' },
               ].map(({ value, label }) => (
                 <span 
                   key={value}
-                  onClick={() => handleSubCategoryChange(value)}
+                  onClick={() => handleSizeChange(value)}
                   className={`col-span-1 border px-3 h-[57px] justify-center cursor-pointer 
                     text-text_strong flex flex-col items-center text-center rounded-lg
-                    ${isSelected('subCategory', value) ? 'bg-black text-white' : ''}`}
+                    ${isSelected('size', value) ? 'bg-black text-white' : ''}`}
                 >
-                  <p className="text-sm">{label}</p>
+                  <p className="text-sm">{value}</p>
+                  <p className="">{label}</p>
                 </span>
               ))}
             </div>

@@ -8,7 +8,7 @@ const Products = () => {
   const [filters, setFilters] = useState({
     category: '',
     gender: [],
-    subCategory: [],
+    size: [],
     priceRange: ''
   });
 

@@ -32,7 +32,7 @@ interface ItemsProps {
   filters: {
     category: string;
     gender: string[];
-    subCategory: string[];
+    size: string[];    // change from subCategory to size
     priceRange: string;
   };
 }
@@ -96,9 +96,9 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
       const matchesGender = filters.gender.length === 0 || 
         filters.gender.some(gender => product.category.toLowerCase() === gender.toLowerCase());
 
-      // SubCategory filter
-      const matchesSubCategory = filters.subCategory.length === 0 ||
-        filters.subCategory.includes(product.subCategory);
+      // Size filter (replacing SubCategory filter)
+      const matchesSize = filters.size.length === 0 ||
+        filters.size.some(size => product.subCategory.includes(size));
 
       // Price filter
       const matchesPrice = !filters.priceRange || (() => {
@@ -111,7 +111,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
         }
       })();
 
-      return matchesCategory && matchesGender && matchesSubCategory && matchesPrice;
+      return matchesCategory && matchesGender && matchesSize && matchesPrice;
     });
   };
 
@@ -129,45 +129,50 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
             setShowFilter(!showFilter);
             onFilterChange(!showFilter);
           }}
-          className="flex gap-2 font-medium text-base items-center cursor-pointer justify-end "
+          className="flex gap-2 font-medium text-base items-center cursor-pointer justify-end"
         >
           <i>{filterIcon()}</i>
           <p>{showFilter ? "Hide filter" : "Show filter"}</p>
         </div>
       </div>
-      <div
-        className={`grid grid-cols-1 ${
+      
+      {filteredProducts.length === 0 ? (
+        <div className="flex justify-center items-center w-full min-h-[400px] text-text_weak text-lg">
+          No matching items found
+        </div>
+      ) : (
+        <div className={`grid grid-cols-1 ${
           showFilter ? "md:grid-cols-3" : "md:grid-cols-4"
-        } flex-row flex-wrap gap-6 w-full justify-between overflow-y-auto px-6 lg:px-2`}
-      >
-        {filteredProducts.map((item: TransformedProduct) => (
-          <div
-            onClick={() => handleRowClick(item.id)}
-            key={item.id}
-            className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col items-center gap-4 w-full max-w-[390px] h-fit pb-[22px] cursor-pointer"
-          >
-            <div className="w-full h-[400px] border flex items-center">
-              <Image
-                className="h-[400px] w-full object-center bg-center"
-                src={item.images} // Now directly using the image URL
-                priority
-                width={410}
-                height={400}
-                alt={item.name}
-              />
-            </div>
-            <div className="flex flex-col text-start w-full items-start gap-2 text-text_strong text-base">
-              <p className="text-text_strong text-base font-medium">
-                {item.name}
-              </p>
-              <div className="flex items-center gap-1 font-semibold">
-                <p className="text-base">{`$ ${item.price}`}</p>
-                <del className="text-base text-text_weak">{`$ ${item.discountPrice}`}</del>
+        } flex-row flex-wrap gap-6 w-full justify-between overflow-y-auto px-6 lg:px-2`}>
+          {filteredProducts.map((item: TransformedProduct) => (
+            <div
+              onClick={() => handleRowClick(item.id)}
+              key={item.id}
+              className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col items-center gap-4 w-full max-w-[390px] h-fit pb-[22px] cursor-pointer"
+            >
+              <div className="w-full h-[400px] border flex items-center">
+                <Image
+                  className="h-[400px] w-full object-center bg-center"
+                  src={item.images} // Now directly using the image URL
+                  priority
+                  width={410}
+                  height={400}
+                  alt={item.name}
+                />
+              </div>
+              <div className="flex flex-col text-start w-full items-start gap-2 text-text_strong text-base">
+                <p className="text-text_strong text-base font-medium">
+                  {item.name}
+                </p>
+                <div className="flex items-center gap-1 font-semibold">
+                  <p className="text-base">{`$ ${item.price}`}</p>
+                  <del className="text-base text-text_weak">{`$ ${item.discountPrice}`}</del>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
