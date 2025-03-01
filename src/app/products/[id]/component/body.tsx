@@ -22,6 +22,9 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getProduct } from "../../../../../utils/api/user/product";
 import { ProductSkeleton } from "./skeleton";
+// import { useCart } from "../../../../../utils/hooks/useCart";
+import { useCart } from "@/context/CartContext";
+
 
 const lora = Lora({
   variable: "--font-lora",
@@ -63,6 +66,8 @@ export const Body = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImage, setCurrentImage] = useState<string>("");
   const [activeSection, setActiveSection] = useState<string | null>('about');
+  const { addToCart } = useCart();
+  const [selectedSize, setSelectedSize] = useState<string>('');
 
   const getProducts = async (id: string) => {
     try {
@@ -154,6 +159,25 @@ export const Body = () => {
     setActiveSection(activeSection === section ? null : section);
   };
 
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert('Please select a size');
+      return;
+    }
+
+    const cartItem = {
+      id: product?.data.id || '',
+      name: product?.data.name || '',
+      price: product?.data.price || 0,
+      currency: product?.data.currency || '',
+      image: product?.data.images[0] || '',
+      size: selectedSize,
+      quantity: 1,
+    };
+
+    addToCart(cartItem);
+  };
+
   if (!product) {
     return <ProductSkeleton />; // Replace the loading text with skeleton
   }
@@ -188,7 +212,7 @@ export const Body = () => {
                       priority
                       alt=""
                       className={`w-[100px] h-[120px] ${
-                        currentImage === item ? "border-2 border-blue-500" : ""
+                        currentImage === item ? "border-2 border-black" : ""
                       }`}
                     />
                   </div>
@@ -252,7 +276,13 @@ export const Body = () => {
                 <p className="font-normal text-sm">Select size</p>
                 <div className="grid grid-cols-5 gap-4 font-medium">
                   {product.data.size.split(',').map((size) => (
-                    <div key={size} className="col-span-1 rounded-lg border flex items-center justify-center flex-col w-[88px] py-2 ">
+                    <div 
+                      key={size} 
+                      className={`col-span-1 rounded-lg border flex items-center justify-center flex-col w-[88px] py-2 cursor-pointer ${
+                        selectedSize === size ? 'border-black' : ''
+                      }`}
+                      onClick={() => setSelectedSize(size)}
+                    >
                       <p className="text-text_strong text-sm uppercase">{size}</p>
                       <p className="text-text_weak text-xs text-nowrap">
                         {size === 'xs' ? 'Extra small' : 
@@ -278,10 +308,23 @@ export const Body = () => {
             {/* buttons */}
 
             <div className="flex flex-col gap-6 font-medium text-base">
-              <button className=" w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center">
+                <button 
+                onClick={() => {
+                  if (selectedSize) {
+                  handleAddToCart();
+                  window.location.href = '/checkout';
+                  } else {
+                  alert('Please select a size');
+                  }
+                }}
+                className=" w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"
+                >
                 Checkout now
-              </button>
-              <button className=" w-full text-text_strong border bg-background rounded-full px-6 h-12 flex justify-center items-center gap-2">
+                </button>
+              <button 
+                onClick={handleAddToCart}
+                className="w-full text-text_strong border bg-background rounded-full px-6 h-12 flex justify-center items-center gap-2"
+              >
                 <i>{cart()}</i>
                 Add to cart
               </button>

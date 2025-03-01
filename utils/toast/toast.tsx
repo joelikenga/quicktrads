@@ -1,32 +1,42 @@
+import { greenInfo, redInfo } from "@/app/global/svg";
 import toast from "react-hot-toast";
 
-// Variable to keep track of the current toast ID
 let currentToastId: string | null = null;
 
-// Utility function for toasts
-export const showToast = (
-  message: string,
-  type: "success" | "error" | "info"
-) => {
-  // Dismiss the previous toast if it exists
+const baseToast = (message: string, type: "success" | "error" | "info") => {
   if (currentToastId) {
     toast.dismiss(currentToastId);
   }
 
-  // Show the new toast and store its ID
   currentToastId = toast(message, {
+    duration: 3000,
+    position: 'top-right',
     style: {
-      fontSize: "12px",
-      background:
+      fontSize: '14px',
+      padding: '16px',
+      borderRadius: '8px',
+      background: '#ffffff',
+      color: '#333333',
+      maxWidth: '350px',
+      textAlign: 'left',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      borderLeft: `4px solid ${
         type === "success"
-          ? "#4CAF50"
+          ? "#109368"
           : type === "error"
-          ? "#ff4d4d"
-          : "#D0F7E4",
-      color: type === "info" ? "#000" : "#fff",
-      width: "312px",
-      textAlign: "left",
+          ? "#DC1827"
+          : "#141414"
+      }`,
     },
-    // icon: type === "info" ? "" : undefined,
+    icon: type === "success" 
+      ? greenInfo()
+      : type === "error" 
+      ? redInfo()
+      : 'ℹ️',
   });
 };
+
+// Simplified toast functions
+export const successToast = (message: string) => baseToast(message, "success");
+export const errorToast = (message: string) => baseToast(message, "error");
+export const infoToast = (message: string) => baseToast(message, "info");

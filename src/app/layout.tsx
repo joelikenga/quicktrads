@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from '@/context/CartContext';
 
 const openSans = Open_Sans({
   variable: "--font-raleway",
   subsets: ["latin"],
 });
-
-// const lora = Lora({
-//   variable: "--font-lora",
-//   subsets: ["latin"],
-// });
 
 export const metadata: Metadata = {
   title: "Quicktrads",
@@ -21,10 +17,6 @@ export const metadata: Metadata = {
         url: '/favicon.ico',
         sizes: 'any',
       },
-      // {
-      //   url: '/icon.svg',
-      //   type: 'image/svg+xml',
-      // },
     ],
     apple: [
       {
@@ -43,7 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${openSans.className}  antialiased`}>
+        <CartProvider>
           {children}
+        </CartProvider>
       </body>
     </html>
   );

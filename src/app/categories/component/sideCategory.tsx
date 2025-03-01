@@ -3,6 +3,7 @@
 import { arrowDown, check } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
+import { getAllProducts, getLatestProducts, getTrendingProducts } from "../../../../utils/api/user/product";
 
 interface SideCategoryProps {
   visible?: boolean;
@@ -22,6 +23,58 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);  // rename from selectedSubCategories
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("");
+
+
+  const [counts, setCounts] = useState({
+    trending: 0,
+    latest: 0,
+    men: 0,
+    women: 0,
+    unisex: 0
+  });
+
+
+
+    // Function to fetch  items count
+    const fetchCounts = async () => {
+      try{
+      const trending = await getTrendingProducts();
+      const latest = await getLatestProducts();
+      const others = await getAllProducts(); 
+      
+      // Count items by gender prefix
+      const menCount = others.data.filter((item: any) => 
+        item.category.startsWith('m-') || item.category === 'men'
+      ).length;
+      
+      const womenCount = others.data.filter((item: any) => 
+        item.category.startsWith('w-') || item.category === 'women'
+      ).length;
+      
+      const unisexCount = others.data.filter((item: any) => 
+        item.category.startsWith('u-') || item.category === 'unisex'
+      ).length;
+
+      setCounts({
+        trending: trending.data.length,
+        latest: latest.data.length,
+        men: menCount,
+        women: womenCount,
+        unisex: unisexCount
+      });
+      // console.log("Trending count:", response.data.length);
+      }catch(error){
+        console.error("API error:", error);
+        throw error;  
+      }
+    };
+
+    useEffect(() => {
+      fetchCounts();
+      const interval = setInterval(fetchCounts, 5000);
+      return () => clearInterval(interval);
+    }, []);
+
 
   // Add helper function to get gender from category prefix
   const getGenderFromCategory = (category: string) => {
@@ -49,7 +102,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
       if (genderFromCategory) {
         setSelectedGenders([genderFromCategory]);
       }
-    }
+    }console.log(savedItem);
   }, []);
 
   // Handle filter updates - only when selectedCategory changes
@@ -91,12 +144,12 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     });
   };
 
-  const handleSizeChange = (size: string) => {     // rename from handleSubCategoryChange
+  const handleSizeChange = (size: string) => {  // rename from handleSubCategoryChange
     setSelectedSizes(prev => {
-      const newSizes = prev.includes(size) 
+      const newSizes = prev.includes(size)
         ? prev.filter(s => s !== size)
         : [...prev, size];
-      onFilterChange('size', newSizes);    // change 'subCategory' to 'size'
+      onFilterChange('size', newSizes);  // change 'subCategory' to 'size'
       return newSizes;
     });
   };
@@ -139,31 +192,31 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
     >
       <div className="px-6 lg:px-2  w-full text-text_strong items-center py-8">
         {selectedCategory.startsWith("trending") && (
-          <p className="font-normal text-[22px]">{`Trending (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Trending (${counts.trending})`}</p>
         )}
         {selectedCategory.startsWith("latestWear") && (
-          <p className="font-normal text-[22px]">{`Latest Wear (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Latest Wear (${counts.latest})`}</p>
         )}
 
         {selectedCategory.startsWith("unisex") && (
-          <p className="font-normal text-[22px]">{`Unisex (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Unisex (${counts.unisex})`}</p>
         )}
         {selectedCategory.includes("u-") && (
-          <p className="font-normal text-[22px]">{`Unisex (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Unisex (${counts.unisex})`}</p>
         )}
 
         {selectedCategory.startsWith("men") && (
-          <p className="font-normal text-[22px]">{`Men (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Men (${counts.men})`}</p>
         )}
         {selectedCategory.includes("m-") && (
-          <p className="font-normal text-[22px]">{`Men (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Men (${counts.men})`}</p>
         )}
 
         {selectedCategory.startsWith("women") && (
-          <p className="font-normal text-[22px]">{`Women (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Women (${counts.women})`}</p>
         )}
         {selectedCategory.includes("w-") && (
-          <p className="font-normal text-[22px]">{`Women (${100})`}</p>
+          <p className="font-normal text-[22px]">{`Women (${counts.women})`}</p>
         )}
       </div>
 
@@ -444,8 +497,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
                     className="flex items-center gap-2" 
                     onClick={() => handleGenderChange(gender)}
                   >
-                    <span className={`w-4 h-4 border border-text_wea rounded flex items-center justify-center
-                      ${isSelected('gender', gender) ? 'bg-black' : ''}`}
+                    <span className={`w-4 h-4 border border-text_wea rounded flex items-center justify-center `}
                     >
                       {isSelected('gender', gender) && check()}
                     </span>

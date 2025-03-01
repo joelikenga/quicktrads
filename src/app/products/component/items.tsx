@@ -4,7 +4,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 // Add your actual API import here
-import { getAllProducts } from "../../../../utils/api/user/product";
+import {
+  getAllProducts,
+  getLatestProducts,
+  getTrendingProducts,
+} from "../../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
 
 interface Product {
@@ -32,7 +36,7 @@ interface ItemsProps {
   filters: {
     category: string;
     gender: string[];
-    size: string[];    // change from subCategory to size
+    size: string[]; // change from subCategory to size
     priceRange: string;
   };
 }
@@ -46,14 +50,24 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   const fetchAllproducts = async () => {
     try {
       setIsLoading(true);
-      // Replace this with your actual API call
-      const response = await getAllProducts();
+      let response;
+
+      // Updated category checks to match SideCategory values
+      if (filters.category.includes( "trending")) {
+        response = await getTrendingProducts() as any;
+      } else if (filters.category === "latestWear") {
+        response = await getLatestProducts()as any;
+      } else {
+        response = await getAllProducts()as any;
+      }
+
+      console.log("response", response);
 
       const transformedProducts =
         response?.data?.map(
           (product: Product): TransformedProduct => ({
             id: product.id,
-            images: product.images[0], // Store just the first image URL
+            images: product.images[0],
             name: product.name,
             price: product.price,
             discountPrice: product.priceDiscount,
@@ -73,11 +87,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
 
   useEffect(() => {
     fetchAllproducts();
-    // const interval = setInterval(() => {
-    //   fetchAllproducts();
-    // }, 5000);
-    // return () => clearInterval(interval);
-  }, []);
+  }, [filters.category]);
 
   const handleRowClick = (index: string) => {
     // Navigate to the dynamic route because table does not accept <LINK>
@@ -85,45 +95,105 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   };
 
   const filterProducts = (products: TransformedProduct[]) => {
-    return products.filter(product => {
-      // Category filter
-      const matchesCategory = !filters.category || 
-        (filters.category.startsWith('u-') && product.category.toLowerCase() === 'unisex') ||
-        (filters.category.startsWith('m-') && product.category.toLowerCase() === 'men') ||
-        (filters.category.startsWith('w-') && product.category.toLowerCase() === 'women');
+    return products.filter((product) => {
+      // Special handling for trending and latest products
+      if (
+        filters.category === "trending" ||
+        filters.category === "latestWear"
+      ) {
+        // Only apply gender, size, and price filters for special categories
+        const matchesGender =
+          filters.gender.length === 0 ||
+          filters.gender.some(
+            (gender) => product.category.toLowerCase() === gender.toLowerCase()
+          );
+
+        const matchesSize =
+          filters.size.length === 0 ||
+          filters.size.some((size) => {
+            const normalizedSize = size.toLowerCase();
+            const normalizedSubCategory = product.subCategory.toLowerCase();
+            return (
+              normalizedSubCategory.includes(normalizedSize) ||
+              normalizedSubCategory === normalizedSize ||
+              (normalizedSize === "two-piece" &&
+                normalizedSubCategory.includes("twopiece"))
+            );
+          });
+
+        const matchesPrice =
+          !filters.priceRange ||
+          (() => {
+            const price = product.price;
+            switch (filters.priceRange) {
+              case "$1 - $20":
+                return price >= 1 && price <= 20;
+              case "$21 - $50":
+                return price >= 21 && price <= 50;
+              case "$51 - $100+":
+                return price >= 51;
+              default:
+                return true;
+            }
+          })();
+
+        return matchesGender && matchesSize && matchesPrice;
+      }
+
+      // Regular category filtering for other cases
+      const matchesCategory =
+        !filters.category ||
+        (filters.category.startsWith("u-") &&
+          product.category.toLowerCase() === "unisex") ||
+        (filters.category.startsWith("m-") &&
+          product.category.toLowerCase() === "men") ||
+        (filters.category.startsWith("w-") &&
+          product.category.toLowerCase() === "women");
 
       // Gender filter
-      const matchesGender = filters.gender.length === 0 || 
-        filters.gender.some(gender => product.category.toLowerCase() === gender.toLowerCase());
+      const matchesGender =
+        filters.gender.length === 0 ||
+        filters.gender.some(
+          (gender) => product.category.toLowerCase() === gender.toLowerCase()
+        );
 
       // Updated Size/SubCategory filter
-      const matchesSize = filters.size.length === 0 ||
-        filters.size.some(size => {
+      const matchesSize =
+        filters.size.length === 0 ||
+        filters.size.some((size) => {
           const normalizedSize = size.toLowerCase();
           const normalizedSubCategory = product.subCategory.toLowerCase();
           return (
             normalizedSubCategory.includes(normalizedSize) ||
             normalizedSubCategory === normalizedSize ||
-            (normalizedSize === 'two-piece' && normalizedSubCategory.includes('twopiece'))
+            (normalizedSize === "two-piece" &&
+              normalizedSubCategory.includes("twopiece"))
           );
         });
 
       // Price filter
-      const matchesPrice = !filters.priceRange || (() => {
-        const price = product.price;
-        switch(filters.priceRange) {
-          case '$1 - $20': return price >= 1 && price <= 20;
-          case '$21 - $50': return price >= 21 && price <= 50;
-          case '$51 - $100+': return price >= 51;
-          default: return true;
-        }
-      })();
+      const matchesPrice =
+        !filters.priceRange ||
+        (() => {
+          const price = product.price;
+          switch (filters.priceRange) {
+            case "$1 - $20":
+              return price >= 1 && price <= 20;
+            case "$21 - $50":
+              return price >= 21 && price <= 50;
+            case "$51 - $100+":
+              return price >= 51;
+            default:
+              return true;
+          }
+        })();
 
       return matchesCategory && matchesGender && matchesSize && matchesPrice;
     });
   };
 
   const filteredProducts = filterProducts(allProducts);
+  console.log("filteredProducts", filteredProducts);
 
   if (isLoading) {
     return <ItemsSkeleton />;
@@ -143,15 +213,17 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
           <p>{showFilter ? "Hide filter" : "Show filter"}</p>
         </div>
       </div>
-      
+
       {filteredProducts.length === 0 ? (
         <div className="flex justify-center items-center w-full min-h-[400px] text-text_weak text-lg">
           No matching items found
         </div>
       ) : (
-        <div className={`grid grid-cols-1 ${
-          showFilter ? "md:grid-cols-3" : "md:grid-cols-4"
-        } flex-row flex-wrap gap-6 w-full justify-between overflow-y-auto px-6 lg:px-2`}>
+        <div
+          className={`grid grid-cols-1 ${
+            showFilter ? "md:grid-cols-3" : "md:grid-cols-4"
+          } flex-row flex-wrap gap-6 w-full justify-between overflow-y-auto px-6 lg:px-2`}
+        >
           {filteredProducts.map((item: TransformedProduct) => (
             <div
               onClick={() => handleRowClick(item.id)}

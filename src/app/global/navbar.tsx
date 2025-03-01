@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   arrowDown,
   cart,
+  cartActiveIcon,
   category,
   checked,
   closeBtn,
@@ -25,6 +26,8 @@ import { useLogin } from "../../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
+// import { useCart } from "../../../utils/hooks/useCart";
+import { useCart } from "@/context/CartContext";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -166,6 +169,7 @@ export const Navbar = () => {
   // };
 
   const { isLoggedIn, isAuthorized, userDetails } = useLogin("user");
+  const { getCartCount } = useCart();
 
   return (
     <div className="w-full left-0 top-0 fixed z-50  ">
@@ -483,11 +487,11 @@ export const Navbar = () => {
               href={`/cart`}
               className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1 relative"
             >
-              {cart()}
+              {getCartCount() > 0 ? cartActiveIcon() : cart()   }
               <p className="">Cart</p>
-              {1 > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                  {0}
+              {getCartCount() > 0 && (
+                <span className="absolute -top-3 right-6 bg-error_1 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {getCartCount()}
                 </span>
               )}
             </Link>
@@ -589,7 +593,14 @@ export const Navbar = () => {
 
       {/* ----- Navbar Mobile----- */}
       <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4  bg-background h-[72px] relative">
-        <Link href={`/cart`}>{cart()}</Link>
+        <Link href={`/cart`}>
+          {cart()}
+          {getCartCount() > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {getCartCount()}
+            </span>
+          )}
+        </Link>
         <Link href={`/`}>{logo()}</Link>
         <div onClick={() => setMobileDropdown(!mobileDropdown)} className="">
           {humbuger()}
