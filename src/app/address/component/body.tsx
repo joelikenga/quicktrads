@@ -2,9 +2,9 @@
 import { arrowDown, closeIcon, mapIcon } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
-import { errorToast, successToast } from "../../../../utils/toast/toast";
-import { loggedInUser } from "../../../../utils/api/user/auth";
-import { deleteShippingAddress, shippingAddress } from "../../../../utils/api/user/product";
+import { errorToast, successToast } from "../../../utils/toast/toast";
+import { loggedInUser } from "../../../utils/api/user/auth";
+import { deleteShippingAddress, shippingAddress } from "../../../utils/api/user/product";
 
 const lora = Lora({
   variable: "--font-lora",

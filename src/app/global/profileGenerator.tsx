@@ -87,7 +87,7 @@ export const ProfileAvatar: React.FC<ProfileElementProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-center rounded-full   ${sizeClass.container} ${className}`}
+      className={`flex items-center justify-center rounded-full capitalize  ${sizeClass.container} ${className}`}
       style={{
         backgroundColor: profile.style.backgroundColor,
         color: profile.style.color
@@ -111,7 +111,7 @@ export const ProfileInitials: React.FC<ProfileElementProps> = ({
 
   return (
     <span 
-      className={`inline-flex items-center justify-center ${sizeClass.font}  font-semibold ${className}`}
+      className={`inline-flex items-center justify-center ${sizeClass.font} capitalize  font-semibold ${className}`}
       style={{ color: profile.style.backgroundColor }}
     >
       {profile.letter}

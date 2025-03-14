@@ -11,9 +11,9 @@ import {
   getAllProducts,
   getLatestProducts,
   getTrendingProducts,
-} from "../../../../utils/api/user/product";
+} from "../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
-import {  successToast } from "../../../../utils/toast/toast";
+import {  successToast } from "../../../utils/toast/toast";
 
 interface Product {
   id: string;

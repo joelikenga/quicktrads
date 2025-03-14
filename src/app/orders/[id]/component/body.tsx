@@ -6,7 +6,7 @@
 import { arrowleft, ordersIcon, orderSmallIcon, xIcon } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getOrder } from "../../../../../utils/api/user/product";
+import { getOrder } from "../../../../utils/api/user/product";
 
 
 interface Product {

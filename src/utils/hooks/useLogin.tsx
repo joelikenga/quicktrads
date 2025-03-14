@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { loggedInUser } from "../api/user/auth";
 import { errorToast } from "../toast/toast";
-// import { errorToast } from "../toast/toast";
 
 interface UserResponse {
   data: {
@@ -33,11 +32,11 @@ export const useLogin = (requiredRole: "user" | "super_admin") => {
   const [userDetails, setUserDetails] = useState<UserResponse | null>(null);
 
   // Compute hasAvatar based on userDetails.data.avatar
-  const hasAvatar = userDetails?.data?.avatar == "";
+  const hasAvatar = userDetails?.data?.avatar === "";
 
   const fetchUserData = async () => {
     try {
-      const res = (await loggedInUser()) as any;
+      const res = (await loggedInUser()) as UserResponse;
       setUserDetails(res);
       setIsLoggedIn(true);
 
@@ -48,11 +47,12 @@ export const useLogin = (requiredRole: "user" | "super_admin") => {
         // Optionally, you can show an error toast or redirect the user
         // errorToast("You do not have permission to access this page.");
       }
-    } catch (error) {
+    } catch (error:any) {
       setIsLoggedIn(false);
       setUserDetails(null);
       // Optionally, show an error toast
-      // errorToast("Failed to fetch user data. Please log in again.");
+      // if(error.res.code === 401)
+      // errorToast("not logged in");
     }
   };
 
@@ -65,5 +65,43 @@ export const useLogin = (requiredRole: "user" | "super_admin") => {
     return userDetails?.data?.role === role;
   };
 
-  return { isLoggedIn, hasAvatar,  hasRole };
+  // Extract the user's role
+  const role = userDetails?.data?.role;
+
+  return { isLoggedIn, hasAvatar, hasRole, userDetails, role };
+};
+
+export const useLogin_2 = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<UserResponse | null>(null);
+
+  // Compute hasAvatar based on userDetails.data.avatar
+  const hasAvatar = userDetails?.data?.avatar === "";
+
+  const fetchUserData = async () => {
+    try {
+      const res = (await loggedInUser()) as UserResponse;
+      setUserDetails(res);
+      setIsLoggedIn(true);
+    } catch (error) {
+      setIsLoggedIn(false);
+      setUserDetails(null);
+      // Optionally, show an error toast
+      errorToast("Failed to fetch user data. Please log in again.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, [isLoggedIn, hasAvatar]); // No role dependency
+
+  // Function to check if the user has a specific role
+  const hasRole = (role: "user" | "super_admin") => {
+    return userDetails?.data?.role === role;
+  };
+
+  // Extract the user's role
+  const role = userDetails?.data?.role;
+
+  return { isLoggedIn, hasAvatar, hasRole, userDetails, role };
 };

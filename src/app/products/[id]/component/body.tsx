@@ -20,11 +20,11 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 // import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { getProduct } from "../../../../../utils/api/user/product";
+import { getProduct } from "../../../../utils/api/user/product";
 import { ProductSkeleton } from "./skeleton";
 // import { useCart } from "../../../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
-import { errorToast, successToast } from "../../../../../utils/toast/toast";
+import { errorToast, successToast } from "../../../../utils/toast/toast";
 
 
 const lora = Lora({

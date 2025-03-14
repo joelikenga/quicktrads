@@ -6,7 +6,7 @@
 import { arrowDown, check } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
-import { getAllProducts, getLatestProducts, getTrendingProducts } from "../../../../utils/api/user/product";
+import { getAllProducts, getLatestProducts, getTrendingProducts } from "../../../utils/api/user/product";
 
 interface SideCategoryProps {
   visible?: boolean;

@@ -2,23 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
-// import { useEffect } from "react";
-// import { useEffect } from "react";
+import { useLogin } from "../../utils/hooks/useLogin";
+import { useEffect } from "react";
 
 export const useLogout = () => {
   const router = useRouter();
+  const { isLoggedIn, hasRole } = useLogin("user");
 
-  // useEffect(() => {
-  //   const cookies = nookies.get(null);
-  //   if (!cookies.token) {
-  //     router.push("/");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (isLoggedIn) return; // Wait until the user data is fully loaded
+
+    if (isLoggedIn && hasRole && !hasRole("user")) {
+     logout();
+    }
+  }, [isLoggedIn, hasRole, router]);
 
   const logout = () => {
     // Clear cookies
-    nookies.destroy(null, "accessToken", { path: "/" });
-    nookies.destroy(null, "refreshToken", { path: "/" });
     nookies.destroy(null, "accessToken", { path: "/" });
     nookies.destroy(null, "refreshToken", { path: "/" });
 
@@ -35,47 +35,27 @@ export const useLogout = () => {
 
 export const useLogoutAdmin = () => {
   const router = useRouter();
+  const { isLoggedIn, hasRole } = useLogin("super_admin");
 
-  const handleLogout = () => {
+  useEffect(() => {
+    // Ensure hook runs only when authentication is fully loaded
+    if (isLoggedIn === false && hasRole && hasRole("super_admin")) {
+      logoutAdmin();
+    }
+  }, [isLoggedIn, hasRole, router]);
 
-    // useEffect(() => {
-    //   const cookies = nookies.get(null);
-    //   if (!cookies.token) {
-    //     router.push("/admin_dashboard/login");
-    //     // logout(); 
-    //   }
-    // }, []);
-
+  const logoutAdmin = () => {
     // Clear cookies
-    nookies.destroy(null, "accessToken", { path: "/admin_dashboard" });
-    nookies.destroy(null, "refreshToken", { path: "/admin_dashboard" }); 
     nookies.destroy(null, "accessToken", { path: "/admin_dashboard" });
     nookies.destroy(null, "refreshToken", { path: "/admin_dashboard" });
 
-    // Clear client-side state
-    // localStorage.clear();
-    // sessionStorage.clear();
+    // Clear local storage & session storage
+    localStorage.clear();
+    sessionStorage.clear();
 
-    // Redirect
+    // Redirect to admin login
     router.push("/admin_dashboard/login");
   };
 
-  return handleLogout;
+  return logoutAdmin;
 };
-
-// export async function getServerSideProps(context:any) {
-//   const cookies = nookies.get(context);
-
-//   if (!cookies.token) {
-//     return {
-//       redirect: {
-//         destination: "/en/admin-dashboard/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {},
-//   };
-// }

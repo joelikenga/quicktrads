@@ -15,14 +15,14 @@ import {
   fetchProduct,
   updateProduct,
   updateProductStatus,
-} from "../../../../../../../utils/api/admin/products";
+} from "../../../../../../utils/api/admin/products";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 // import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { errorToast, successToast } from "../../../../../../../utils/toast/toast";
+import { errorToast, successToast } from "../../../../../../utils/toast/toast";
 
 // interface TransformedProduct {
 //   id: string;

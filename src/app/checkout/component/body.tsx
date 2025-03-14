@@ -19,10 +19,10 @@ import {
   createOrder,
   deleteShippingAddress,
   shippingAddress,
-} from "../../../../utils/api/user/product";
+} from "../../../utils/api/user/product";
 import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
-import { loggedInUser } from "../../../../utils/api/user/auth";
-import { errorToast, successToast } from "../../../../utils/toast/toast";
+import { loggedInUser } from "../../../utils/api/user/auth";
+import { errorToast, successToast } from "../../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",

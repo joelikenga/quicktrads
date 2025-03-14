@@ -49,9 +49,10 @@ axiosInstance.interceptors.response.use(
     }
 
     // Check for 401 Unauthorized
-    if (error.response.status === 401) {
-      errorToast("Unauthorized access. Please log in again.");
-    }
+    // if (error.response.status === 401) {
+    //   errorToast("Invalid login details");
+      
+    // }
 
     if (error.response.status === 413) {
       errorToast(
@@ -65,7 +66,7 @@ axiosInstance.interceptors.response.use(
     }
 
     // Other error cases (e.g., 4xx errors)
-    errorToast(error.response.data.message || "An error occurred.");
+    // errorToast(error.response.data.message || "An error occurred.");
   }
 );
 

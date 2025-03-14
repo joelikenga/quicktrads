@@ -4,7 +4,7 @@
 
 import React, { createContext, useContext, useState,  useEffect } from 'react';
 // import { CartContextType, CartItem } from '../types/';
-import { errorToast } from '../../utils/toast/toast';
+import { errorToast } from '../utils/toast/toast';
 
 
  interface CartItem {

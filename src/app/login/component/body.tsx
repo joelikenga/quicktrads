@@ -8,11 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
-import { loggedInUser, userLogin } from "../../../../utils/api/user/auth";
+import { loggedInUser, userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { errorToast, infoToast, successToast } from "../../../../utils/toast/toast";
+import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
 
 type FormValues = {
   email: string;
@@ -107,13 +107,8 @@ export const Body = () => {
       successToast("Login successful");
       setLoading(false);
       router.push("/");
-    } catch (error: unknown) {
-      let errorMessage = "An unexpected error occurred";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        errorToast(errorMessage)
-      }
-      errorToast(error);
+    } catch (error: any) {
+      console.log(error);
       setLoading(false);
     }
   };

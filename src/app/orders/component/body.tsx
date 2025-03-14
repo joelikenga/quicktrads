@@ -5,7 +5,7 @@
 import { filterIcon, ordersIcon, searchIcon } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import { getOrders } from "../../../../utils/api/user/product";
+import { getOrders } from "../../../utils/api/user/product";
 import { useRouter } from "next/navigation";
 
 interface Product {

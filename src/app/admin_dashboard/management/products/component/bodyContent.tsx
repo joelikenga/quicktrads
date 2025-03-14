@@ -18,7 +18,7 @@ import {
   createProduct,
   deleteProduct,
   fetchAllProducts,
-} from "../../../../../../utils/api/admin/products";
+} from "../../../../../utils/api/admin/products";
 import { useRouter } from "next/navigation"; // Add this at the top with other imports
 
 // interface ProductData {

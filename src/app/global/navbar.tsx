@@ -22,14 +22,14 @@ import {
 import { Lora } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useLogin } from "../../../utils/hooks/useLogin";
+import { useLogin } from "../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
 // import { useCart } from "../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
-import { loggedInUser } from "../../../utils/api/user/auth";
-import { errorToast } from "../../../utils/toast/toast";
+import { loggedInUser } from "../../utils/api/user/auth";
+import { errorToast } from "../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -96,7 +96,6 @@ export const Navbar = () => {
     try {
       const res = (await loggedInUser()) as any;
       setUserDetails(res);
-      console.log(res)
     } catch (error) {
       errorToast(error);
       setUserDetails(null);
@@ -563,7 +562,7 @@ export const Navbar = () => {
                       alt=""
                     />
                   )}
-                  <p className="">{userDetails?.data?.fullName}</p>
+                  <p className="capitalize">{userDetails?.data?.fullName}</p>
                   <i
                     className={`${profileOption && "rotate-180"} duration-300`}
                   >
