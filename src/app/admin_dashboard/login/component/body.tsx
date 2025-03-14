@@ -74,6 +74,12 @@ const Body = () => {
         throw new Error('Unauthorized: Access restricted to admin users only');
       }
 
+
+      // Save tokens to localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user)); // Store user details
+
       // Set cookies using nookies
       nookies.set(null, "accessToken", accessToken, {
         maxAge: 1 * 24 * 60 * 60,

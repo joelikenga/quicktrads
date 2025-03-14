@@ -22,21 +22,21 @@ import Link from "next/link";
 // import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { stat } from "fs";
+import { errorToast, successToast } from "../../../../../../../utils/toast/toast";
 
-interface TransformedProduct {
-  id: string;
-  images: string;
-  name: string;
-  price: number;
-  discountPrice?: number;
-  category: string;
-  subCategory: string;
-  rating: number;
-  status: string;
-  ordersCount: number;
-  isFeatured: boolean;
-}
+// interface TransformedProduct {
+//   id: string;
+//   images: string;
+//   name: string;
+//   price: number;
+//   discountPrice?: number;
+//   category: string;
+//   subCategory: string;
+//   rating: number;
+//   status: string;
+//   ordersCount: number;
+//   isFeatured: boolean;
+// }
 
 interface ProductDetails {
   data: {
@@ -204,7 +204,7 @@ export const Body = ({ id }: BodyProps) => {
 
   useEffect(() => {
     getProduct(id);
-  }, []);
+  }, [id]);
 
   const calculateDiscount = (): string | null => {
     if (!price || !discountPrice) return null;
@@ -278,17 +278,12 @@ export const Body = ({ id }: BodyProps) => {
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error?.message || "Error uploading to Cloudinary"
-        );
-      }
+
 
       const data = await response.json();
       return data.secure_url;
     } catch (error) {
-      console.error("Cloudinary upload error:", error);
+      errorToast(error);
       throw error;
     }
   };
@@ -356,7 +351,8 @@ export const Body = ({ id }: BodyProps) => {
       setDescription("");
       setSelectedSizes([]);
     } catch (error) {
-      console.error("Error uploading product:", error);
+      errorToast(uploadError || error);
+
       setUploadError("Failed to upload product. Please try again.");
     } finally {
       setIsUploading(false);
@@ -424,16 +420,16 @@ export const Body = ({ id }: BodyProps) => {
     }
   };
 
-  let P_Status = product?.data.status === "active" ? "deactivate" : "active";
+  const P_Status = product?.data.status === "active" ? "deactivate" : "active";
 
   const handleStatusChange = async (e: React.MouseEvent, status: string) => {
     e.stopPropagation(); // Prevent row click event from firing
 
     try {
       await updateProductStatus(id, status);
-      console.log("Product status changed successfully");
+      successToast("Product status changed ");
     } catch (error) {
-      console.error("Error updating  status:", error);
+      errorToast(error);
     }
   };
 

@@ -1,26 +1,31 @@
-import { greenInfo, redInfo } from "@/app/global/svg";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { errorInfoIcon, successInfoIcon } from "@/app/global/svg";
 import toast from "react-hot-toast";
 
 let currentToastId: string | null = null;
 
-const baseToast = (message: string, type: "success" | "error" | "info") => {
+const baseToast = (message: any, type: "success" | "error" | "info") => {
   if (currentToastId) {
     toast.dismiss(currentToastId);
   }
 
   currentToastId = toast(message, {
     duration: 3000,
-    position: 'top-right',
+    position: 'bottom-center',
     style: {
-      fontSize: '14px',
-      padding: '16px',
+      fontSize: '16px',
+      fontWeight:'600',
+      padding: '14px',
       borderRadius: '8px',
       background: '#ffffff',
       color: '#333333',
       maxWidth: '350px',
+      width:"100%",
       textAlign: 'left',
+      border:'gray',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      borderLeft: `4px solid ${
+      borderLeft: `5px solid ${
         type === "success"
           ? "#109368"
           : type === "error"
@@ -29,14 +34,16 @@ const baseToast = (message: string, type: "success" | "error" | "info") => {
       }`,
     },
     icon: type === "success" 
-      ? greenInfo()
+      ? successInfoIcon()
       : type === "error" 
-      ? redInfo()
+      ?  errorInfoIcon()
       : 'ℹ️',
   });
 };
 
 // Simplified toast functions
-export const successToast = (message: string) => baseToast(message, "success");
-export const errorToast = (message: string) => baseToast(message, "error");
-export const infoToast = (message: string) => baseToast(message, "info");
+export const successToast = (message: any) => baseToast(message, "success");
+export const errorToast = (message: any) => baseToast(message, "error");
+export const infoToast = (message: any) => baseToast(message, "info");
+
+/* eslint-disable @typescript-eslint/no-explicit-any */

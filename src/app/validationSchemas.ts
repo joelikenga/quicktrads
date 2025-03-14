@@ -11,8 +11,7 @@ export const login = z.object({
     }),
   password: z
     .string()
-    .min(8, { message: "Incorrect Password" })
-    .max(16, { message: "Incorrect Password" }),
+    .min(1, { message: "Incorrect Password" })
 });
 export const forgotPassword_Step_1 = z.object({
   step1: z.object({

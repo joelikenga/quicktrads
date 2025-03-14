@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { add, info, redCart, remove, trash } from "@/app/global/svg";
@@ -35,7 +37,8 @@ export const Body = () => {
 
   const calculateSubtotal = () => {
     return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+      (total: number, item: { price: number; quantity: number }) =>
+        total + item.price * item.quantity,
       0
     );
   };
@@ -246,7 +249,7 @@ export const Body = () => {
               </div>
               {/* ----- items list ----- */}
               <div className="flex flex-col gap-[64px]">
-                {cartItems.map((item) => (
+                {cartItems.map((item: any) => (
                   <div
                     key={item.id}
                     className="max-w-[600px] w-full bg-white flex flex-col md:flex-row gap-6"
@@ -369,8 +372,12 @@ export const Body = () => {
                     <div className="flex flex-col gap-2 w-full max-w-[343px] items-start">
                       <p className="text-text_weak  text-base">Subtotal</p>
                       <div className="text-text_weak  text-sm flex gap-2">
-                       <i>{info()}</i> <> The subtotal reflects the total price of your order, It
-                        does not include shipping costs and taxes.</>
+                        <i>{info()}</i>{" "}
+                        <>
+                          {" "}
+                          The subtotal reflects the total price of your order,
+                          It does not include shipping costs and taxes.
+                        </>
                       </div>
                     </div>
                     <p className="text-text_strong  text-base">
@@ -414,3 +421,4 @@ export const Body = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

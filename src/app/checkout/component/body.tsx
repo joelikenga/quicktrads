@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import {
-  add,
-  arrowDown,
   closeIcon,
   failedIcon,
   info,
@@ -15,9 +15,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext"; // Add this import
-import { shippingAddress } from "../../../../utils/api/user/product";
+import {
+  createOrder,
+  deleteShippingAddress,
+  shippingAddress,
+} from "../../../../utils/api/user/product";
 import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../../utils/api/user/auth";
+import { errorToast, successToast } from "../../../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -53,14 +58,14 @@ interface Address {
 
 // Add interface for Flutterwave config
 interface FlutterwaveConfig {
-  public_key: string;
-  tx_ref: number;
-  amount: number;
-  currency: string;
-  payment_options: string;
+  public_key: any;
+  tx_ref: any;
+  amount: any;
+  currency: any;
+  payment_options: any;
   customer: {
     email: string;
-    phone_number: string;
+    phone_number: any;
     name: string;
   };
   customizations: {
@@ -68,6 +73,62 @@ interface FlutterwaveConfig {
     description: string;
     logo: string;
   };
+}
+
+// First, add an interface for the Flutterwave response
+interface FlutterwaveResponse {
+  status: any;
+  transaction_id: any;
+  tx_ref: any;
+  flw_ref: any;
+  amount: number;
+  currency: string;
+  customer: {
+    email: string;
+    phone_number: string;
+    name: string;
+  };
+}
+
+interface OrderProduct {
+  productId: string;
+  quantity: number;
+}
+
+interface OrderRequest {
+  currency: string;
+  product: OrderProduct[];
+  shippingDetails: ShippingDetails;
+  shippingFee: number;
+  tax: number;
+}
+
+interface ShippingDetails {
+  fullName: string;
+  email: string;
+  address: string;
+  phoneNumber: string;
+  state: string;
+  country: string;
+}
+
+interface OrderRes {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  currency: string;
+  dhlStatus: string | null;
+  dhlStatusCode: string | null;
+  order: OrderProduct[];
+  paymentMethod: string;
+  reason: string | null;
+  shippingDetails: ShippingDetails;
+  shippingFee: number;
+  status: "pending" | "completed" | "failed";
+  totalAmount: number;
+  trackingID: string | null;
+  usdAmount: number;
+  userId: string;
 }
 
 export const Body = () => {
@@ -78,7 +139,8 @@ export const Body = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [pending, setPending] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
-  const { cartItems } = useCart(); // Change from cart to cartItems to match the context
+  const [deleteIndex, setDeleteIndex] = useState<number>(0);
+  const { cartItems, clearCart } = useCart(); // Add clearCart to destructuring
   const [addressData, setAddressData] = useState<Address>({
     fullName: "",
     email: "",
@@ -97,19 +159,35 @@ export const Body = () => {
     country: "",
   });
   const [shippingData, setShippingData] = useState<Address[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null
+  );
+  const [orderResponse, setOrderResponse] = useState<OrderRes | null>(null);
 
   const isNigeria = selectedAddress.country?.toLowerCase() === "nigeria";
   const deliveryFee = isNigeria ? FEES.NIGERIA.DELIVERY : FEES.USA.DELIVERY;
   const vatRate = isNigeria ? FEES.NIGERIA.VAT_RATE : FEES.USA.VAT_RATE;
 
+  interface CartItem {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+    originalPrice?: number;
+    size?: string;
+  }
+
   const productTotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc: number, item: CartItem) => acc + item.price * item.quantity,
     0
   );
   const vatAmount = productTotal * vatRate;
   const subTotal = productTotal + vatAmount; // Includes product total and VAT
-  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const totalQuantity = cartItems.reduce(
+    (acc: number, item: CartItem) => acc + item.quantity,
+    0
+  );
   const total = subTotal + deliveryFee; // Final total including delivery fee
 
   // const handlePayment = () => {
@@ -141,16 +219,19 @@ export const Body = () => {
 
     try {
       const res = await shippingAddress(data);
+      console.warn(res.status);
+      successToast("Address added");
+
       // Handle the response if needed
-    } catch (error) {
-      // Handle the error if needed
+    } catch (error: unknown) {
+      throw error;
     }
   };
 
   const getShippindData = async () => {
     try {
       const shipping_res = await loggedInUser();
-      console.log("logged user", shipping_res);
+      // console.log("logged user", shipping_res);
 
       const transformedData = shipping_res?.data?.shippingDetails.map(
         (detail: Address) => ({
@@ -164,11 +245,7 @@ export const Body = () => {
       );
       setShippingData(transformedData);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error("An unknown error occurred");
-      }
+      errorToast(err);
     }
   };
   useEffect(() => {
@@ -194,7 +271,7 @@ export const Body = () => {
   // Update the config with proper type checking
   const config: FlutterwaveConfig = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "", // Provide fallback empty string
-    tx_ref: Number(new Date().toLocaleDateString('en-GB').replace(/\//g, "")),
+    tx_ref: Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")),
     amount: total,
     currency: isNigeria ? "NGN" : "USD",
     payment_options: "card",
@@ -206,26 +283,66 @@ export const Body = () => {
     customizations: {
       title: "Quicktrads",
       description: "Quicktrads Purchase",
-      logo: "https://your-logo-url.com/logo.png",
+      logo: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
     },
   };
 
   // Type the response properly
   const fwConfig = {
     ...config,
-    callback: (response: any) => {
-      // You can create a proper type for the response if needed
-      console.log(response);
-      closePaymentModal();
+    callback: async (response: FlutterwaveResponse) => {
+      try {
+        if (response.status === "successful") {
+          // Create order with the cart items
+          const orderData: OrderRequest = {
+            currency: response.currency,
+            product: cartItems.map(
+              (item: { id: string; quantity: number }) => ({
+                productId: item.id,
+                quantity: item.quantity,
+              })
+            ),
+            shippingDetails: {
+              address: selectedAddress.address,
+              country: selectedAddress.country,
+              email: selectedAddress.email,
+              fullName: selectedAddress.fullName,
+              phoneNumber: selectedAddress.phoneNumber,
+              state: selectedAddress.state,
+            },
+            shippingFee: deliveryFee,
+            tax: vatRate,
+          };
+
+          const orderResponse = (await createOrder(orderData)) as OrderRes;
+          console.log("orderResponse", orderResponse);
+          console.log("FW", response);
+          setOrderResponse(orderResponse);
+
+          setSuccess(true);
+
+          // Clear the cart
+          clearCart();
+          closePaymentModal();
+        } else {
+          setFailed(true);
+          setPending(false);
+          errorToast("Payment failed");
+        }
+      } catch (error) {
+        errorToast(error);
+        setFailed(true);
+      } finally {
+        closePaymentModal();
+      }
     },
     onClose: () => {
       console.log("Payment modal closed");
     },
   };
-
   // Add validation function
   const canProceedToReview = () => {
-    return Object.values(selectedAddress).every(value => value !== "");
+    return Object.values(selectedAddress).every((value) => value !== "");
   };
 
   // Update review click handler
@@ -234,7 +351,7 @@ export const Body = () => {
       setReview(true);
     } else {
       // Optionally show an error message
-      alert("Please select a shipping address before proceeding");
+      errorToast("Please select a shipping address before proceeding");
     }
   };
 
@@ -247,6 +364,17 @@ export const Body = () => {
   // Add this handler function near your other handlers:
   const handleConfirmAddress = () => {
     setAddressEdit(false);
+  };
+
+  const handleAddressDelete = async (index: number) => {
+    try {
+      await deleteShippingAddress(index);
+      setShippingData((prev) => prev.filter((_, i) => i !== index));
+      successToast("Address deleted successfully");
+      setDeleteAddress(false);
+    } catch (error: unknown) {
+      errorToast(error);
+    }
   };
 
   return (
@@ -279,10 +407,11 @@ export const Body = () => {
                 Order confirmation details
               </p>
               <div className="justify-between flex w-full">
-                <p className="font-medium text-base text-text_weak">
-                  Tracking number
-                </p>
-                <p className="font-medium text-base">{`T9483Jk_e832`}</p>
+                <p className="font-medium text-base text-text_weak">Order ID</p>
+                <p className="font-medium text-base">{`${orderResponse?.id.slice(
+                  0,
+                  7
+                )}...${orderResponse?.id.slice(-1)}`}</p>
               </div>
 
               <div className="justify-between flex w-full">
@@ -290,7 +419,7 @@ export const Body = () => {
                   Payment amount
                 </p>
                 <p className="font-medium text-base">{`$${formatPrice(
-                  total
+                  orderResponse?.totalAmount || 0
                 )}`}</p>
               </div>
             </div>
@@ -299,13 +428,19 @@ export const Body = () => {
             <div className="flex justify-end gap-4">
               <button
                 className="bg-text_strong text-background h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
-                // onClick={() => setDeleteAddress(false)}
+                onClick={() => {
+                  setSuccess(false);
+                  window.location.href = "/orders";
+                }}
               >
                 <p>Track order</p>
               </button>
               <button
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
-                // onClick={() => setDeleteAddress(false)}
+                onClick={() => {
+                  setSuccess(false);
+                  window.location.href = "/categories";
+                }}
               >
                 <p>Continue shopping</p>
               </button>
@@ -404,7 +539,7 @@ export const Body = () => {
             <div className="flex justify-end gap-4">
               <button
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
-                onClick={() => setDeleteAddress(false)}
+                onClick={() => setFailed(false)}
               >
                 <p>Retry payment</p>
               </button>
@@ -566,7 +701,10 @@ export const Body = () => {
             <div className="flex justify-end gap-4">
               <button
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
-                onClick={() => setDeleteAddress(false)}
+                onClick={() => {
+                  handleAddressDelete(deleteIndex);
+                  // setDeleteIndex();
+                }}
               >
                 <p>Delete</p>
               </button>
@@ -810,11 +948,15 @@ export const Body = () => {
                         <div
                           key={index}
                           className={`max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
-                            selectedAddressId === index ? 'bg-fill overflow-hidden' : 'bg-white'
+                            selectedAddressId === index
+                              ? "bg-fill overflow-hidden"
+                              : "bg-white"
                           }`}
                           onClick={() => handleAddressSelection(data, index)}
                         >
-                          {selectedAddressId === index && <div className="h-12 w-5 bg-black absolute rotate-[45deg] -top-4 -translate-x-[30px]"></div>}
+                          {selectedAddressId === index && (
+                            <div className="h-12 w-5 bg-black absolute rotate-[45deg] -top-4 -translate-x-[30px]"></div>
+                          )}
                           <div className="w-full flex justify-between ">
                             <p className="text-text_strong font-medium text-base">
                               {data.fullName}
@@ -824,6 +966,7 @@ export const Body = () => {
                               <div
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  setDeleteIndex(index);
                                   setDeleteAddress(true);
                                 }}
                                 className="cursor-pointer"
@@ -850,12 +993,12 @@ export const Body = () => {
 
               {addressEdit && (
                 <div className="flex justify-between px-6 gap-6">
-                  <button 
+                  <button
                     onClick={handleConfirmAddress}
                     className={`border rounded-full items-center flex h-10 w-full justify-center px-6 ${
-                      selectedAddressId !== null 
-                        ? 'bg-text_strong text-background border-text_strong' 
-                        : 'text-gray-400 border-gray-300 cursor-not-allowed'
+                      selectedAddressId !== null
+                        ? "bg-text_strong text-background border-text_strong"
+                        : "text-gray-400 border-gray-300 cursor-not-allowed"
                     }`}
                     disabled={selectedAddressId === null}
                   >
@@ -905,8 +1048,8 @@ export const Body = () => {
                 onClick={handleReviewClick}
                 className={`h-10 rounded-full font-medium text-base flex justify-center items-center w-full px-6 ${
                   canProceedToReview()
-                    ? 'bg-text_strong text-background'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? "bg-text_strong text-background"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
                 disabled={!canProceedToReview()}
               >
@@ -984,7 +1127,7 @@ export const Body = () => {
 
             <div className="w-full">
               {cartItems &&
-                cartItems.map((item) => (
+                cartItems.map((item: CartItem) => (
                   <div
                     key={item.id}
                     className="flex justify-start gap-6 w-full mb-6"
@@ -1054,3 +1197,4 @@ export const Body = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

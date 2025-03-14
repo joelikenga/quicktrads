@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 "use client";
 import { filterIcon } from "@/app/global/svg";
 import Image from "next/image";
@@ -10,6 +13,7 @@ import {
   getTrendingProducts,
 } from "../../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
+import {  successToast } from "../../../../utils/toast/toast";
 
 interface Product {
   id: string;
@@ -194,6 +198,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
 
   const filteredProducts = filterProducts(allProducts);
   console.log("filteredProducts", filteredProducts);
+  successToast("hello")
 
   if (isLoading) {
     return <ItemsSkeleton />;
@@ -256,3 +261,5 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
     </div>
   );
 };
+
+/* eslint-disable @typescript-eslint/no-explicit-any */

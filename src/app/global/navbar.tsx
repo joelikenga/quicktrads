@@ -28,11 +28,37 @@ import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
 // import { useCart } from "../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
+import { loggedInUser } from "../../../utils/api/user/auth";
+import { errorToast } from "../../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
 });
+
+interface UserResponse {
+  data: {
+    avatar: string;
+    country: string;
+    createdAt: string; // ISO Date string
+    dob: string; // ISO Date string
+    email: string;
+    emailVerified: boolean;
+    fullName: string;
+    gender: string;
+    id: string; // UUID
+    lastLoggedInAt: string; // ISO Date string
+    lastOrderedAt: string | null; // ISO Date string or null
+    password: string;
+    phoneNumber: string;
+    role: string; // Add other roles if needed
+    shippingDetails: string | null;
+    state: string;
+    status: string; // Add other statuses if needed
+    totalOrders: number | null;
+    updatedAt: string; // ISO Date string
+  };
+}
 
 export const Navbar = () => {
   const [searchOptions, setSearchOptions] = useState<boolean>(false);
@@ -42,6 +68,7 @@ export const Navbar = () => {
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const [profileOption, setProfileOption] = useState<boolean>(false);
   const [logoutModal, setLogoutModal] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<UserResponse | null>(null);
 
   // ----- for mobile -----
   const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
@@ -64,6 +91,21 @@ export const Navbar = () => {
       router.push("/categories");
     }
   };
+
+  const fetchUserData = async () => {
+    try {
+      const res = (await loggedInUser()) as any;
+      setUserDetails(res);
+      console.log(res)
+    } catch (error) {
+      errorToast(error);
+      setUserDetails(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   const handleCollectionDropdown = () => {
     setCollectionDropdown(!collectionDropdown);
@@ -163,12 +205,10 @@ export const Navbar = () => {
     if (currencyOptions) setCurrencyOptions(false);
   };
 
-  // const handleMouseLeaveCategory = (event: React.MouseEvent) => {
-  //   event.stopPropagation();
-  //   setCategoryOptions(false);
-  // };
+  const { isLoggedIn,  hasAvatar, } = useLogin("user");
 
-  const { isLoggedIn, isAuthorized, userDetails } = useLogin("user");
+  // console.log("isLogged", isLoggedIn);
+  // console.log("hasAvatar", hasAvatar);
   const { getCartCount } = useCart();
 
   return (
@@ -487,7 +527,7 @@ export const Navbar = () => {
               href={`/cart`}
               className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1 relative"
             >
-              {getCartCount() > 0 ? cartActiveIcon() : cart()   }
+              {getCartCount() > 0 ? cartActiveIcon() : cart()}
               <p className="">Cart</p>
               {getCartCount() > 0 && (
                 <span className="absolute -top-3 right-6 bg-error_1 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
@@ -497,7 +537,7 @@ export const Navbar = () => {
             </Link>
 
             {/* ----- profile----- */}
-            {isLoggedIn && userDetails ? (
+            {isLoggedIn ? (
               <div
                 ref={profileWrapperRef}
                 className="border-l pl-6 relative flex justify-center  py-1"
@@ -508,8 +548,7 @@ export const Navbar = () => {
                     profileOption ? "border-text_strong" : "border-transparent"
                   }`}
                 >
-                  {userDetails.data.avatar === "" ||
-                  userDetails.data.avatar === null ? (
+                  {hasAvatar === true ? (
                     <ProfileAvatar
                       name={userDetails?.data?.fullName || "User"}
                       size="small"
@@ -517,7 +556,7 @@ export const Navbar = () => {
                   ) : (
                     <Image
                       className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px]  rounded-full"
-                      src={userDetails.data.avatar}
+                      src={userDetails?.data?.avatar || ""}
                       priority
                       width={25}
                       height={25}
@@ -821,23 +860,35 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* -----profile----- */}
-                {userDetails?.data.avatar === "" ? (
+                {isLoggedIn ? (
                   <div
                     ref={profileWrapperRef}
-                    className="w-full gap-6 flex flex-col  border-b pb-6"
+                    className="border-l pl-6 relative flex justify-center py-1"
                   >
-                    <div className=" h-[46px flex justify-between items-start  ">
-                      <div
-                        onClick={handleMobileProfileOption}
-                        className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1 text-nowrap`}
-                      >
+                    <div
+                      onClick={handleProfileOption}
+                      className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b-2 py-1 text-nowrap ${
+                        profileOption
+                          ? "border-text_strong"
+                          : "border-transparent"
+                      }`}
+                    >
+                      {hasAvatar  ? (
+                        <Image
+                          className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
+                          src={userDetails?.data?.avatar || ""}
+                          priority
+                          width={25}
+                          height={25}
+                          alt=""
+                        />
+                      ) : (
                         <ProfileAvatar
-                          name={userDetails?.data?.fullName || "User"}
+                          name={userDetails?.data?.fullName || ""}
                           size="small"
                         />
-                        <p className="">{userDetails?.data.fullName}</p>
-                      </div>
-                      {/*  */}
+                      )}
+                      <p className="">{userDetails?.data?.fullName}</p>
                       <i
                         className={`${
                           profileOption && "rotate-180"
@@ -847,64 +898,59 @@ export const Navbar = () => {
                       </i>
                     </div>
                     {/* ----- profile dropdown ----- */}
-
                     {profileOption && (
-                      <div className="flex flex-col gap-4 ">
+                      <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
                         <Link
-                          href={``}
-                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/profile`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Profile
-                        </Link>{" "}
+                        </Link>
                         <Link
-                          href={``}
-                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/orders`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Orders
-                        </Link>{" "}
+                        </Link>
                         <Link
-                          href={``}
-                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/address`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Address
-                        </Link>{" "}
+                        </Link>
                         <Link
-                          href={``}
-                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/password`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Password
-                        </Link>{" "}
+                        </Link>
                         <div
                           onClick={() => setLogoutModal(true)}
-                          className="h-10 selection:bg-none w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Logout
-                        </div>{" "}
+                        </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="min-h-[8rem] flex flex-col gap-6 justify-end">
-                    {/* text */}
-                    {/* <div className="font-base text-base text-text_weak">
-                    If you already have an account, click Login to access your profile. If you’re a new user, click Sign up to create an account.
-                    </div> */}
-                    {/* signup */}
-                    <div className="flex font-medium text-sm w-full justify-between">
-                      <Link
-                        href={`/login`}
-                        className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer bg-text_strong text-background"
-                      >
-                        <p className=" selection:bg-none">Signup</p>
-                      </Link>
+                  // login and signup
+                  <div className="border-l pl-6 flex gap-6 items-center">
+                    {/* ----- Login ----- */}
+                    <Link
+                      href={`/login`}
+                      className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b border-text_strong py-1"
+                    >
+                      <p className="">Login</p>
+                    </Link>
 
-                      <Link
-                        href={`/login`}
-                        className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer border"
-                      >
-                        <p className="selection:bg-none">Login</p>
-                      </Link>
-                    </div>
+                    {/* ----- Signup ----- */}
+                    <Link
+                      href={`/sign_up`}
+                      className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
+                    >
+                      <p className="">Signup</p>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -925,13 +971,17 @@ export const Navbar = () => {
               {/* ----- whatsapp ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{whatsapp()}</i>
-                <p className="text-sm selection:bg-none text-text_strong">+234 704 451 4049</p>
+                <p className="text-sm selection:bg-none text-text_strong">
+                  +234 704 451 4049
+                </p>
               </div>
 
               {/* ----- instagram ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{instagram()}</i>
-                <p className="text-sm selection:bg-none text-text_strong">Quicktrads</p>
+                <p className="text-sm selection:bg-none text-text_strong">
+                  Quicktrads
+                </p>
               </div>
             </div>
           </div>

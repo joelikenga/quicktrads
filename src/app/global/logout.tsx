@@ -18,9 +18,9 @@ export const useLogout = () => {
   const logout = () => {
     // Clear cookies
     nookies.destroy(null, "accessToken", { path: "/" });
-    // nookies.destroy(null, "refreshToken", { path: "/" });
+    nookies.destroy(null, "refreshToken", { path: "/" });
     nookies.destroy(null, "accessToken", { path: "/" });
-    // nookies.destroy(null, "refreshToken", { path: "/" });
+    nookies.destroy(null, "refreshToken", { path: "/" });
 
     // Clear client-side state
     localStorage.clear();
@@ -53,8 +53,8 @@ export const useLogoutAdmin = () => {
     nookies.destroy(null, "refreshToken", { path: "/admin_dashboard" });
 
     // Clear client-side state
-    localStorage.clear();
-    sessionStorage.clear();
+    // localStorage.clear();
+    // sessionStorage.clear();
 
     // Redirect
     router.push("/admin_dashboard/login");

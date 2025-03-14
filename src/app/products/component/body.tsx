@@ -3,7 +3,7 @@ import { Items } from "./items"
 export const Body = () => {
     return(
         <div>
-            <Items  />
+            <Items onFilterChange={() => {}} filters={{ category: "", gender: [], size: [], priceRange: "" }} />
         </div>
     )
 }

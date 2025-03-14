@@ -24,6 +24,7 @@ import { getProduct } from "../../../../../utils/api/user/product";
 import { ProductSkeleton } from "./skeleton";
 // import { useCart } from "../../../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
+import { errorToast, successToast } from "../../../../../utils/toast/toast";
 
 
 const lora = Lora({
@@ -161,7 +162,7 @@ export const Body = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      alert('Please select a size');
+      errorToast('Please select a size');
       return;
     }
 
@@ -176,6 +177,7 @@ export const Body = () => {
     };
 
     addToCart(cartItem);
+    successToast('Added to cart')
   };
 
   if (!product) {
@@ -314,7 +316,7 @@ export const Body = () => {
                   handleAddToCart();
                   window.location.href = '/checkout';
                   } else {
-                  alert('Please select a size');
+                  errorToast('Please select a size');
                   }
                 }}
                 className=" w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"

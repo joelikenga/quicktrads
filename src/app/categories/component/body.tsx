@@ -9,6 +9,7 @@ export const Body = () => {
     const savedItem = localStorage.getItem("category");
     if (savedItem) {
       setSelectedCategory(savedItem);
+      console.warn(selectedCategory)
     }
   }, []);
 

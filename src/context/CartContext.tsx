@@ -1,14 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { CartContextType, CartItem } from '../types/cart';
+import React, { createContext, useContext, useState,  useEffect } from 'react';
+// import { CartContextType, CartItem } from '../types/';
+import { errorToast } from '../../utils/toast/toast';
 
+
+ interface CartItem {
+  id: string; // Unique identifier for the item
+  name: string; // Name of the item
+  price: number; // Price of the item
+  quantity: number; // Quantity of the item in the cart
+  size?: string; // Optional size of the item (e.g., for clothing)
+  image?: string; // Optional image URL of the item
+  // Add any other relevant properties here
+}
+
+//  interface CartContextType {
+//   cartItems: CartItem[]; // Array of items in the cart
+//   addToCart: (item: CartItem) => void; // Function to add an item to the cart
+//   removeFromCart: (id: string) => void; // Function to remove an item from the cart
+//   updateQuantity: (id: string, quantity: number) => void; // Function to update the quantity of an item in the cart
+//   getCartCount: () => number; // Function to get the total number of items in the cart
+//   updateSize: (itemId: string, newSize: string) => void; // Function to update the size of an item in the cart
+//   clearCart: () => void; // Function to clear all items from the cart
+// }
 
 const CART_STORAGE_KEY = 'quicktrads_cart';
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<any | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children }: { children: any }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Load cart items from localStorage when the component mounts
@@ -18,6 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         setCartItems(JSON.parse(savedCart));
       } catch (error) {
+        errorToast(error)
       }
     }
   }, []);
@@ -68,6 +92,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   return (
     <CartContext.Provider value={{ 
       cartItems, 
@@ -75,7 +103,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeFromCart, 
       updateQuantity,
       getCartCount,
-      updateSize
+      updateSize,
+      clearCart
     }}>
       {children}
     </CartContext.Provider>
@@ -89,3 +118,4 @@ export function useCart() {
   }
   return context;
 }
+/* eslint-disable @typescript-eslint/no-explicit-any */

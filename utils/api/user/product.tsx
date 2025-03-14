@@ -1,6 +1,32 @@
 import { axios$ } from "../../../src/app";
 
 
+interface OrderProduct {
+  productId: string;
+  quantity: number;
+}
+
+interface ShippingDetails {
+  address: string;
+  country: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  state: string;
+}
+
+ interface OrderRequest {
+  currency: string;
+  product: OrderProduct[];
+  shippingDetails: ShippingDetails;
+}
+
+ interface OrderResponse {
+  id: string;
+  status: string;
+  createdAt: string;
+}
+
 interface Address {
   address: string,
 country: string,
@@ -67,4 +93,42 @@ export const shippingAddress = async (data:Address) => {
   }
 };
 
+export const deleteShippingAddress = async (index:number) => {
+  try {
+    const response = await axios$.delete(`/auth/user/shipping-details?index=${index}`);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
 
+
+export const createOrder = async (data: OrderRequest): Promise<OrderResponse> => {
+  try {
+    const response = await axios$.post(`/order`, data);
+    return response.data;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getOrders = async () => {
+  try {
+    const response = await axios$.get(`/order`);
+    console.log("order response", response);
+
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getOrder = async (orderId: string) => {
+  try {
+    const response = await axios$.get(`/order/${orderId}`);
+    return response;
+  } catch (error: unknown) {
+    console.error("API error:", error);
+    throw error;
+  }
+};

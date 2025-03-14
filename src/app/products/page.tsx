@@ -1,3 +1,6 @@
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import { useCallback, useState } from "react";
 import { Items } from "./component/items";
@@ -38,3 +41,5 @@ const Products = () => {
 };
 
 export default Products;
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
