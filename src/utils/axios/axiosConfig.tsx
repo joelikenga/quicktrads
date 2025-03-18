@@ -1,5 +1,6 @@
 import axios from "axios";
 import nookies from "nookies";
+import { errorToast } from "../toast/toast";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
@@ -41,30 +42,31 @@ axiosInstance.interceptors.response.use(
     if (!error.response) {
       // Network error (no response)
       if (error.code === 'ECONNABORTED') {
-        throw new Error("Network timeout. Please check your internet connection.");
+        errorToast("Network timeout. Please check your internet connection.");
       } else {
-        throw new Error(error.code);
+        errorToast(error.code);
       }
     }
 
     // Check for 401 Unauthorized
-    if (error.response.status === 401) {
-      throw new Error("Unauthorized access. Please log in again.");
-    }
+    // if (error.response.status === 401) {
+    //   errorToast("Invalid login details");
+      
+    // }
 
     if (error.response.status === 413) {
-      throw new Error(
+      errorToast(
         "Payload too large. Please reduce the size of your request."
       );
     }
 
     // Server down or 5xx errors
     if (error.response.status >= 500) {
-      throw new Error("Server is currently down. Please try again later.");
+      errorToast("Server is currently down. Please try again later.");
     }
 
     // Other error cases (e.g., 4xx errors)
-    throw new Error(error.response.data.message || "An error occurred.");
+    // errorToast(error.response.data.message || "An error occurred.");
   }
 );
 

@@ -8,10 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
-import { userLogin } from "@/app/utils/api/user/auth";
+import { loggedInUser, userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
 
 type FormValues = {
   email: string;
@@ -29,6 +30,8 @@ interface LoginResponse {
     role: string;
   };
 }
+
+
 
 const lora = Lora({
   variable: "--font-lora",
@@ -50,14 +53,20 @@ export const Body = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+    const [userDetails, setUserDetails] = useState<any | null>(null);
+  
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const cookies = nookies.get(null);
-    if (!cookies.accessToken) {
-      router.push("/login");
-    } else {
-      router.push("/");
-    }
+    const checkAuth = async () => {
+      const cookies = nookies.get(null);
+      if (cookies.accessToken) {
+        infoToast('You are still logged in');
+        await router.push('/'); // Redirect to homepage if logged in
+      }
+    };
+
+    checkAuth();
   }, [router]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -66,35 +75,40 @@ export const Body = () => {
       const res: AxiosResponse<LoginResponse> = (await userLogin(
         data
       )) as AxiosResponse<LoginResponse>;
+
+            // const userD = (await loggedInUser()) as any;
+            // setUserDetails(res);
       const loginData = res.data;
       const { accessToken, refreshToken, user } = loginData;
 
+      
+  
       // Check if user is admin
       if (user.role !== "user") {
-        throw new Error("Unauthorized Access");
+        errorToast("Incorrect details");
       }
+  
+      // Save tokens to localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user)); // Store user details
 
-      // Set cookies using nookies
+      // Save tokens in cookies
       nookies.set(null, "accessToken", accessToken, {
-        maxAge: 1 * 24 * 60 * 60, // Cookie expires in a day
+        maxAge: 1 * 24 * 60 * 60, // 1 day
         path: "/",
       });
-
+  
       nookies.set(null, "refreshToken", refreshToken, {
-        maxAge: 3 * 24 * 60 * 60, // Cookie expires in 3 days
+        maxAge: 3 * 24 * 60 * 60, // 3 days
         path: "/",
       });
-
-      if (!accessToken) {
-        throw new Error("Access token not found in the login response");
-      }
-
-      console.log("Access token", accessToken);
-      console.log("Login successful:", res);
+  
+      successToast("Login successful");
       setLoading(false);
       router.push("/");
-    } catch (error: unknown) {
-      console.error("Login error:", error);
+    } catch (error: any) {
+      console.log(error);
       setLoading(false);
     }
   };

@@ -23,7 +23,7 @@ import {
   forgetPassword,
   resetPassword,
   validateOtp,
-} from "@/app/utils/api/user/auth";
+} from "../../../utils/api/user/auth";
 // import { set } from "zod";
 
 type step_1 = {

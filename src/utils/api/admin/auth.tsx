@@ -1,4 +1,4 @@
-import { axios$ } from "../../..";
+import { axios$ } from "../../../app";
 
 interface loginData {
     email: string;

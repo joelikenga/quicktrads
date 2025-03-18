@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import {  Open_Sans } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "@/context/CartContext";
+import { Toaster } from "react-hot-toast";
+import RouteGuard from "@/utils/routeGuard";
 
 const openSans = Open_Sans({
   variable: "--font-raleway",
   subsets: ["latin"],
 });
-
-// const lora = Lora({
-//   variable: "--font-lora",
-//   subsets: ["latin"],
-// });
 
 export const metadata: Metadata = {
   title: "Quicktrads",
@@ -18,18 +16,14 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/favicon.ico',
-        sizes: 'any',
+        url: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
+        sizes: "any",
       },
-      // {
-      //   url: '/icon.svg',
-      //   type: 'image/svg+xml',
-      // },
     ],
     apple: [
       {
-        url: '/apple-touch-icon.png',
-        sizes: '180x180',
+        url: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
+        sizes: "180x180",
       },
     ],
   },
@@ -42,12 +36,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${openSans.className}  antialiased`}
-      >
-        {children}
+      <body className={`${openSans.className}  antialiased`}>
+          <CartProvider>
+        <RouteGuard>
+            {children}
+        </RouteGuard>
+            <Toaster />
+          </CartProvider>
       </body>
     </html>
   );
 }
-// ${lora.variable}

@@ -1,9 +1,11 @@
+'use client';
 import { Footer } from "../Component/footer";
 import { Navbar } from "../global/navbar";
 import { Body } from "./component/body";
 
-const Cart = () => {
-    return(
+export default function CartPage() {
+  
+  return(
         <div className="">
             <Navbar />
             <Body />
@@ -11,5 +13,3 @@ const Cart = () => {
         </div>
     )
 }
-
-export default Cart;

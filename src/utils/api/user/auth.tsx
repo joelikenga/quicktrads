@@ -1,4 +1,4 @@
-import { axios$ } from "../../..";
+import { axios$ } from "../../../app";
 
 interface UserRegistrationData {
   fullName: string;
@@ -99,3 +99,5 @@ export const loggedInUser = async () => {
     throw error;
   }
 };
+
+

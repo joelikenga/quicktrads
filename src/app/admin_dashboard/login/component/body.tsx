@@ -15,7 +15,8 @@ import { AxiosResponse } from "axios";
 import nookies from "nookies";
 // import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { adminLogin } from "@/app/utils/api/admin/auth";
+import { adminLogin } from "../../../../utils/api/admin/auth";
+import { errorToast } from "../../../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -68,10 +69,17 @@ const Body = () => {
       const loginData = res.data;
       const { accessToken, refreshToken, user } = loginData;
 
+      console.log(res);
       // Check if user is admin
       if (user.role !== 'super_admin') {
-        throw new Error('Unauthorized: Access restricted to admin users only');
+        errorToast('Unauthorized: Access restricted to admin users only');
       }
+
+
+      // Save tokens to localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(user)); // Store user details
 
       // Set cookies using nookies
       nookies.set(null, "accessToken", accessToken, {
