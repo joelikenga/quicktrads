@@ -33,12 +33,12 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     }
 
     // 🚀 Checkout page protection (users can only proceed if cart > 0)
-    if (pathname === "/checkout") {
-      const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
-      if (cartItems.length === 0) {
-        router.push("/categories"); // Redirect if cart is empty
-      }
-    }
+    // if (pathname === "/checkout") {
+    //   const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+    //   if (cartItems.length === 0) {
+    //     router.push("/categories"); // Redirect if cart is empty
+    //   }
+    // }
   }, [pathname, isLoggedIn, role, router]);
 
   return <>{children}</>;

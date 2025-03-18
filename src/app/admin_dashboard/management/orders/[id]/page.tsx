@@ -1,20 +1,19 @@
-"use client";
+import { Body } from "./component/body";
 import { SideNav } from "../../component/sideNav";
 import { Navbar } from "@/app/admin_dashboard/component/navbar";
-import { BodyContent } from "./bodyContent";
 
-const Body = () => {
+const Page = () => {
   return (
     <div className="">
       <Navbar />
       <div className="px-10 w-full">
         <div className="mx-auto w-full max-w-7xl">
           <SideNav />
-          <BodyContent />
+          <Body />
         </div>
       </div>
     </div>
   );
 };
 
-export default Body;
+export default Page;
