@@ -1,26 +1,70 @@
 import { arrowleft, info } from '@/app/global/svg';
 import { Lora } from 'next/font/google';
 import Image from 'next/image';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { updateContent, getContent } from '@/utils/api/admin/products';
 
 interface EditContentProps {
     onClick: () => void;
 }
-
 
 const lora = Lora({
     variable: "--font-lora",
     subsets: ["latin"],
 });
 
-
 // color wheel
 const colors = ["#E9C46A", "#FEEDC2", "#DFDACF", "#F6F4F4", "#FFE1E1", "#E1FFF6"]
 
-
 const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
-    const [selectedColor, setSelectedColor] = useState<string>();
+    const [selectedColor, setSelectedColor] = useState<string>("#E9C46A");
+    const [formData, setFormData] = useState({
+        id: "",
+        userId: "",
+        backgroundColor: "#E9C46A",
+        heroTitle: "",
+        heroSubTitle: "",
+        heroImage: "",
+        heroBtnText: "",
+        heroBtnTextColor: "#FFFFFF",
+        heroBtnBgColor: "#000000",
+        heroBtnCTA: "",
+        heroPageName: "heroPageMain" as const
+    });
+
+    useEffect(() => {
+        const fetchContent = async () => {
+            try {
+                const response = await getContent();
+                if (response.data) {
+                    setFormData(response.data);
+                    setSelectedColor(response.data.backgroundColor);
+                }
+            } catch (error) {
+                console.error('Failed to fetch content:', error);
+            }
+        };
+        fetchContent();
+    }, []);
+
+    const handleSubmit = async () => {
+        try {
+            await updateContent({
+                ...formData,
+                backgroundColor: selectedColor
+            });
+            onClick(); // Close modal after successful update
+        } catch (error) {
+            console.error('Failed to update content:', error);
+        }
+    };
+
+    const handleInputChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: e.target.value
+        }));
+    };
 
     function handleColorChange(color: string): void {
         setSelectedColor(color);
@@ -69,7 +113,13 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                             <div className="pb-4">
                                 <label htmlFor="header-text">
                                     <p className="text-sm leading-[22px] font-400 text-text_strong pb-2">Header</p>
-                                    <input type="text" className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" id="header-text" />
+                                    <input 
+                                        type="text" 
+                                        value={formData.heroTitle}
+                                        onChange={handleInputChange('heroTitle')}
+                                        className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" 
+                                        id="header-text" 
+                                    />
                                 </label>
                             </div>
 
@@ -77,7 +127,13 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                             <div className="pb-4">
                                 <label htmlFor="description-text">
                                     <p className="text-sm leading-[22px] font-400 text-text_strong pb-2">Description</p>
-                                    <input type="text" className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" id="description-text" />
+                                    <input 
+                                        type="text" 
+                                        value={formData.heroSubTitle}
+                                        onChange={handleInputChange('heroSubTitle')}
+                                        className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" 
+                                        id="description-text" 
+                                    />
                                 </label>
                             </div>
 
@@ -85,16 +141,27 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                             <div className="pb-4">
                                 <label htmlFor="button-text">
                                     <p className="text-sm leading-[22px] font-400 text-text_strong pb-2">Button</p>
-                                    <input type="text" className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" id="button-text" />
+                                    <input 
+                                        type="text" 
+                                        value={formData.heroBtnText}
+                                        onChange={handleInputChange('heroBtnText')}
+                                        className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" 
+                                        id="button-text" 
+                                    />
                                 </label>
                             </div>
 
                             {/* Button link */}
                             <div>
-
                                 <label htmlFor="button-link-text">
                                     <p className="text-sm leading-[22px] font-400 text-text_strong pb-2">Button link</p>
-                                    <input type="text" className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" id="button-link-text" />
+                                    <input 
+                                        type="text" 
+                                        value={formData.heroBtnCTA}
+                                        onChange={handleInputChange('heroBtnCTA')}
+                                        className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4" 
+                                        id="button-link-text" 
+                                    />
                                 </label>
                             </div>
                         </div>
@@ -139,7 +206,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                     </div>
 
                     <div className="flex gap-4 items-center mb-[14px]">
-                        <div onClick={onClick} className="w-[153.3px] cursor-pointer selection:no-underline h-[40px] rounded-full py-[9px] px-[51px] border-1 border text-white bg-black flex justify-center items-center">Update</div>
+                        <div onClick={handleSubmit} className="w-[153.3px] cursor-pointer selection:no-underline h-[40px] rounded-full py-[9px] px-[51px] border-1 border text-white bg-black flex justify-center items-center">Update</div>
                         <div onClick={onClick} className="w-[153.3px] cursor-pointer selection:no-underline h-[40px] rounded-full py-[9px] px-[51px] border-1 border border-stroke_weak flex justify-center items-center">Cancel</div>
                     </div>
                 </section>

@@ -13,7 +13,7 @@ import {
   getTrendingProducts,
 } from "../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
-import {  successToast } from "../../../utils/toast/toast";
+import {  errorToast, successToast } from "../../../utils/toast/toast";
 
 interface Product {
   id: string;
@@ -82,7 +82,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
 
       setAllProducts(transformedProducts);
     } catch (error) {
-      console.error("Error fetching all products:", error);
+      errorToast(error);
       setAllProducts([]);
     } finally {
       setIsLoading(false);
@@ -197,7 +197,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   };
 
   const filteredProducts = filterProducts(allProducts);
-  console.log("filteredProducts", filteredProducts);
+  // console.log("filteredProducts", filteredProducts);
   successToast("hello")
 
   if (isLoading) {

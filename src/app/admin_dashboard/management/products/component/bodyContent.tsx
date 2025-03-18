@@ -12,7 +12,7 @@ import {
   searchIcon,
   trash,
 } from "@/app/global/svg";
-import { useState, useRef,  useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import {
   createProduct,
@@ -20,6 +20,7 @@ import {
   fetchAllProducts,
 } from "../../../../../utils/api/admin/products";
 import { useRouter } from "next/navigation"; // Add this at the top with other imports
+import { errorToast } from "@/utils/toast/toast";
 
 // interface ProductData {
 //   name: string;
@@ -102,8 +103,7 @@ export const BodyContent = () => {
   // const [size] = useState<number>(10);  // Remove setSize as it's now fixed
   const [searchQuery, setSearchQuery] = useState("");
 
-
-  console.log("upload error", uploadError);
+  // console.log("upload error", uploadError);
 
   const [paginationData, setPaginationData] = useState<PaginationData>({
     hasPreviousPage: false,
@@ -218,66 +218,69 @@ export const BodyContent = () => {
     });
   };
 
-    const handleProductUpload = async () => {
-      if (isSaving) return; // Prevent upload if saving
-      try {
-        setIsUploading(true);
-        setUploadError(null);
+  const handleProductUpload = async () => {
+    if (isSaving) return; // Prevent upload if saving
+    try {
+      setIsUploading(true);
+      setUploadError(null);
 
-        if (
-          !productName ||
-          !price ||
-          images.length === 0 ||
-          !selectedSubCategory
-        ) {
-          setUploadError(
-            "Please fill in all required fields including subcategory"
-          );
-          return;
-        }
-
-        // Upload all images to Cloudinary
-        const uploadedImageUrls = await Promise.all(
-          images.map(async (image) => {
-            const base64 = await convertFileToBase64(image.file);
-            const cloudinaryUrl = await uploadImageToCloudinary(base64);
-            return cloudinaryUrl;
-          })
+      if (
+        !productName ||
+        !price ||
+        images.length === 0 ||
+        !selectedSubCategory
+      ) {
+        setUploadError(
+          "Please fill in all required fields including subcategory"
         );
-
-        // Create product data object matching the interface
-        const productData = {
-          addToInventory: true,
-          category: selectedCategory,
-          currency: currency,
-          description: description,
-          images: uploadedImageUrls,
-          isFeatured: false,
-          name: productName,
-          price: Number(price),
-          priceDiscount: discountPrice ? Number(discountPrice) : undefined,
-          size: selectedSizes.join(","),
-          subCategory: selectedSubCategory, // Add selected subcategory
-        };
-
-        // Send to backend using the createProduct function
-        const response = await createProduct(productData);
-        console.log("Product uploaded successfully:", response);
-
-        // Clear form after successful upload
-        setImages([]);
-        setProductName("");
-        setPrice("");
-        setDiscountPrice("");
-        setDescription("");
-        setSelectedSizes([]);
-      } catch (error) {
-        console.error("Error uploading product:", error);
-        setUploadError("Failed to upload product. Please try again.");
-      } finally {
-        setIsUploading(false);
+        errorToast(uploadError)
+        return;
       }
-    };
+
+      // Upload all images to Cloudinary
+      const uploadedImageUrls = await Promise.all(
+        images.map(async (image) => {
+          const base64 = await convertFileToBase64(image.file);
+          const cloudinaryUrl = await uploadImageToCloudinary(base64);
+          return cloudinaryUrl;
+        })
+      );
+
+      // Create product data object matching the interface
+      const productData = {
+        addToInventory: true,
+        category: selectedCategory,
+        currency: currency,
+        description: description,
+        images: uploadedImageUrls,
+        isFeatured: false,
+        name: productName,
+        price: Number(price),
+        priceDiscount: discountPrice ? Number(discountPrice) : undefined,
+        size: selectedSizes.join(","),
+        subCategory: selectedSubCategory, // Add selected subcategory
+      };
+
+      // Send to backend using the createProduct function
+      const response = await createProduct(productData);
+      // console.log("Product uploaded successfully:", response);
+
+      // Clear form after successful upload
+      setImages([]);
+      setProductName("");
+      setPrice("");
+      setDiscountPrice("");
+      setDescription("");
+      setSelectedSizes([]);
+    } catch (error) {
+      // console.error("Error uploading product:", error);
+      setUploadError("Failed to upload product. Please try again.");
+      errorToast(uploadError)
+
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSaveToDraft = async () => {
     if (isUploading) return; // Prevent saving if uploading
@@ -345,32 +348,35 @@ export const BodyContent = () => {
       const response = await fetchAllProducts(1, 1000); // Get all products at once
 
       console.log("All products response:", response);
-      
-      const transformedProducts = response?.data?.map((product: Product): TransformedProduct => ({
-        id: product.id,
-        images: product.images[0],
-        name: product.name,
-        price: product.price,
-        discountPrice: product.priceDiscount,
-        category: product.category,
-        subCategory: product.subCategory,
-        rating: product.stars,
-        status: product.status,
-        ordersCount: product.ordersCount,
-        isFeatured: product.isFeatured
-      })) || [];
+
+      const transformedProducts =
+        response?.data?.map(
+          (product: Product): TransformedProduct => ({
+            id: product.id,
+            images: product.images[0],
+            name: product.name,
+            price: product.price,
+            discountPrice: product.priceDiscount,
+            category: product.category,
+            subCategory: product.subCategory,
+            rating: product.stars,
+            status: product.status,
+            ordersCount: product.ordersCount,
+            isFeatured: product.isFeatured,
+          })
+        ) || [];
 
       setAllProducts(transformedProducts);
-      
+
       // Set pagination data
       setPaginationData({
         hasPreviousPage: page > 1,
-        has_next_page: page < Math.ceil(transformedProducts.length / ITEMS_PER_PAGE),
+        has_next_page:
+          page < Math.ceil(transformedProducts.length / ITEMS_PER_PAGE),
         page: page,
         size: ITEMS_PER_PAGE,
-        totalCount: transformedProducts.length
+        totalCount: transformedProducts.length,
       });
-      
     } catch (error) {
       console.error("Error fetching all products:", error);
       setAllProducts([]);
@@ -379,7 +385,7 @@ export const BodyContent = () => {
         has_next_page: false,
         page: 1,
         size: ITEMS_PER_PAGE,
-        totalCount: 0
+        totalCount: 0,
       });
     }
   };
@@ -390,19 +396,19 @@ export const BodyContent = () => {
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
-    
+
     // Update products state with paginated results
     setProducts(paginatedProducts);
-    
+
     const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-    
+
     // Update pagination data based on filtered results
-    setPaginationData(prev => ({
+    setPaginationData((prev) => ({
       ...prev,
       hasPreviousPage: page > 1,
       has_next_page: page < totalPages,
       totalCount: filteredProducts.length,
-      page: page // Ensure current page is set correctly
+      page: page, // Ensure current page is set correctly
     }));
   };
 
@@ -415,15 +421,18 @@ export const BodyContent = () => {
   };
 
   // Update getFilteredProducts to work with allProducts
-  const getFilteredProducts = (productsToFilter: TransformedProduct[] = allProducts) => {
+  const getFilteredProducts = (
+    productsToFilter: TransformedProduct[] = allProducts
+  ) => {
     if (!searchQuery) return productsToFilter;
 
     const searchTerm = searchQuery.toLowerCase();
-    return productsToFilter.filter(product => 
-      product.name.toLowerCase().includes(searchTerm) ||
-      product.category.toLowerCase().includes(searchTerm) ||
-      product.subCategory.toLowerCase().includes(searchTerm) ||
-      product.status.toLowerCase().includes(searchTerm)
+    return productsToFilter.filter(
+      (product) =>
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.category.toLowerCase().includes(searchTerm) ||
+        product.subCategory.toLowerCase().includes(searchTerm) ||
+        product.status.toLowerCase().includes(searchTerm)
     );
   };
 
@@ -431,6 +440,10 @@ export const BodyContent = () => {
   useEffect(() => {
     getCurrentPageItems();
   }, [page, searchQuery, allProducts]);
+
+  // useEffect(() => {
+  //   console.log("addProduct state:", addProduct); // Debugging step
+  // }, [addProduct]);
 
   useEffect(() => {
     getAllproducts();
@@ -446,7 +459,6 @@ export const BodyContent = () => {
       prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
     );
   };
-
 
   // Add this helper function after the component declaration
   const generatePaginationRange = (currentPage: number, totalPages: number) => {
@@ -497,55 +509,444 @@ export const BodyContent = () => {
   const handleDeleteClick = async (e: React.MouseEvent, productId: string) => {
     e.stopPropagation(); // Prevent row click event from firing
 
-      try {
-        // Call the deleteProduct function from your API utility
-        await deleteProduct(productId);
-        console.log("Product deleted successfully");
+    try {
+      // Call the deleteProduct function from your API utility
+      await deleteProduct(productId);
+      console.log("Product deleted successfully");
 
-        // Refresh the product list after deletion
-        getAllproducts();
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Failed to delete product. Please try again.");
-      }
+      // Refresh the product list after deletion
+      getAllproducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Failed to delete product. Please try again.");
+    }
   };
-
-  
 
   return (
     <div className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
-      {/* Show no products view when products array is empty */}
-      {  products.length === 0  ? (
-        <div className="w-full flex flex-col">
-          <div className="w-full flex items-center justify-start">
-            <div className="flex items-center text-[18px] font-medium text-text_strong">
-              Products
+      {allProducts.length === 0 ? (
+        addProduct ? (
+          <div className="h-full">
+            {/* Add product form content */}
+            <div
+              onClick={() => setAddProduct(false)}
+              className="flex text-lg items-center pb-6 gap-1 cursor-pointer"
+            >
+              {arrowleft()}Add product
             </div>
-          </div>
-          <div className="w-full">
-            <div className="flex justify-center items-center w-full">
-              <div className="mt-20 flex flex-col items-center justify-center gap-4">
-                <i>{noproducts()}</i>
-                <div className="text-[18px] font-medium text-text_strong w-full max-w-[290px] gap-2 text-center">
-                  <p>There are currently no products!</p>
-                  <p className="text-[14px] font-normal text-text_weak">
-                    It looks like there are currently no products available at
-                    the moment
+            <div className="flex gap-[73px]">
+              {/* the card sections where the images will be previewed and uploaded */}
+              <div>
+                <p>Image</p>
+                <div className="flex items-center text-sm gap-2 text-text_weak mt-2">
+                  <i>{info()}</i>
+                  <p className="">
+                    {`The first image will be your cover image (Note: you can move or drag image)`}
                   </p>
                 </div>
-                <button
-                  onClick={() => setAddProduct(true)}
-                  className="w-[160px] h-[38px] bg-text_strong text-background rounded-full"
-                >
-                  Add Product
-                </button>
+
+                <div className="pt-2">
+                  {/* the images panel */}
+                  <div className="flex gap-6 pt-2">
+                    {/* side images */}
+                    <div className="flex flex-col gap-4">
+                      {images.map((img, index) => (
+                        <div
+                          key={index}
+                          className="w-[100px] h-[120px] relative"
+                          onMouseEnter={() => setHoveredIndex(index)}
+                          onMouseLeave={() => setHoveredIndex(null)}
+                        >
+                          <Image
+                            src={img.preview}
+                            alt={`Product ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                          {hoveredIndex === index && (
+                            <div
+                              className="absolute top-2 right-2 cursor-pointer bg-black rounded-full p-2"
+                              onClick={() => handleDeleteImage(index)}
+                            >
+                              {trash()}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {images.length < 3 && (
+                        <div
+                          className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak hover:border-error_1 border-dashed cursor-pointer"
+                          onClick={() => fileInputRef.current?.click()}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={handleDrop}
+                        >
+                          {imageadd()}
+                          <input
+                            type="file"
+                            hidden
+                            ref={fileInputRef}
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* the main image */}
+                    <div>
+                      <div
+                        className="w-[492px] h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={handleDrop}
+                        onClick={() =>
+                          images.length === 0 && fileInputRef.current?.click()
+                        }
+                      >
+                        {images.length > 0 ? (
+                          <Image
+                            src={images[0].preview}
+                            alt="Main product"
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <>
+                            <span>{imageadd()}</span>
+                            <p className="w-[240px] leading-[24px] text-text_weak text-sm">
+                              <span className="underline font-[400] text-text_strong">
+                                Click to upload
+                              </span>
+                              or drag and drop image here
+                            </p>
+                            <p className="text-xs text-text_weak mt-2">
+                              PNG or JPG(max. 500x600px)
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          hidden
+                          ref={fileInputRef}
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* product options */}
+              <section className="w-[323px] h-[972px]">
+                {/* name */}
+                <div className="pb-4 w-full">
+                  <label htmlFor="name">
+                    <p className="pb-2 text-sm">Name</p>
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      autoComplete="on"
+                      value={productName}
+                      onChange={(e) => setProductName(e.target.value)}
+                      className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4"
+                    />
+                  </label>
+                </div>
+
+                {/* regular price */}
+                <div className="pb-4 w-full relative">
+                  <label htmlFor="price">
+                    <p className="pb-2 text-sm">Regular price</p>
+                    <input
+                      type="number"
+                      name="price"
+                      id="price"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="border  w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
+                    />
+                    {/* price list */}
+                    <div className="absolute top-[38px] left-4">
+                      <p className="flex items-center text-sm text-text_weak gap-1">
+                        NGN ₦
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {/* discount price */}
+                <div className="pb-4 w-full relative">
+                  <label htmlFor="discount-price">
+                    <p className="pb-2 text-sm">
+                      Discount price{" "}
+                      <span className="text-sm  text-text_weak">
+                        (Optional)
+                      </span>
+                    </p>
+                    <input
+                      type="text"
+                      name="discount-price"
+                      id="discount-price"
+                      value={discountPrice}
+                      onChange={(e) => setDiscountPrice(e.target.value)}
+                      className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
+                    />
+                    {/* price list */}
+                    <div className="absolute top-[38px] left-4">
+                      <p className="flex items-center text-sm text-text_weak gap-1">
+                        NGN ₦
+                      </p>
+                    </div>
+
+                    {/* discount display */}
+                    {calculateDiscount() && (
+                      <div className="absolute top-[38px] right-4">
+                        <p className="flex items-center text-sm text-error_1">
+                          {calculateDiscount()}
+                        </p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+
+                {/* size filter options */}
+                <div className="pt-4">
+                  <p className="pb-2 text-sm">Size</p>
+
+                  <p className="text-[12px] 2xl:text-sm text-text_weak relative flex gap-1  items-center">
+                    <span>{info()}</span>Select all product available size below
+                  </p>
+
+                  {/* size option filter itself */}
+                  <div className="flex gap-4 pt-4 flex-col">
+                    <div className="flex gap-3">
+                      {/*  */}
+                      <div
+                        onClick={() => handleSizeToggle("XS")}
+                        className={`w-full border text-center rounded-lg ${
+                          selectedSizes.includes("XS")
+                            ? "border-text_strong bg-stroke_weak"
+                            : "border-stroke_strong"
+                        } py-2 px-6`}
+                      >
+                        <h3 className="text-sm">XS</h3>
+                        <p className="text-sm text-text_weak">Extra Small</p>
+                      </div>
+                      {/*  */}
+                      <div
+                        onClick={() => handleSizeToggle("S")}
+                        className={`w-full border text-center rounded-lg ${
+                          selectedSizes.includes("S")
+                            ? "border-text_strong bg-stroke_weak"
+                            : "border-stroke_strong"
+                        } py-2 px-6`}
+                      >
+                        <h3 className="text-sm">S</h3>
+                        <p className="text-sm text-text_weak">Small</p>
+                      </div>
+                    </div>
+
+                    {/*  */}
+                    <div className="flex gap-3">
+                      {/*  */}
+                      <div
+                        onClick={() => handleSizeToggle("M")}
+                        className={`w-full border text-center rounded-lg ${
+                          selectedSizes.includes("M")
+                            ? "border-text_strong bg-stroke_weak"
+                            : "border-stroke_strong"
+                        } py-2 px-4 2xl:px-6`}
+                      >
+                        <h3 className="text-sm">M</h3>
+                        <p className="text-sm text-text_weak">Medium</p>
+                      </div>
+                      {/*  */}
+                      <div
+                        onClick={() => handleSizeToggle("L")}
+                        className={`w-full border text-center rounded-lg ${
+                          selectedSizes.includes("L")
+                            ? "border-text_strong bg-stroke_weak"
+                            : "border-stroke_strong"
+                        } py-2 px-4 2xl:px-6`}
+                      >
+                        <h3 className="text-sm">L</h3>
+                        <p className="text-sm text-text_weak">Large</p>
+                      </div>
+                    </div>
+
+                    <div
+                      onClick={() => handleSizeToggle("XL")}
+                      className={`w-full border text-center rounded-lg ${
+                        selectedSizes.includes("XL")
+                          ? "border-text_strong bg-stroke_weak"
+                          : "border-stroke_strong"
+                      } py-2 px-4 2xl:px-6`}
+                    >
+                      <h3 className="text-sm">XL</h3>
+                      <p className="text-sm text-text_weak">Extra Large</p>
+                    </div>
+                  </div>
+
+                  {/* category */}
+                  <div className="pt-3">
+                    <p className="text-sm pb-2">category</p>
+
+                    <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
+                      {info()}Select a product category below
+                    </p>
+
+                    {/* category filter options */}
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-2">
+                        <div
+                          onClick={() => handleCategoryChange("men")}
+                          className={`border rounded-lg text-center text-sm w-full ${
+                            selectedCategory === "men"
+                              ? "border-text_strong bg-stroke_weak"
+                              : "border-stroke_strong"
+                          } py-2 px-6`}
+                        >
+                          Men
+                        </div>
+                        <div
+                          onClick={() => handleCategoryChange("women")}
+                          className={`border rounded-lg text-center text-sm w-full ${
+                            selectedCategory === "women"
+                              ? "border-text_strong bg-stroke_weak"
+                              : "border-stroke_strong"
+                          } py-2 px-6`}
+                        >
+                          Women
+                        </div>
+                      </div>
+                      <div
+                        onClick={() => handleCategoryChange("unisex")}
+                        className={`border rounded-lg text-center text-sm w-full ${
+                          selectedCategory === "unisex"
+                            ? "border-text_strong bg-stroke_weak"
+                            : "border-stroke_strong"
+                        } py-2 px-6`}
+                      >
+                        Unisex
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* sub-category */}
+                  <div className="pt-3">
+                    <p className="text-sm pb-2">
+                      {selectedCategory} sub-category
+                    </p>
+
+                    <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
+                      {info()}Select a sub category below
+                    </p>
+
+                    <div className="grid grid-cols-2 flex-wrap gap-3 w-full">
+                      {subCategories[selectedCategory].map((subCat) => (
+                        <div
+                          key={subCat}
+                          onClick={() => setSelectedSubCategory(subCat)}
+                          className={`border rounded-lg text-center text-sm col-span-1 ${
+                            selectedSubCategory === subCat
+                              ? "border-text_strong bg-stroke_weak"
+                              : "border-stroke_strong"
+                          } py-2 px-6 cursor-pointer`}
+                        >
+                          {subCat}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* about product */}
+                  <div className="pt-3">
+                    <p className="pb-2">About product</p>
+
+                    <textarea
+                      name=""
+                      className="w-full h-[88px] border rounded-lg text-sm  resize-none border-stroke_strong outline-none focus:border-stroke_strong placeholder-text-text_weak p-2"
+                      id=""
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="flex flex-col lg:gap-2 2xl:gap-6 pt-4 pb-2">
+                  <button
+                    onClick={handleProductUpload}
+                    disabled={isUploading || isSaving || images.length === 0}
+                    className={`rounded-full py-[10px] px-18 border border-text_strong text-center text-sm 
+            ${
+              isUploading || isSaving
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-text_strong hover:bg-text_strong/90"
+            } 
+            text-white flex items-center justify-center`}
+                  >
+                    {isUploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                        Uploading...
+                      </>
+                    ) : (
+                      "Upload product"
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleSaveToDraft}
+                    disabled={isUploading || isSaving || images.length === 0}
+                    className="rounded-full py-[10px] px-18 border border-stroke_strong text-center text-sm text-text_strong flex justify-center items-center "
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save to draft"
+                    )}
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full flex flex-col">
+            <div className="w-full flex items-center justify-start">
+              <div className="flex items-center text-[18px] font-medium text-text_strong">
+                Products
+              </div>
+            </div>
+            <div className="w-full">
+              <div className="flex justify-center items-center w-full">
+                <div className="mt-20 flex flex-col items-center justify-center gap-4">
+                  <i>{noproducts()}</i>
+                  <div className="text-[18px] font-medium text-text_strong w-full max-w-[290px] gap-2 text-center">
+                    <p>There are currently no products!</p>
+                    <p className="text-[14px] font-normal text-text_weak">
+                      It looks like there are currently no products available at
+                      the moment
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setAddProduct(true);
+                    }}
+                    className="w-[160px] h-[38px] bg-text_strong text-background rounded-full"
+                  >
+                    Add Product
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )
       ) : (
         <>
-          {/* Show either add product form or products table */}
           {addProduct ? (
             <div className="h-full">
               {/* Add product form content */}
@@ -1020,104 +1421,122 @@ export const BodyContent = () => {
                   </thead>
 
                   <tbody className="divide-y divide-stroke_weak">
-                    {products.map((product) => (
-                      <tr 
-                        key={product.id} 
-                        className="cursor-pointer hover:bg-stroke_weak/20"
-                        onClick={() => handleRowClick(product.id)}
-                      >
-                        <td className="p-4">
-                          <div className="flex gap-6 items-start w-ful w-[304px]">
-                            <Image
-                              src={product.images || "/placeholder.png"} // Add a placeholder image
-                              className="w-[69px] h-[80px]"
-                              width={69}
-                              height={80}
-                              priority
-                              alt={product.name}
-                            />
-                            <div className="text-text_strong text-sm font-normal text-wrap">
-                              {product.name}
+                    {products.length > 0 ? (
+                      products.map((product) => (
+                        <tr
+                          key={product.id}
+                          className="cursor-pointer hover:bg-stroke_weak/20"
+                          onClick={() => handleRowClick(product.id)}
+                        >
+                          <td className="p-4">
+                            <div className="flex gap-6 items-start w-ful w-[304px]">
+                              <Image
+                                src={product.images || "/placeholder.png"} // Add a placeholder image
+                                className="w-[69px] h-[80px]"
+                                width={69}
+                                height={80}
+                                priority
+                                alt={product.name}
+                              />
+                              <div className="text-text_strong text-sm font-normal text-wrap">
+                                {product.name}
+                              </div>
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        <td className="px-6 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
-                            <p>₦{product.price.toLocaleString()}</p>
-                            {product.discountPrice && product.discountPrice > 0 && (
-                              <p className="line-through text-text_weak">
-                                ₦{product.price.toLocaleString()}
+                          <td className="px-6 py-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
+                              <p>₦{product.price.toLocaleString()}</p>
+                              {product.discountPrice &&
+                                product.discountPrice > 0 && (
+                                  <p className="line-through text-text_weak">
+                                    ₦{product.price.toLocaleString()}
+                                  </p>
+                                )}
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
+                              <p className="capitalize">{product.category}</p>
+                              {product.isFeatured && (
+                                <p className="text-text_weak">Featured</p>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
+                              <p className="capitalize">
+                                {product.subCategory}
                               </p>
-                            )}
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
-                            <p className="capitalize">{product.category}</p>
-                            {product.isFeatured && (
-                              <p className="text-text_weak">Featured</p>
-                            )}
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
-                            <p className="capitalize">{product.subCategory}</p>
-                            {/* Add trending logic if needed */}
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
-                            <i>{review_1()}</i>
-                            <p className="text-text_weak">
-                              {`(${product.rating || 0} reviews)`}
-                            </p>
-                          </div>
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="text-text_strong text-sm font-normal text-wrap">
-                            <div
-                              className={`h-6 flex px-2 items-center justify-center rounded-full ${
-                                product.status === "active"
-                                  ? "bg-[#F5FFFC] text-[#109368]"
-                                  : "bg-[#FFF5F5] text-[#931010]"
-                              } text-sm font-medium gap-1`}
-                            >
-                              <span
-                                className={`rounded-full w-2 h-2 ${
-                                  product.status === "active"
-                                    ? "bg-[#109368]"
-                                    : "bg-[#931010]"
-                                }`}
-                              ></span>
-                              <p className="capitalize">{product.status}</p>
+                              {/* Add trending logic if needed */}
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        <td className="">
-                          <div className="text-text_strong text-sm font-normal text-nowrap flex gap-4">
-                            <i
-                              className="cursor-pointer"
-                              onClick={(e) => handleEditClick(e, product.id)}
-                            >
-                              {editIcon()}
-                            </i>
-                            <i
-                              onClick={(e) => handleDeleteClick(e, product.id)}
+                          <td className="px-6 py-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap flex-flex-col gap-2">
+                              <i>{review_1()}</i>
+                              <p className="text-text_weak">
+                                {`(${product.rating || 0} reviews)`}
+                              </p>
+                            </div>
+                          </td>
 
-                              className="cursor-pointer"
-                            >
-                              {trash()}
-                            </i>
+                          <td className="px-6 py-4">
+                            <div className="text-text_strong text-sm font-normal text-wrap">
+                              <div
+                                className={`h-6 flex px-2 items-center justify-center rounded-full ${
+                                  product.status === "active"
+                                    ? "bg-[#F5FFFC] text-[#109368]"
+                                    : "bg-[#FFF5F5] text-[#931010]"
+                                } text-sm font-medium gap-1`}
+                              >
+                                <span
+                                  className={`rounded-full w-2 h-2 ${
+                                    product.status === "active"
+                                      ? "bg-[#109368]"
+                                      : "bg-[#931010]"
+                                  }`}
+                                ></span>
+                                <p className="capitalize">{product.status}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="">
+                            <div className="text-text_strong text-sm font-normal text-nowrap flex gap-4">
+                              <i
+                                className="cursor-pointer"
+                                onClick={(e) => handleEditClick(e, product.id)}
+                              >
+                                {editIcon()}
+                              </i>
+                              <i
+                                onClick={(e) => handleDeleteClick(e, product.id)}
+                                className="cursor-pointer"
+                              >
+                                {trash()}
+                              </i>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-8">
+                          <div className="flex flex-col items-center justify-center gap-4">
+                            <i>{noproducts()}</i>
+                            <div className="text-[18px] font-medium text-text_strong">
+                              <p>No products found!</p>
+                              <p className="text-[14px] font-normal text-text_weak">
+                                No products match your search criteria
+                              </p>
+                            </div>
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1129,7 +1548,9 @@ export const BodyContent = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page <= 1}
                     className={`text-text_weak flex items-center gap-2 ${
-                      page <= 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                      page <= 1
+                        ? "opacity-50 cursor-not-allowed"
+                        : "cursor-pointer"
                     }`}
                   >
                     {" "}
@@ -1163,7 +1584,9 @@ export const BodyContent = () => {
 
                   <button
                     onClick={() => handlePageChange(page + 1)}
-                    disabled={page >= Math.ceil(allProducts.length / ITEMS_PER_PAGE)}
+                    disabled={
+                      page >= Math.ceil(allProducts.length / ITEMS_PER_PAGE)
+                    }
                     className={`text-text_weak flex items-center gap-2 ${
                       page >= Math.ceil(allProducts.length / ITEMS_PER_PAGE)
                         ? "opacity-50 cursor-not-allowed"

@@ -14,6 +14,33 @@ interface ProductData {
   subCategory: string;
 }
 
+interface Settings {
+  customer: {
+    orderUpdates: boolean;
+    customerMessages: boolean;
+    reviewAlerts: boolean;
+    customerActivity: boolean;
+  };
+  admin: {
+    SuspeciousActivity: boolean;
+    passwordChange: boolean;
+  };
+}
+
+interface HeroPage {
+  id: string;
+  userId: string;
+  backgroundColor: string;
+  heroTitle: string;
+  heroSubTitle: string;
+  heroImage: string;
+  heroBtnText: string;
+  heroBtnTextColor: string;
+  heroBtnBgColor: string;
+  heroBtnCTA: string;
+  heroPageName: "heroPageMain"; // Enforce specific value
+}
+
 export const createProduct = async (data: ProductData) => {
   try {
     const response = await axios$.post("/product", data);
@@ -55,7 +82,7 @@ export const deleteProduct = async (id: string) => {
 export const fetchAllProducts = async (page:number,size:number) => {
   try {
     const response = await axios$.get(`/product/admin?page=${page}&size=${size}`);
-    console.log("Raw API response:", response);
+    // console.log("Raw API response:", response);
 
     return response;
   } catch (error: unknown) {
@@ -77,6 +104,83 @@ export const fetchProduct = async (productId: string) => {
     return response;
   } catch (error: unknown) {
     console.error("API error:", error);
+    throw error;
+  }
+};
+
+
+export const getOrders = async () => {
+  try {
+    const response = await axios$.get(`/admin/order`);
+    // console.log("order response", response);
+
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+export const getOrder = async (orderId: any) => {
+  try {
+    const response = await axios$.get(`/order/${orderId}`);
+    return response;
+
+  } catch (error: unknown) {
+    // console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const adminDashboard = async () => {
+  try {
+    const response = await axios$.get(`/auth/admin/dashboard`);
+    // console.log("order response", response);
+
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getSettings = async () => {
+  try {
+    const response = await axios$.get(`/auth/admin/settings`);
+    return response;
+
+  } catch (error: unknown) {
+    // console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const updateSettings = async (data:Settings) => {
+  try {
+    const response = await axios$.patch(`/auth/admin/settings`,data);
+    return response;
+
+  } catch (error: unknown) {
+    // console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const updateContent = async (data:HeroPage) => {
+  try {
+    const response = await axios$.patch(`/auth/admin/hero-section`,data);
+    return response;
+
+  } catch (error: unknown) {
+    // console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const getContent = async () => {
+  try {
+    const response = await axios$.get(`/auth/hero-section`);
+    return response;
+
+  } catch (error: unknown) {
+    // console.error("API error:", error);
     throw error;
   }
 };

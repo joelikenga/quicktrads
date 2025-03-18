@@ -115,7 +115,7 @@ export const createOrder = async (data: OrderRequest): Promise<OrderResponse> =>
 export const getOrders = async () => {
   try {
     const response = await axios$.get(`/order`);
-    console.log("order response", response);
+    // console.log("order response", response);
 
     return response;
   } catch (error: unknown) {
@@ -128,7 +128,7 @@ export const getOrder = async (orderId: string) => {
     const response = await axios$.get(`/order/${orderId}`);
     return response;
   } catch (error: unknown) {
-    console.error("API error:", error);
+    // console.error("API error:", error);
     throw error;
   }
 };

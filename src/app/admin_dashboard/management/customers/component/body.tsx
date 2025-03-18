@@ -16,7 +16,7 @@ export default function body() {
       <div className="">
         <Navbar />
         <div className="px-10 w-full">
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl ">
             <SideNav />
             <CustomerModal />
           </div>
