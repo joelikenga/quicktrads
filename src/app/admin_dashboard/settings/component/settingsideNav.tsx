@@ -18,7 +18,7 @@ export const SettingsideNav = () => {
       <div className=" h-full w-full flex flex-col justify-between text-start gap-[200px fixed h-full top-2 ">
         {/* navs */}
         <div className="flex flex-col w-full gap-2 flex-grow">
-          <Link
+          {/* <Link
             href={`/admin_dashboard/settings/profile`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
               pathname === "/admin_dashboard/settings/profile"
@@ -27,7 +27,7 @@ export const SettingsideNav = () => {
             } w-full`}
           >
             Profile
-          </Link>
+          </Link> */}
 
           <Link
             href={`/admin_dashboard/settings/password`}

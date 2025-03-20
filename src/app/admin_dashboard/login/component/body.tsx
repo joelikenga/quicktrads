@@ -99,6 +99,7 @@ const Body = () => {
       setLoading(false);
       router.refresh();
       router.push("/admin_dashboard");
+      router.refresh();
     } catch (error: unknown) {
       console.error("Login error:", error);
       setLoading(false);

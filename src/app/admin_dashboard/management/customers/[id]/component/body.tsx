@@ -16,7 +16,7 @@ import {
 } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import { getCustomer, getOrders } from "@/utils/api/admin/products";
+import { getCustomer, getOrders, getStatusCount } from "@/utils/api/admin/products";
 import { Lora } from "next/font/google";
 import { useParams, useRouter } from "next/navigation";
 import { ProfileAvatar } from "@/app/global/profileGenerator";
@@ -71,16 +71,14 @@ export const Body = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [page, setPage] = useState<any>(null);
+  const [count, setCount] = useState<any>(null);
 
   const user = async (id: string) => {
     try {
-      const response = (await getCustomer(id)) as any;
-      // console.log("Raw API response:", response);
-      
-      // Check if the customer data is nested in a data property
-      const customerData = response.data || response;
-      // console.log("Processed customer data:", customerData);
-      
+      const response = (await getCustomer(id)) as any;     
+      const customerData = response.data || response;      
+      const counts = await getStatusCount(id) as any;
+      setCount(counts.data);
       const orderData = (await getOrders()) as any;
       setCustomer(customerData);
       setOrders(orderData.data || []);
@@ -284,14 +282,14 @@ export const Body = () => {
             <div className="flex gap-8 justify-center items-center col-span-1 border-l-2 px-6">
               <div className="flex-col items-center justify-center ">
                 <p className="text-text_weak">Pending</p>
-                <p className="text-text_strong">3</p>
+                <p className="text-text_strong">{count?.pending || 0}</p>
               </div>
             </div>
 
             <div className="flex gap-8 justify-center items-center col-span-1 border-l-2 px-6">
               <div className="flex-col items-center justify-center ">
                 <p className="text-text_weak">Cancelled</p>
-                <p className="text-text_strong">3</p>
+                <p className="text-text_strong">{count?.cancelled || 0}</p>
               </div>
             </div>
 

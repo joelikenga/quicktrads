@@ -56,13 +56,13 @@ axiosInstance.interceptors.response.use(
 
     if (error.response.status === 413) {
       errorToast(
-        "Payload too large. Please reduce the size of your request."
+        "Payload too large."
       );
     }
 
     // Server down or 5xx errors
     if (error.response.status >= 500) {
-      errorToast("Server is currently down. Please try again later.");
+      errorToast("Server down. Please try again later.");
     }
 
     // Other error cases (e.g., 4xx errors)

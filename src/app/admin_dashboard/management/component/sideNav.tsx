@@ -21,7 +21,7 @@ export const SideNav = () => {
       <Link
         href={`/admin_dashboard/management/orders`}
         className={`w-full h-[38px] rounded-full items-center flex justify-center ${
-          pathname === "/admin_dashboard/management/orders"
+          pathname.includes("/admin_dashboard/management/orders")
             ? "bg-stroke_weak text-text_strong"
             : "text-text_weak"
         }`}
@@ -31,7 +31,7 @@ export const SideNav = () => {
       <Link
         href={`/admin_dashboard/management/customers`}
         className={`w-full h-[38px] rounded-full items-center flex justify-center ${
-          pathname === "/admin_dashboard/management/customers"
+          pathname.includes(`/admin_dashboard/management/customers`) 
             ? "bg-stroke_weak text-text_strong"
             : "text-text_weak"
         }`}
