@@ -97,8 +97,8 @@ const Body = () => {
       }
 
       setLoading(false);
-      router.push("/admin_dashboard");
       router.refresh();
+      router.push("/admin_dashboard");
     } catch (error: unknown) {
       console.error("Login error:", error);
       setLoading(false);

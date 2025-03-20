@@ -340,8 +340,7 @@ export const Body = ({ id }: BodyProps) => {
       };
 
       // Send to backend using the createProduct function
-      const response = await updateProduct(id, productData);
-      console.log("Product uploaded successfully:", response);
+      // const response = await updateProduct(id, productData);
 
       // Clear form after successful upload
       setImages([]);
@@ -350,6 +349,8 @@ export const Body = ({ id }: BodyProps) => {
       setDiscountPrice("");
       setDescription("");
       setSelectedSizes([]);
+
+      successToast("Product uploaded successfully");
     } catch (error) {
       errorToast(uploadError || error);
 

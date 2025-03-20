@@ -2,14 +2,14 @@ import { axios$ } from "../../../app";
 
 interface ProductData {
   addToInventory: boolean;
-  category: 'men' | 'women' | 'unisex';  // restricting to specific categories
-  currency: 'USD' | 'NGN';  // restricting to supported currencies
+  category: "men" | "women" | "unisex"; // restricting to specific categories
+  currency: "USD" | "NGN"; // restricting to supported currencies
   description: string;
   images: string[];
   isFeatured: boolean;
   name: string;
   price: number;
-  priceDiscount?: number;  // optional since it's a discount
+  priceDiscount?: number; // optional since it's a discount
   size: string;
   subCategory: string;
 }
@@ -50,20 +50,18 @@ export const createProduct = async (data: ProductData) => {
   }
 };
 
-
-
-export const updateProduct = async (id:string,data:ProductData) => {
+export const updateProduct = async (id: string, data: ProductData) => {
   try {
-    const response = await axios$.patch(`/product/${id}`,data);
+    const response = await axios$.patch(`/product/${id}`, data);
     return response;
   } catch (error: unknown) {
     throw error;
   }
 };
 
-export const updateProductStatus = async (id:string,status:string) => {
+export const updateProductStatus = async (id: string, status: string) => {
   try {
-    const response = await axios$.patch(`/product/status/${id}`,status);
+    const response = await axios$.patch(`/product/status/${id}`, status);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -77,37 +75,38 @@ export const deleteProduct = async (id: string) => {
   } catch (error: unknown) {
     throw error;
   }
-}
+};
 
-export const fetchAllProducts = async (page:number,size:number) => {
+export const fetchAllProducts = async (page: number, size: number) => {
   try {
-    const response = await axios$.get(`/product/admin?page=${page}&size=${size}`);
+    const response = await axios$.get(
+      `/product/admin?page=${page}&size=${size}`
+    );
     // console.log("Raw API response:", response);
 
     return response;
   } catch (error: unknown) {
     throw error;
   }
-}
+};
 
 export const fetchProduct = async (productId: string) => {
   try {
     // console.log("Fetching product with ID:", productId);
     const response = await axios$.get(`/product/${productId}`);
     // console.log("Raw API response:", response);
-    
+
     // Add validation for response structure
     if (!response?.data) {
       throw new Error("Invalid response structure");
     }
-    
+
     return response;
   } catch (error: unknown) {
-    console.error("API error:", error);
+    // console.error("API error:", error);
     throw error;
   }
 };
-
 
 export const getOrders = async () => {
   try {
@@ -123,7 +122,6 @@ export const getOrder = async (orderId: any) => {
   try {
     const response = await axios$.get(`/order/${orderId}`);
     return response;
-
   } catch (error: unknown) {
     // console.error("API error:", error);
     throw error;
@@ -145,29 +143,26 @@ export const getSettings = async () => {
   try {
     const response = await axios$.get(`/auth/admin/settings`);
     return response;
-
   } catch (error: unknown) {
     // console.error("API error:", error);
     throw error;
   }
 };
 
-export const updateSettings = async (data:Settings) => {
+export const updateSettings = async (data: Settings) => {
   try {
-    const response = await axios$.patch(`/auth/admin/settings`,data);
+    const response = await axios$.patch(`/auth/admin/settings`, data);
     return response;
-
   } catch (error: unknown) {
     // console.error("API error:", error);
     throw error;
   }
 };
 
-export const updateContent = async (data:HeroPage) => {
+export const updateContent = async (data: HeroPage) => {
   try {
-    const response = await axios$.patch(`/auth/admin/hero-section`,data);
+    const response = await axios$.patch(`/auth/admin/hero-section`, data);
     return response;
-
   } catch (error: unknown) {
     // console.error("API error:", error);
     throw error;
@@ -178,9 +173,53 @@ export const getContent = async () => {
   try {
     const response = await axios$.get(`/auth/hero-section`);
     return response;
-
   } catch (error: unknown) {
     // console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const getCustomers = async (page: number, size: number) => {
+  try {
+    const response = await axios$.get(
+      `/auth/admin/users?page=${page}&size=${size}`
+    );
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const updateUserStatus = async (
+  id: any,
+  data: "active" | "inactive" | "blocked"
+) => {
+  try {
+    const response = await axios$.patch(`/auth/admin/user-status/${id}`, data);
+    return response;
+    // console.error("API error:", response);
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getCustomer = async (id: any) => {
+  try {
+    const response = await axios$.get(`/auth/admin/user/${id}`);
+    // console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+
+export const getStatusCount = async (id: any) => {
+  try {
+    const response = await axios$.get(`/admin/orders/status-count?userID=${id}`);
+    console.log("response", response);
+    return response;
+  } catch (error: unknown) {
     throw error;
   }
 };
