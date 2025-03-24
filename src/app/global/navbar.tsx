@@ -279,7 +279,7 @@ export const Navbar = () => {
         </div>
       </div>
       {/* ----- Navbar Desktop----- */}
-      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px]   items-center border-b border">
+      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px] items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
           {/* ----- search and currency ----- */}
           <div className="flex gap-6 items-center">
@@ -334,17 +334,17 @@ export const Navbar = () => {
               {currencyOptions && (
                 <div
                   // onMouseLeave={handleCurrencyOptions}
-                  className="flex flex-col gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
+                  className="flex flex-col gap-2 sm:gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
                 >
-                  <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
-                    <div className="gap-2 flex">
+                  <div className="rounded-lg h-10 w-full px-[.4] sm:px-1 md:px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
+                    <div className="gap-1 items-center flex">
                       {nigeriaIcon()}
                       <p className="">NGN ₦</p>
                     </div>
                     {checked()}
                   </div>
-                  <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
-                    <div className="gap-2 flex">
+                  <div className="rounded-lg h-10 w-full px-[.4] sm:px-1 md:px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
+                    <div className="gap-1 flex">
                       {USAIcon()}
                       <p className="">USA $</p>
                     </div>

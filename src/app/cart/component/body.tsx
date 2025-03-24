@@ -55,7 +55,7 @@ export const Body = () => {
   };
 
   return (
-    <div className="w-full px-6 md:px-10  lg:px-10 flex flex-col gap-4 z-0 mt-[120px] ">
+    <div className="w-full px-6 md:px-10  lg:px-10 flex flex-col gap-4 z-0 mt-[120px]">
       {/* ----- deleteItem modal ----- */}
       {deleteItemId && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
@@ -207,11 +207,11 @@ export const Body = () => {
         {cartItems.length === 0 ? (
           <div className="bg-background h-[360px] w-full flex justify-center items-center">
             {/* ----- content ---- */}
-            <div className="max-w-[406px] w-full h-fit flex flex-col gap-8 items-center text-center ">
+            <div className="w-full max-w-[406px] h-fit flex flex-col gap-8 items-center text-center ">
               {redCart()}
               <div className="flex flex-col gap-4 text-text_strong">
                 <p
-                  className={`${lora.className} font-medium text-[22px] text-nowrap`}
+                  className={`${lora.className} font-medium text-[22px] sm:text-nowrap`}
                 >
                   There are currently no items in the cart
                 </p>

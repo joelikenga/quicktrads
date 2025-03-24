@@ -453,7 +453,7 @@ export const BodyContent = () => {
               <thead className="text-start bg-background border-y">
                 <tr className="">
                   <th
-                    scope="col"
+                    scope="col"   
                     className="px-4 py-[12px] text-start  font-normal text-sm h-10 "
                   >
                     Product details

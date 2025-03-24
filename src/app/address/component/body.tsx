@@ -127,7 +127,7 @@ export const Body = () => {
     
 
   return (
-    <div className=" flex flex-col gap-8 h-[82px] border-b ml-[280px] mt-[150px]">
+    <div className="px-4 md:px-0 flex flex-col gap-8 h-[82px] border-b md:ml-[280px] mt-[150px]">
       {/* add address modal */}
       {addressModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-start backdrop-blur px-4 md:px-0 overflow-y-auto">
@@ -293,14 +293,14 @@ export const Body = () => {
         </div>
       )}
 
-      <div className="flex justify-between items-start">
-        <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
+      <div className="flex justify-between w-full max-w-7xl items-start">
+        <div className="flex flex-col gap-2 w-fit font-normal">
           <p className="text-text_strong text-[22px]">Address</p>
-          <p className="text-text_weak text-base ">{`Add, update and select your address information`}</p>
+          <p className="text-text_weak sm:text-base text-[12px] sm:w-full">{`Add, update and select your address information`}</p>
         </div>
         <button
           onClick={() => setAddressModal(true)}
-          className=" w-fit max-w-[323px] text-background bg-text_strong rounded-full px-6 h-10 flex justify-center items-center"
+          className=" w-fit max-w-[323px] text-background bg-text_strong rounded-full text-nowrap px-6 mr-0 md:mr-9 xl:mr-0 h-10 flex justify-center items-center"
         >
           Add address
         </button>
@@ -332,7 +332,7 @@ export const Body = () => {
             {/* address */}
 
             {(
-                  <div className="mt-8 w-full flex flex-col gap-2">
+                  <div className="mt-0 sm:mt-8 w-full flex flex-col gap-2">
                     {shippingData &&
                       shippingData.map((data, index) => (
                         <div
@@ -367,7 +367,7 @@ export const Body = () => {
                           </div>
 
                           <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
-                            <div className="flex gap-4 font-medium text-sm">
+                            <div className="flex gap-3 sm:gap-4 font-medium text-sm">
                               <div className="">{data.phoneNumber}</div>
                               <div className="">{data.email}</div>
                             </div>

@@ -11,7 +11,7 @@ const Body = () => {
         setCountry((prev) => !prev)
     }
     return (
-        <div className=" flex flex-col gap-8 h-[82px] ml-[280px] mt-[150px]">
+        <div className=" flex flex-col gap-8 h-[82px] px-4 md:ml-[280px] mt-[150px]">
             <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
                 <p className="text-text_strong text-[18px] leading-[28px]">Profile</p>
                 <p className="text-text_weak text-base">Update your profile details</p>
@@ -35,7 +35,7 @@ const Body = () => {
 
                 <div className="flex flex-col items-start gap-4 w-full ">
                     {/* fullName and Email */}
-                    <div className="flex gap-8 justify-start items-center w-full">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 justify-start items-center w-full">
                         {/* fullName */}
                         <div className="flex flex-col gap-2 w-full max-w-[323px]">
                             <p className="text-sm leading-[22px] text-text_strong">Full name</p>
@@ -62,7 +62,7 @@ const Body = () => {
                     </div>
 
                     {/* phone and Country */}
-                    <div className="flex gap-8 justify-start items-center w-full">
+                    <div className="flex flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 justify-start items-center w-full">
                         {/* Phone */}
                         <div className="flex flex-col gap-2 w-full max-w-[323px]">
                             <p className="text-sm leading-[22px] text-text_strong">Phone number</p>
@@ -99,7 +99,7 @@ const Body = () => {
                     </div>
 
                     {/* State and Address */}
-                    <div className="flex gap-8 justify-start items-center w-full">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 justify-start items-center w-full">
                         {/* State */}
                         <div className="flex flex-col gap-2 w-full max-w-[323px]">
                             <p className="text-sm leading-[22px] text-text_strong">State</p>

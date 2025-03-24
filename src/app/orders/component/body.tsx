@@ -222,10 +222,10 @@ export const Body = () => {
 
 
   return (
-    <div className=" flex flex-col gap-8 h-[82px] border-b ml-[280px] mt-[150px]">
+    <div className=" flex flex-col px-4 md:px-0 gap-8 h-[82px] border-b md:ml-[280px] mt-[150px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
         <p className="text-text_strong text-[22px]">Orders</p>
-        <p className="text-text_weak text-base ">{`Add, update and select your address information`}</p>
+        <p className="text-text_weak sm:text-base text-[12px]">{`Add, update and select your address information`}</p>
       </div>
 
       {(filteredOrders === null || filteredOrders === undefined) && (
@@ -236,8 +236,8 @@ export const Body = () => {
               {ordersIcon()}
 
               <div className="flex flex-col gap-4 font-normal text-center">
-                <p className="text-text_strong text-[22px] ">{`There are currently no order`}</p>
-                <p className="text-text_weak text-base ">{`Discover the latest trends and start building your dream wardrobe today!`}</p>
+                <p className="text-text_strong text-[22px]">{`There are currently no order`}</p>
+                <p className="text-text_weak text-base">{`Discover the latest trends and start building your dream wardrobe today!`}</p>
               </div>
               <button className="bg-text_strong text-background font-medium text-base h-12 w-full px-6 flex rounded-full items-center justify-center">
                 Continue shopping
@@ -422,7 +422,7 @@ export const Body = () => {
             </div>
             {/* pagination */}
             {!loading && (
-              <div className="flex justify-between p-4 border-t">
+              <div className="flex flex-wrap items-center justify-between p-4 border-t">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => {
@@ -483,7 +483,7 @@ export const Body = () => {
                   </button>
                 </div>
 
-                <p className="font-medium text-base">
+                <p className="font-medium text-[14px] sm:text-base">
                   Page {orderData?.page.page || 1} of{" "}
                   {Math.ceil(
                     (orderData?.page.totalCount || 0) /
