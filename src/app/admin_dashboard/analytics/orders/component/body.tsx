@@ -7,7 +7,7 @@ const Body = () => {
   return (
     <div className="">
       <Navbar />
-      <div className="px-10 w-full">
+      <div className=" w-full">
         <div className="mx-auto w-full max-w-7xl">
           <SideNav />
           <BodyContent />

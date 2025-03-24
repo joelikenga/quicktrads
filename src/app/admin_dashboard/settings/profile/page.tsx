@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { SettingsideNav } from "@/app/global/settingsideNav";
+import { SettingsideNav } from "@/app/admin_dashboard/settings/component/settingsideNav";
 import Body from "./component/body";
 import { Navbar } from '../../component/navbar';
 

@@ -1,7 +1,9 @@
 "use client";
 import { getSettings, updateSettings } from "@/utils/api/admin/products";
-import { errorToast } from "@/utils/toast/toast";
+import { errorToast, successToast } from "@/utils/toast/toast";
 import { useEffect, useState } from "react";
+import Router from 'next/router';
+import { success } from "@/app/global/svg";
 
 export const Body = () => {
   const [loading, setLoading] = useState(true);
@@ -36,6 +38,8 @@ export const Body = () => {
 
   useEffect(() => {
     fetchSettings();
+    const interval = setInterval(fetchSettings, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSettingUpdate = async (
@@ -65,8 +69,12 @@ export const Body = () => {
       }
 
       await updateSettings(currentSettings);
+      // Router.reload()
+      successToast('Settings updated');
     } catch (error) {
-      errorToast( error);
+      
+      errorToast( `Failed to update settings ${error}`);
+      throw error;
     }
   };
 

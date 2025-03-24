@@ -113,31 +113,7 @@ const options = {
   },
 };
 
-const monthlydata = {
-  labels: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ], // Labels for all months
-  datasets: [
-    {
-      label: "Sales",
-      data: [0, 20, 15, 35, 38, 20, 42, 41, 48, 60, 52, 65], // Candlestick-like zigzag pattern
-      borderColor: "#22C26E", // Active color
-      backgroundColor: "rgba(34, 194, 110, 0.2)", // Active color with transparency
-      // fill: "origin", // Fill the area beneath the line
-    },
-  ],
-};
+
 
 const circleData = [
   {
