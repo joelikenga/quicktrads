@@ -10,6 +10,7 @@ import {
   previousIcon,
   review_1,
   searchIcon,
+  success,
   trash,
 } from "@/app/global/svg";
 import { useState, useRef, useEffect } from "react";
@@ -20,7 +21,7 @@ import {
   fetchAllProducts,
 } from "../../../../../utils/api/admin/products";
 import { useRouter } from "next/navigation"; // Add this at the top with other imports
-import { errorToast } from "@/utils/toast/toast";
+import { errorToast, successToast } from "@/utils/toast/toast";
 
 // interface ProductData {
 //   name: string;
@@ -326,7 +327,7 @@ export const BodyContent = () => {
 
       // Send to backend using the createProduct function
       const response = await createProduct(productData);
-      console.log("Product drafted successfully:", response);
+      successToast("Product added to draft ");
 
       // Clear form after successful upload
       setImages([]);
@@ -336,7 +337,7 @@ export const BodyContent = () => {
       setDescription("");
       setSelectedSizes([]);
     } catch (error) {
-      console.error("Error drafting product:", error);
+     errorToast("Error drafting product");
       setUploadError("Failed to draft product. Please try again.");
     } finally {
       setIsSaving(false);
@@ -347,7 +348,7 @@ export const BodyContent = () => {
     try {
       const response = await fetchAllProducts(1, 1000); // Get all products at once
 
-      console.log("All products response:", response);
+      // console.log("All products response:", response);
 
       const transformedProducts =
         response?.data?.map(
@@ -512,7 +513,7 @@ export const BodyContent = () => {
     try {
       // Call the deleteProduct function from your API utility
       await deleteProduct(productId);
-      console.log("Product deleted successfully");
+      successToast("Product deleted");
 
       // Refresh the product list after deletion
       getAllproducts();

@@ -2,9 +2,14 @@
 import { edit, bin, userGroup, restoreIcn } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { ProfileAvatar } from "@/app/global/profileGenerator";
 
 interface User {
+  id: string;
   name: string;
+  image: string;
   mail: string;
   total_orders: number;
   last_purchase: string;
@@ -25,6 +30,7 @@ const lora = Lora({
 });
 
 const CustomerTable: React.FC<UserTableProps> = ({ users }) => {
+  const router = useRouter();
   const [deleteCustomer, setDeleteCustomer] = useState(false);
   const [restoreCustomer, setRestoreCustomer] = useState(false);
 
@@ -35,9 +41,14 @@ const CustomerTable: React.FC<UserTableProps> = ({ users }) => {
   const restore = () => {
     setRestoreCustomer((prev) => !prev);
   };
+
+  const handleRowClick = (userId: string) => {
+    router.push(`/admin_dashboard/management/customers/${userId}`);
+  };
+
   return (
     <>
-      <div className="overflow-x-auto ">
+      <div className="overflow-x-auto">
         <table className="w-full border-t border-b lg:w-[1080px] border-stroke_weak">
           {/* Table Header */}
           <thead className="border-b border-stroke_weak">
@@ -73,65 +84,96 @@ const CustomerTable: React.FC<UserTableProps> = ({ users }) => {
 
           {/* Table Body */}
           <tbody>
-            {users.map((user, key) => (
-              <tr key={key} className="hover:bg-gray-50 rounded-lg cursor-pointer">
-                <td className="pt-[16px] pl-[16px] h-[80px] flex gap-3 items-center">
-                  <div className="w-[40px] h-[40px] rounded-full bg-black" />
-                  <p>{user.name}</p>
-                </td>
-                <td className="pt-[16px] pl-[16px] h-[80px]">
-                  <p className="text-base leading-[22px] pb-[4px] text-text_strong font-[400]">
-                    {user.mail}
-                  </p>
-                  <p className="text-base leading-[22px] text-text_weak font-[400]">
-                    {user.phone_number}
-                  </p>
-                </td>
-
-                <td className="pt-[16px] pl-[16px]">{user.total_orders}</td>
-                <td className="pt-[16px] pl-[16px] h-[80px] flex gap-2">
-                  <p>{user.last_purchase}</p>
-                  <p>{user.time}</p>
-                </td>
-
-                <td
-                  className={`w-[150px] pt-[16px] pl-[16px] h-[80px] text-center`}
+            {users.length > 0 ? (
+              users.map((user, key) => (
+                <tr
+                  key={key}
+                  className="hover:bg-gray-50 rounded-lg cursor-pointer"
+                  onClick={() => handleRowClick(user.id)}
                 >
-                  <p
-                    style={{
-                      backgroundColor: user.status_color,
-                      color: user.status_deep,
-                    }}
-                    className="w-[100px] flex gap-1 h-[24px] rounded-full justify-center items-center text-[14px] leading-[19.07px] font-[500] mx-auto"
-                  >
-                    <p
-                      style={{ backgroundColor: user.status_deep }}
-                      className="w-[8px] h-[8px] rounded-full"
-                    ></p>
-                    {user.status}
-                  </p>
-                </td>
+                  <td className="pt-[16px] pl-[16px] h-[80px] flex gap-3 items-center">
+                    <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                      {user?.image.length >0 ? (
+                        <Image
+                          src={user.image}
+                          width={40}
+                          height={40}
+                          alt={`${user.name}'s avatar`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : <ProfileAvatar name={user?.name} size="medium" />}
 
-                {/* options */}
-                <td className="flex w-[120px] h-[80px] justify-center items-center gap-2">
-                  <span className="cursor-pointer selection:no-underline">
-                    {edit()}
-                  </span>
-                  <span
-                    onClick={clear}
-                    className="cursor-pointer selection:no-underline"
+                    </div>
+                    <p>{user.name}</p>
+                  </td>
+                  <td className="pt-[16px] pl-[16px] h-[80px]">
+                    <p className="text-base leading-[22px] pb-[4px] text-text_strong font-[400]">
+                      {user.mail}
+                    </p>
+                    <p className="text-base leading-[22px] text-text_weak font-[400]">
+                      {user.phone_number}
+                    </p>
+                  </td>
+
+                  <td className="pt-[16px] pl-[16px]">{user.total_orders}</td>
+                  <td className="pt-[16px] pl-[16px] h-[80px] flex gap-2">
+                    <p>{user.last_purchase}</p>
+                    <p>{user.time}</p>
+                  </td>
+
+                  <td
+                    className={`w-[150px] pt-[16px] pl-[16px] h-[80px] text-center`}
                   >
-                    {bin()}
-                  </span>
-                  <span
-                    onClick={restore}
-                    className="cursor-pointer selection:no-underline"
-                  >
-                    {restoreIcn()}
-                  </span>
+                    <div
+                      style={{
+                        backgroundColor: user.status_color,
+                        color: user.status_deep,
+                      }}
+                      className="w-[100px] flex gap-1 h-[24px] rounded-full justify-center items-center text-[14px] leading-[19.07px] font-[500] mx-auto"
+                    >
+                      <span
+                        style={{ backgroundColor: user.status_deep }}
+                        className="w-[8px] h-[8px] rounded-full"
+                      ></span>
+                      {user.status}
+                    </div>
+                  </td>
+
+                  {/* options */}
+                  <td className="flex w-[120px] h-[80px] justify-center items-center gap-2">
+                    {/* <span className="cursor-pointer selection:no-underline">
+                      {edit()}
+                    </span> */}
+                    <span
+                      onClick={clear}
+                      className="cursor-pointer selection:no-underline"
+                    >
+                      {bin()}
+                    </span>
+                    <span
+                      onClick={restore}
+                      className="cursor-pointer selection:no-underline"
+                    >
+                      {restoreIcn()}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="text-center py-8">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="w-max mx-auto pb-4">{userGroup()}</div>
+                    <h3 className="text-[18px] leading-[28px]">
+                      No matching customers found
+                    </h3>
+                    <p className="text-[14px] leading-[22px] text-text_weak">
+                      Try adjusting your search or filter criteria
+                    </p>
+                  </div>
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -148,12 +190,12 @@ const CustomerTable: React.FC<UserTableProps> = ({ users }) => {
             <h3
               className={`text-[22px] ${lora.className} leading-[28px] font-[400] text-center`}
             >
-              Are you sure you want to block customer `&apos;`s account?
+              {` Are you sure you want to block customer's account?`}
             </h3>
             <p className="text-base w-[384px] leading-[22px] text-center font-[400] pt-[16px]">
-              This action will block customer`&apos;`s data temporarily. If you
-              `&apos;`re not ready to make changes, you can cancel block for
-              later instead
+              {`This action will block customer's data temporarily. If you
+              're not ready to make changes, you can cancel block for
+              later instead`}
             </p>
 
             {/* block and cancel */}

@@ -33,10 +33,10 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
     heroSubTitle: "",
     heroImage: "",
     heroBtnText: "",
-    heroBtnTextColor: "#FFFFFF",
+    heroBtnTextColor: selectedColor,
     heroBtnBgColor: "#000000",
     heroBtnCTA: "",
-    heroPageName: "heroPageMain" as const
+    heroPageName: "heroPagePromotion" as const
   });
 
   useEffect(() => {

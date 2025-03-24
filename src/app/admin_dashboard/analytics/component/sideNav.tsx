@@ -39,7 +39,7 @@ export const SideNav = () => {
        Products
       </Link>
 
-      <Link
+      {/* <Link
         href={`/admin_dashboard/analytics/customers`}
         className={`w-full h-[38px] rounded-full items-center flex justify-center ${
           pathname === "/admin_dashboard/analytics/customers"
@@ -48,7 +48,7 @@ export const SideNav = () => {
         }`}
       >
        Customers
-      </Link>
+      </Link> */}
     </div>
   );
 };

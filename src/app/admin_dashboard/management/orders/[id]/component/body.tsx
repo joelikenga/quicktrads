@@ -9,12 +9,16 @@ import {
   numberIcon,
   ordersIcon,
   orderSmallIcon,
+  successIcon,
+  successInfoIcon,
+  unsuccessfulIcon,
   updateArrowIcon,
+  vanIcon,
   xIcon,
 } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getOrder } from "@/utils/api/admin/products";
+import { getOrder, updateOrderStatus } from "@/utils/api/admin/products";
 import { Lora } from "next/font/google";
 import { useParams } from "next/navigation";
 
@@ -55,6 +59,7 @@ interface ShippingDetails {
   address: string;
   phoneNumber: string;
   state: string;
+  country: string;
 }
 
 interface OrderItem {
@@ -66,6 +71,7 @@ interface OrderItem {
 
 interface OrderData {
   id: string;
+  dhlStatus:any;
   order: OrderItem[];
   shippingDetails: ShippingDetails;
   shippingFee: number;
@@ -84,14 +90,19 @@ export const Body = () => {
   const [cancelOrder, setCancelOrder] = useState<boolean>(false);
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [trackingId, setTrackingId] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchOrder = async (id: string) => {
     try {
       setIsLoading(true);
       const response = await getOrder(id);
-      setOrderData(response.data);
+      if (response?.data) {
+        setOrderData(response.data);
+      }
     } catch (err: unknown) {
-      throw err;
+      console.error("Error fetching order:", err);
     } finally {
       setIsLoading(false);
     }
@@ -99,15 +110,71 @@ export const Body = () => {
 
   useEffect(() => {
     fetchOrder(id);
+    // Set up auto-refresh interval
+    // const interval = setInterval(() => {
+    //   fetchOrder(id);
+    // }, 1000);
+
+    // // Cleanup interval on component unmount
+    // return () => clearInterval(interval);
   }, [id]);
 
-  if (isLoading) {
+  const handleStatusUpdate = async () => {
+    try {
+      setIsUpdating(true);
+      const statusUpdate = await updateOrderStatus(id, {
+        status: selectedStatus || orderData?.status,
+        trackingID: trackingId
+      });
+      console.log(statusUpdate)
+      if (statusUpdate) {
+        await fetchOrder(id);
+        setTrackingId("");
+        setSelectedStatus("");
+      }
+    } catch (err) {
+      console.error("Error updating order status:", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setTrackingId("");
+    setSelectedStatus("");
+  };
+
+  const getStatusIcon = (currentStep: string, orderStatus: string | undefined) => {
+    if (!orderStatus) return unsuccessfulIcon();
+    
+    switch (currentStep) {
+      case 'pending':
+        return orderStatus !== 'cancelled' ? successInfoIcon() : unsuccessfulIcon();
+      case 'processing':
+        return ['processing', 'delivered'].includes(orderStatus) ? successInfoIcon() : unsuccessfulIcon();
+      case 'delivered':
+        return orderStatus === 'delivered' ? successInfoIcon() : unsuccessfulIcon();
+      default:
+        return unsuccessfulIcon();
+    }
+  };
+
+  // Add helper function to get shipping status text
+  const getShippingStatusText = (dhlStatus: any, status: string) => {
+    if (dhlStatus === null) {
+    } else if (dhlStatus === null && status !== 'processing') {
+    } else {
+      return dhlStatus; // Show actual DHL status if available
+    }
+  };
+
+  if (isLoading || !orderData || !orderData.order || orderData.order.length === 0) {
     return (
       <div className="ml-[280px] mt-[120px]">
         <div className="animate-pulse">
           {/* Header skeleton */}
           <div className="h-8 w-48 bg-gray-200 rounded"></div>
-          
+
           {/* Content section skeleton */}
           <div className="mt-8 flex gap-4">
             <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
@@ -184,7 +251,10 @@ export const Body = () => {
       )}
 
       <div className="flex justify-start gap-2 items-center font-normal text-nowrap w-full">
-        <div onClick={() => history.back()} className="text-text_strong text-[22px] flex items-center gap-2">
+        <div
+          onClick={() => history.back()}
+          className="text-text_strong text-[22px] flex items-center gap-2"
+        >
           {arrowleft()}
           <>Order details</>
         </div>
@@ -216,7 +286,9 @@ export const Body = () => {
               {/* status */}
               <div className="flex justify-center items-center w-[100px] h-[24px] bg-[#F5FFFC] rounded-full px-2 gap-4">
                 <div className="w-[8px] h-[8px] rounded-full bg-green-500"></div>
-                <p className="text-text_weak text-sm font-normal">{orderData?.status}</p>
+                <p className="text-text_weak text-sm font-normal">
+                  {orderData?.status}
+                </p>
               </div>
             </div>
             {/* contact */}
@@ -241,10 +313,15 @@ export const Body = () => {
         </div>
 
         {/* update status */}
-        <button className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-fit pl-4 pr-2 border gap-2">
-          <p>Update status</p>
-          <i>{updateArrowIcon()}</i>
-        </button>
+        {tab === "order items" ? (
+          <button
+            onClick={() => setTab("track orders")}
+            className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-fit pl-4 pr-2 border gap-2"
+          >
+            <p>Update status</p>
+            <i>{updateArrowIcon()}</i>
+          </button>
+        ) : null}
       </div>
 
       <div className="px-7 flex flex-col gap-12">
@@ -269,7 +346,18 @@ export const Body = () => {
               <p className="text-text_weak">Tracking ID</p>
               <div className="flex gap-2 items-center">
                 <i>{add()}</i>
-                <p className="text-text_strong underline">{orderData?.trackingID || "Add tracking ID"}</p>
+                {orderData?.trackingID ? (
+                  <p className="text-text_strong underline">
+                    {orderData?.trackingID || "Add tracking ID"}
+                  </p>
+                ) : (
+                  <p
+                    onClick={() => setTab("track orders")}
+                    className="text-text_strong underline"
+                  >
+                    {"Add tracking ID"}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -277,7 +365,9 @@ export const Body = () => {
           <div className="flex gap-8 justify-center items-center col-span-1  px-6">
             <div className="flex-col items-center justify-center ">
               <p className="text-text_weak">Date</p>
-              <p className="text-text_strong">{new Date(orderData?.createdAt || "").toLocaleDateString()}</p>
+              <p className="text-text_strong">
+                {new Date(orderData?.createdAt || "").toLocaleDateString()}
+              </p>
             </div>
           </div>
         </div>
@@ -397,6 +487,208 @@ export const Body = () => {
                 </tr>
               </tbody>
             </table>
+          )}
+
+          {/* track orders */}
+          {tab === "track orders" && (
+            <div className="w-full max-w-[829px flex flex-col  gap-12 mt-12">
+              <div className="w-full grid grid-cols-5 ">
+                <div className="col-span-1 flex justify-between gap-2 pr-6 items-start w-fit ">
+                  <i>{vanIcon()}</i>
+                  <div className="flex flex-col items-center">
+                    <p className="text-text_weak text-sm font-normal">
+                      Order type
+                    </p>
+                    <p className="text-text_strong text-base font-normal">
+                      Home delivery
+                    </p>
+                  </div>
+                </div>
+                <div className="col-span-2 flex justify-center gap-2 px-6 items-center border-x-2 w-fit">
+                  <div className="flex flex-col items-center">
+                    <p className="text-text_weak text-sm font-normal">
+                      contact information
+                    </p>
+                    <p className="text-text_strong text-base font-normal">
+                      {orderData?.shippingDetails.fullName}
+                    </p>
+                    <div className="text-text_weak text-base font-normal flex gap-1 items-center">
+                      <p className="">{orderData?.shippingDetails.phoneNumber}</p>
+                      <>|</>
+                      <p className="">{orderData?.shippingDetails.email}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-2 flex justify-center text-center gap-2 pl- items-center w-full max-w-258px">
+                  <div className="flex flex-col justify-center">
+                    <p className="text-text_weak text-sm font-normal text-center">
+                      Shipping address
+                    </p>
+                    <p className="text-text_strong text-base font-normal">
+                      {`${orderData?.shippingDetails.address}, ${orderData?.shippingDetails.state}, ${orderData?.shippingDetails?.country}`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* tracking view */}
+              <div className="w-full flex justify-start items-center">
+                <div className="w-fit flex justify-center items-center">
+                  {/* order confirmed */}
+                  <div className="">
+                    <div className="flex-flex-col items-center">
+                      <div className="w-fit flex justify-end">
+                        <div className="flex items-center justify-end pl-[100px] w-fit">
+                          <i>{getStatusIcon('pending', orderData?.status)}</i>
+                          <span className="w-[100px] border h-0.5 bg-stroke_weak"></span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center mt-4">
+                        <p className="text-text_weak text-sm font-normal">
+                          Order confirmed
+                        </p>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Product shipped */}
+                  <div className="">
+                    <div className="flex-flex-col items-center">
+                      <div className="w-fit flex justify-end">
+                        <div className="flex items-center justify-end w-fit">
+                          <span className="w-[86px] border h-0.5 bg-stroke_weak"></span>
+                            <i>{orderData?.dhlStatus ? successInfoIcon() : unsuccessfulIcon()}</i>
+                          <span className="w-[100px] border h-0.5 bg-stroke_weak"></span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center mt-4">
+                        <p className="text-text_weak text-sm font-normal">
+                          Product shipped
+                        </p>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Product Delivered */}
+                  <div className="">
+                    <div className="flex-flex-col items-center">
+                      <div className="w-fit flex justify-end">
+                        <div className="flex items-center justify-end w-fit pr-[100px]">
+                          <span className="w-[100px] border h-0.5 bg-stroke_weak"></span>
+                          <i>{getStatusIcon('delivered', orderData?.status)}</i>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center mt-4">
+                        <p className="text-text_weak text-sm font-normal">
+                          Product Delivered
+                        </p>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className=" flex flex-col justify-center items-center gap-8 mt- 12 w-full max-w-[892px]  py-8 px6">
+                <div className="flex flex-col justify-start items-start gap-2  w-full max-w-[392px]">
+                  <p className="text-text_strong text-sm font-normal">
+                    Tracking ID
+                  </p>
+                  <input
+                    className="border outline-none rounded-lg  w-full h-10 px-4 py-2"
+                    placeholder="Trk-12344556"
+                    type="text"
+                    value={trackingId}
+                    onChange={(e) => setTrackingId(e.target.value)}
+                  />
+                </div>
+
+                {/* status */}
+                <div className="flex flex-col justify-start items-start gap-2 w-full max-w-[392px]">
+                  <p className="text-text_strong text-sm font-normal">
+                    Update status
+                  </p>
+
+                  {/* status select */}
+                  <div className="grid grid-cols-3 gap-4 w-full">
+                    {/* pending */}
+                    <button 
+                      onClick={() => setSelectedStatus("pending")}
+                      className={`rounded-full border h-10 flex justify-center items-center gap-2 text-warning_1 px-4 text-sm font-medium ${
+                        selectedStatus === "pending" ? "bg-warning_1 bg-opacity-10" : ""
+                      }`}
+                    >
+                      <span className="h-2 w-2 bg-warning_1 rounded-full"></span>
+                      Pending
+                    </button>
+
+                    {/* Processing */}
+                    <button 
+                      onClick={() => setSelectedStatus("processing")}
+                      className={`rounded-full border h-10 flex justify-center items-center gap-2 text-[#1F0EC9] px-4 text-sm font-medium ${
+                        selectedStatus === "processing" ? "bg-[#1F0EC9] bg-opacity-10" : ""
+                      }`}
+                    >
+                      <span className="h-2 w-2 bg-[#1F0EC9] rounded-full"></span>
+                      Processing
+                    </button>
+
+                    {/* Delivered */}
+                    <button 
+                      onClick={() => setSelectedStatus("delivered")}
+                      className={`rounded-full border h-10 flex justify-center items-center gap-2 text-success_1 px-4 text-sm font-medium ${
+                        selectedStatus === "delivered" ? "bg-success_1 bg-opacity-10" : ""
+                      }`}
+                    >
+                      <span className="h-2 w-2 bg-success_1 rounded-full"></span>
+                      Delivered
+                    </button>
+
+                    {/* Refunded */}
+                    <button 
+                      onClick={() => setSelectedStatus("refunded")}
+                      className={`rounded-full border h-10 flex justify-center items-center gap-2 text-black px-4 text-sm font-medium ${
+                        selectedStatus === "refunded" ? "bg-black bg-opacity-10" : ""
+                      }`}
+                    >
+                      <span className="h-2 w-2 bg-black rounded-full"></span>
+                      Refunded
+                    </button>
+
+                    {/* Cancelled */}
+                    <button 
+                      onClick={() => setSelectedStatus("cancelled")}
+                      className={`rounded-full border h-10 flex justify-center items-center gap-2 text-error_1 px-4 text-sm font-medium ${
+                        selectedStatus === "cancelled" ? "bg-error_1 bg-opacity-10" : ""
+                      }`}
+                    >
+                      <span className="h-2 w-2 bg-error_1 rounded-full"></span>
+                      Cancelled
+                    </button>
+                  </div>
+
+                  {/* update and cancel button */}
+                  <div className="w-full flex gap-6 mt-6">
+                    <button 
+                      onClick={handleStatusUpdate}
+                      disabled={isUpdating}
+                      className="bg-black text-background h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border disabled:opacity-50"
+                    >
+                      {isUpdating ? "Updating..." : "Update"}
+                    </button>
+
+                    <button 
+                      onClick={handleCancel}
+                      className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

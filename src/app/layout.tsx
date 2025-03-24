@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "react-hot-toast";
 import RouteGuard from "@/utils/routeGuard";
+import InternetConnection from "@/components/InternetConnection";
 
 const openSans = Open_Sans({
   variable: "--font-raleway",
@@ -36,11 +37,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${openSans.className}  antialiased`}>
+      <body suppressHydrationWarning className={`${openSans.className}  antialiased`}>
+              <InternetConnection />
           <CartProvider>
-        <RouteGuard>
-            {children}
-        </RouteGuard>
+            <RouteGuard>
+              {children}
+            </RouteGuard>
             <Toaster />
           </CartProvider>
       </body>
