@@ -54,7 +54,7 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
               <span>{editIcon()}</span>Edit
             </p>
           </div>
-
+{/* hero content display */}
           <div className="h-[280px] flex relative bg-brand_yellow">
             <div className="py-[64px] pl-[50.91px] selection:no-underline">
               <h1
@@ -119,7 +119,7 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
               <span>{editIcon()}</span>Edit
             </p>
           </div>
-
+{/* promotion content display */}
           <div className="h-[280px] relative flex justify-between bg-promotion_bg">
             <div className="py-[64px] pl-[50.91px] selection:no-underline">
               <h1

@@ -40,7 +40,7 @@ export const SettingsideNav = () => {
             Password
           </Link>
 
-          <Link
+          {/* <Link
             href={`/admin_dashboard/settings/notification`}
             className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
               pathname === "/admin_dashboard/settings/notification"
@@ -49,7 +49,7 @@ export const SettingsideNav = () => {
             } w-full`}
           >
             Notification
-          </Link>
+          </Link> */}
 
           <Link
             href={`/admin_dashboard/settings/content`}

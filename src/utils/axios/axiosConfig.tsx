@@ -1,6 +1,7 @@
 import axios from "axios";
 import nookies from "nookies";
 import { errorToast } from "../toast/toast";
+// import toast from "react-hot-toast";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
@@ -42,9 +43,7 @@ axiosInstance.interceptors.response.use(
     if (!error.response) {
       // Network error (no response)
       if (error.code === 'ECONNABORTED') {
-        errorToast("Network timeout. Please check your internet connection.");
-      } else {
-        errorToast(error.code);
+        // errorToast("Network timeout. Please check your internet connection.");
       }
     }
 
@@ -55,14 +54,14 @@ axiosInstance.interceptors.response.use(
     // }
 
     if (error.response.status === 413) {
-      errorToast(
-        "Payload too large."
-      );
+      // toast.error(
+      //   "Payload too large."
+      // );
     }
 
     // Server down or 5xx errors
     if (error.response.status >= 500) {
-      errorToast("Server down. Please try again later.");
+      // errorToast("Server down. Please try again later.");
     }
 
     // Other error cases (e.g., 4xx errors)

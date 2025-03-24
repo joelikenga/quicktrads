@@ -41,6 +41,11 @@ interface HeroPage {
   heroPageName: "heroPageMain"; // Enforce specific value
 }
 
+interface updateOrderStatus{
+  status: 'canceled'| 'processing'| 'refunded'| 'delivered'| 'shipped' | 'completed';
+  trackingNumber: string;
+}
+
 export const createProduct = async (data: ProductData) => {
   try {
     const response = await axios$.post("/product", data);
@@ -128,6 +133,16 @@ export const getOrder = async (orderId: any) => {
   }
 };
 
+export const updateOrderStatus = async (id: any,data:updateOrderStatus) => {
+  try {
+    const response = await axios$.patch(`/admin/order/${id}`,data);
+    // console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
 export const adminDashboard = async () => {
   try {
     const response = await axios$.get(`/auth/admin/dashboard`);
@@ -160,6 +175,16 @@ export const updateSettings = async (data: Settings) => {
 };
 
 export const updateContent = async (data: HeroPage) => {
+  try {
+    const response = await axios$.patch(`/auth/admin/hero-section`, data);
+    return response;
+  } catch (error: unknown) {
+    // console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const createContent = async (data: HeroPage) => {
   try {
     const response = await axios$.patch(`/auth/admin/hero-section`, data);
     return response;
@@ -217,6 +242,47 @@ export const getCustomer = async (id: any) => {
 export const getStatusCount = async (id: any) => {
   try {
     const response = await axios$.get(`/admin/orders/status-count?userID=${id}`);
+    console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+
+export const getSalesAnalytics = async (duration: any) => {
+  try {
+    const response = await axios$.get(`/auth/admin/sales-analytics?duration=${duration}`);
+    console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getOrderAnalytics = async (duration: any) => {
+  try {
+    const response = await axios$.get(`/auth/admin/orders-analytics?duration=${duration}`);
+    console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getProductAnalytics = async (duration: any) => {
+  try {
+    const response = await axios$.get(`/auth/admin/product-analytics?duration=${duration}`);
+    console.log("response", response);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const getUserAnalytics = async (duration: any) => {
+  try {
+    const response = await axios$.get(`/auth/admin/product-analytics?duration=${duration}`);
     console.log("response", response);
     return response;
   } catch (error: unknown) {
