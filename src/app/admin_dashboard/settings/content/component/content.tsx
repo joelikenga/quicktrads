@@ -1,8 +1,9 @@
 "use client";
 import { editIcon, info } from "@/app/global/svg";
+import { getContent } from "@/utils/api/admin/products";
 import { Lora } from "next/font/google";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -14,17 +15,86 @@ interface ContentProps {
   onPromote: () => void; // Handler to go to PromoteContent
 }
 
+interface HeroPage {
+  id: string;
+  backgroundColor: string;
+  heroTitle: string;
+  heroSubTitle: string;
+  heroImage: string;
+  heroBtnText: string;
+  heroBtnTextColor: string;
+  heroBtnBgColor: string;
+  heroBtnCTA: string;
+  heroPageName: 'heroPageMain' | 'heroPagePromotion';
+}
+
+const FallbackImage = () => (
+  <div className="bg-gray-200 w-full h-full flex items-center justify-center">
+    <p className="text-gray-500">Image not available</p>
+  </div>
+);
+
+const SafeImage: React.FC<{
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+}> = ({ src, width, height, alt }) => {
+  const [error, setError] = useState(false);
+
+  if (error || !src || !isValidUrl(src)) {
+    return <FallbackImage />;
+  }
+
+  return (
+    <Image
+      src={src}
+      width={width}
+      height={height}
+      alt={alt}
+      onError={() => setError(true)}
+    />
+  );
+};
+
+const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
   const [hero, setHero] = useState(false);
   const [promotion, setPromotion] = useState(false);
+  const [heroPages, setHeroPages] = useState<HeroPage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const addHero = () => {
-    setHero((prev) => !prev);
+  const fetchContent = async () => {
+    try {
+      const response = await getContent();
+      if (response.data) {
+        setHeroPages(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch content:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const addPromotion = () => {
-    setPromotion((prev) => !prev);
-  };
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const mainHero = heroPages.find(page => page.heroPageName === 'heroPageMain');
+  const promotionHero = heroPages.find(page => page.heroPageName === 'heroPagePromotion');
+
+  const Skeleton = () => (
+    <div className="h-[280px] bg-gray-200 animate-pulse rounded-md"></div>
+  );
 
   return (
     <div className="w-auto">
@@ -48,55 +118,68 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
             </p>
 
             <p
-              onClick={addHero}
+              onClick={() => setHero((prev) => !prev)}
               className="flex items-center selection:bg-none gap-[1px] cursor-pointer"
             >
               <span>{editIcon()}</span>Edit
             </p>
           </div>
-{/* hero content display */}
-          <div className="h-[280px] flex relative bg-brand_yellow">
-            <div className="py-[64px] pl-[50.91px] selection:no-underline">
-              <h1
-                className={`${lora.className} text-[38.18px] font-[400] leading-[42px] w-[309px] pb-[12px]]`}
+          {isLoading ? (
+            <Skeleton />
+          ) : !mainHero ? (
+            <div className="h-[280px] flex items-center justify-center bg-gray-100">
+              <button
+                onClick={onReturn}
+                className="px-6 py-3 bg-black text-white rounded-full"
               >
-                Shine brighter with Africa wears
-              </h1>
-              <p className="text-[10px] text-text_weak leading-[14px]">
-                The light you need to showcase you are made of black
-              </p>
-
-              <p className="mt-[20.26px] py-[5.73px] w-[78.55px] h-[25.45px] text-[10px] selection:no-underline cursor-pointer px-[15.27px] bg-black text-white rounded-full">
-                Shop now
-              </p>
-
-              {/* edit overlay display */}
-              {
-                <div
-                  className={`absolute left-0 w-full h-full top-0 bg-black/70 flex items-center justify-center  ${
-                    hero ? "block" : "hidden"
-                  }`}
+                Add Hero Banner
+              </button>
+            </div>
+          ) : (
+            <div className="h-[280px] border flex relative" style={{ backgroundColor: mainHero.backgroundColor }}>
+              <div className="py-[64px] pl-[50.91px]">
+                <h1 className={`${lora.className} text-[38.18px] font-[400] leading-[42px] w-[309px]`}>
+                  {mainHero.heroTitle}
+                </h1>
+                <p className="text-[10px] text-text_weak leading-[14px]">
+                  {mainHero.heroSubTitle}
+                </p>
+                <button
+                  className="mt-[20.26px] py-[5.73px] px-[15.27px] rounded-full"
+                  style={{
+                    backgroundColor: mainHero.heroBtnBgColor,
+                    color: mainHero.heroBtnTextColor
+                  }}
                 >
-                  <div>
-                    <p
-                      onClick={onReturn}
-                      className=" h-[40px] bg-white rounded-full flex justify-center items-center py-[10px] px-[24px] gap-2 cursor-pointer selection:bg-none hover:bg-white/90 ease-in-out text-text_strong text-sm leading-[19.07px]"
-                    >
-                      {editIcon()}Edit content
-                    </p>
+                  {mainHero.heroBtnText}
+                </button>
+                {
+                  <div
+                    className={`absolute left-0 w-full h-full top-0 bg-black/70 flex items-center justify-center  ${
+                      hero ? "block" : "hidden"
+                    }`}
+                  >
+                    <div>
+                      <p
+                        onClick={onReturn}
+                        className=" h-[40px] bg-white rounded-full flex justify-center items-center py-[10px] px-[24px] gap-2 cursor-pointer selection:bg-none hover:bg-white/90 ease-in-out text-text_strong text-sm leading-[19.07px]"
+                      >
+                        {editIcon()}Edit content
+                      </p>
+                    </div>
                   </div>
-                </div>
-              }
+                }
+              </div>
+              <div>
+                <SafeImage
+                  width={413}
+                  height={620}
+                  src={mainHero.heroImage}
+                  alt="hero banner"
+                />
+              </div>
             </div>
-            <div>
-              <Image
-                width={413}
-                height={620}
-                src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740665591/image_iumukx.png"
-                alt="lady"
-              />
-            </div>
-          </div>
+          )}
         </div>
 
         {/* promotion section */}
@@ -113,56 +196,68 @@ const Content: React.FC<ContentProps> = ({ onReturn, onPromote }) => {
             </p>
 
             <p
-              onClick={addPromotion}
+              onClick={() => setPromotion((prev) => !prev)}
               className="flex items-center selection:bg-none gap-[1px] cursor-pointer"
             >
               <span>{editIcon()}</span>Edit
             </p>
           </div>
-{/* promotion content display */}
-          <div className="h-[280px] relative flex justify-between bg-promotion_bg">
-            <div className="py-[64px] pl-[50.91px] selection:no-underline">
-              <h1
-                className={`${lora.className} text-[32px] font-[400] leading-[42px] w-[361.33px] pb-[12px]]`}
+          {isLoading ? (
+            <Skeleton />
+          ) : !promotionHero ? (
+            <div className="h-[280px] flex items-center justify-center bg-gray-100">
+              <button
+                onClick={onPromote}
+                className="px-6 py-3 bg-black text-white rounded-full"
               >
-                Move around with your essentials needs
-              </h1>
-              <p className="text-[10px] text-text_weak leading-[14px]">
-                Inspired by the African women’s tote bag for anyone ready to
-                showcase black
-              </p>
-
-              <p className="mt-[20.26px] py-[5.73px] w-[78.55px] h-[25.45px] text-[10px] selection:no-underline cursor-pointer px-[15.27px] bg-black text-white rounded-full">
-                Shop now
-              </p>
-
-              {/* edit overlay display */}
-              {
-                <div
-                  className={`absolute left-0 w-full h-full top-0 bg-black/70 flex items-center justify-center  ${
-                    promotion ? "block" : "hidden"
-                  }`}
+                Add Promotion Banner
+              </button>
+            </div>
+          ) : (
+            <div className="h-[280px] border flex relative justify-between" style={{ backgroundColor: promotionHero.backgroundColor }}>
+              <div className="py-[64px] pl-[50.91px]">
+                <h1 className={`${lora.className} text-[32px] font-[400] leading-[42px] w-[361.33px]`}>
+                  {promotionHero.heroTitle}
+                </h1>
+                <p className="text-[10px] text-text_weak leading-[14px]">
+                  {promotionHero.heroSubTitle}
+                </p>
+                <button
+                  className="mt-[20.26px] py-[5.73px] px-[15.27px] rounded-full"
+                  style={{
+                    backgroundColor: promotionHero.heroBtnBgColor,
+                    color: promotionHero.heroBtnTextColor
+                  }}
                 >
-                  <div>
-                    <p
-                      onClick={onPromote}
-                      className=" h-[40px] bg-white rounded-full flex justify-center items-center py-[10px] px-[24px] gap-2 cursor-pointer selection:bg-none hover:bg-white/90 ease-in-out text-text_strong text-sm leading-[19.07px]"
-                    >
-                      {editIcon()}Edit content
-                    </p>
+                  {promotionHero.heroBtnText}
+                </button>
+                {
+                  <div
+                    className={`absolute left-0 w-full h-full top-0 bg-black/70 flex items-center justify-center  ${
+                      promotion ? "block" : "hidden"
+                    }`}
+                  >
+                    <div>
+                      <p
+                        onClick={onPromote}
+                        className=" h-[40px] bg-white rounded-full flex justify-center items-center py-[10px] px-[24px] gap-2 cursor-pointer selection:bg-none hover:bg-white/90 ease-in-out text-text_strong text-sm leading-[19.07px]"
+                      >
+                        {editIcon()}Edit content
+                      </p>
+                    </div>
                   </div>
-                </div>
-              }
+                }
+              </div>
+              <div>
+                <SafeImage
+                  width={239}
+                  height={260}
+                  src={promotionHero.heroImage}
+                  alt="promotion banner"
+                />
+              </div>
             </div>
-            <div>
-              <Image
-                width={239}
-                height={260}
-                src="https://res.cloudinary.com/dymkfk58k/image/upload/v1740665611/image_copy_rziblo.png"
-                alt="lady"
-              />
-            </div>
-          </div>
+          )}
         </div>
       </section>
     </div>

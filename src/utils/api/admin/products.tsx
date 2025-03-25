@@ -38,7 +38,7 @@ interface HeroPage {
   heroBtnTextColor: string;
   heroBtnBgColor: string;
   heroBtnCTA: string;
-  heroPageName: "heroPageMain"; // Enforce specific value
+  heroPageName: string; // Enforce specific value
 }
 
 interface updateOrderStatus{
@@ -174,9 +174,9 @@ export const updateSettings = async (data: Settings) => {
   }
 };
 
-export const updateContent = async (data: HeroPage) => {
+export const updateContent = async (id:string,data: HeroPage) => {
   try {
-    const response = await axios$.patch(`/auth/admin/hero-section`, data);
+    const response = await axios$.patch(`/auth/admin/hero-section/${id}`, data);
     return response;
   } catch (error: unknown) {
     // console.error("API error:", error);
@@ -186,7 +186,7 @@ export const updateContent = async (data: HeroPage) => {
 
 export const createContent = async (data: HeroPage) => {
   try {
-    const response = await axios$.patch(`/auth/admin/hero-section`, data);
+    const response = await axios$.post(`/auth/admin/hero-section`, data);
     return response;
   } catch (error: unknown) {
     // console.error("API error:", error);
