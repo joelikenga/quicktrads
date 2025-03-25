@@ -314,21 +314,9 @@ export const USAIcon = () => {
 
 export const arrowDown = () => {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M16 7.00005C16 7.00005 11.5811 13 9.99995 13C8.41884 13 4 7 4 7"
-        stroke="#B8B8B8"
-        strokeWidth="1.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.1992 8.40015C19.1992 8.40015 13.8965 15.6001 11.9992 15.6001C10.1018 15.6001 4.79922 8.4001 4.79922 8.4001" stroke="#B8B8B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
   );
 };
 

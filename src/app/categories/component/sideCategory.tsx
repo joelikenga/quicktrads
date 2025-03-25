@@ -185,7 +185,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
   return (
     <div 
       className={`
-        max-w-[240px] w-full h-[calc(100vh-7.5rem)] fixed top-[120px]
+        max-w-[240px] w-full bg-white h-[calc(100vh-7.5rem)] z-20 fixed top-[72px] xl:top-[110px]
         transform transition-all duration-300 ease-in-out
         ${visible 
           ? 'translate-x-0 opacity-100 visible' 
@@ -224,7 +224,7 @@ export const SideCategory = ({ visible = true, onFilterChange }: SideCategoryPro
       </div>
 
       {/* {showFilter && ( */}
-      <div className="overflow-y-auto  w-full  flex justify-start items-start flex-col gap-6 fixed h-screen md:relative   top-0 bg-background md:h-full d:pt-12 md:pt-0 px-2 md:pr-6  md:block">
+      <div className="overflow-y-auto  w-full  flex justify-start items-start flex-col gap-6  fixed h-screen md:relative   top-0 bg-background md:h-full d:pt-12 md:pt-0 px-2 md:pr-6  md:block">
         {selectedCategory === "collections" && (
           <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
             <div

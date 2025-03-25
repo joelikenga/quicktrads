@@ -48,11 +48,11 @@ export const Body = () => {
 
 
             <div className="mt-[152px] px-2 lg:px-10">
-                <p className="text-xl text-text_weak pb-2 w-max mx-auto">Shipping & Delivery</p>
-                <h1 className="w-full sm:w-[507px] text-3xl text-text_strong text-center sm:mx-auto pb-6">Fast and reliable delivery straight to your doorstep</h1>
+                <p className="sm:text-xl text-text_weak text-[14px] pb-2 w-max mx-auto">Shipping & Delivery</p>
+                <h1 className="w-full sm:w-[507px] sm:text-3xl text-[24px]  text-text_strong text-center sm:mx-auto pb-6">Fast and reliable delivery straight to your doorstep</h1>
 
 
-                <div className="py-[48px] max-w-full w-[800px] mx-auto">
+                <div className="py-[48px] px-4 sm:px-0 max-w-full w-[800px] mx-auto">
                     {faqs.map((faq, index) => (
                         <div key={index} className="bg-white border-b border-b-stroke_weak">
                             <button

@@ -185,7 +185,7 @@ export const Body = () => {
   }
 
   return (
-    <div className="px-10 mt-[150px]">
+    <div className="px-4 md:px-10 mt-[150px]">
       <div className="mx-auto max-w-7xl w-full">
 
         {/* <div className="w-full flex justify-start items-center ">
@@ -195,9 +195,9 @@ export const Body = () => {
           </div>
         </div> */}
 
-        <div className="w-full flex justify-start gap-8">
+        <div className="w-full flex flex-col md:flex-row justify-start gap-8">
           {/* image container */}
-          <div className="w-fit h-full flex justify-between gap-6">
+          <div className="w-fit h-full flex flex-col-reverse md:flex-row justify-between gap-6">
             {/* 3 images */}
             <div className="flex flex-col gap-4">
               {product.data.images.map((item) => (
@@ -251,7 +251,7 @@ export const Body = () => {
 
           {/* details container*/}
 
-          <div className="w-[504px] h-fit flex flex-col gap-6">
+          <div className=" w-full max-w-[504px] h-fit flex flex-col gap-6">
             {/* name and price */}
             <div className="flex flex-col gap-4 w-full">
               <p
@@ -492,7 +492,7 @@ export const Body = () => {
                 <p className="text-text_strong text-base font-medium">
                   Share product
                 </p>
-                <div className="flex gap-12 justify-start items-center">
+                <div className="flex flex-wrap gap-12 justify-start items-center">
                   <div className="flex gap-2 items-center text-text_strong font-medium text-sm">
                     <i>{linkIcon()}</i>
                     <p>Copy link</p>

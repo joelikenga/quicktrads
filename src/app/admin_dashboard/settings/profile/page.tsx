@@ -8,7 +8,7 @@ import { Navbar } from '../../component/navbar';
 const Profile = () => {
     return (
         <>
-                <Navbar /><div className="w-full px-10">
+                <Navbar /><div className="w-full lg:px-10">
                 <div className="w-full max-w-7xl mx-auto">
                     <SettingsideNav />
                     <Body />
