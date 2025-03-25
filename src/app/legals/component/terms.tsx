@@ -16,7 +16,7 @@ export default function terms() {
                 {/*  */}
                 <div className="pb-6">
                     <h3 className="font-[500] text-[18px] text-text_strong pb-2">Use of services</h3>
-                    <ul >
+                    <ul className='pl-3 sm:pl-0'>
                         <li className="text-base text-text_weak list-disc">You must be of legal age in your jurisdiction to use our services.</li>
                         <li className="text-base text-text_weak list-disc">You agree not to use our products or services for illegal or unauthorized purposes.Unauthorized reproduction, distribution, or exploitation of any part of our services is prohibited.</li>
                     </ul>
@@ -26,7 +26,7 @@ export default function terms() {
                 {/*  */}
                 <div className="pb-6">
                     <h3 className="font-[500] text-[18px] text-text_strong pb-2">Products and pricing</h3>
-                    <ul>
+                    <ul className='pl-3 sm:pl-0'>
                         <li className="text-base text-text_weak list-disc">Products listed on our website are subject to availability and may have limited quantities.</li>
                         <li className="text-base text-text_weak list-disc">Prices may change without notice.</li>
                         <li className="text-base text-text_weak list-disc">We reserve the right to discontinue products or services at any time.</li>
@@ -37,7 +37,7 @@ export default function terms() {
                 {/*  */}
                 <div className="pb-6">
                     <h3 className="font-[500] text-[18px] text-text_strong pb-2">Orders and account information</h3>
-                    <ul>
+                    <ul className='pl-3 sm:pl-0'>
                         <li className="text-base text-text_weak list-disc">Quicktrads reserves the right to reject or cancel any orders at its discretion.</li>
                         <li className="text-base text-text_weak list-disc">You agree to provide accurate and up-to-date information for all purchases and account registrations.</li>
                         <li className="text-base text-text_weak list-disc">Any changes to your account or payment details should be updated promptly to ensure accurate transactions.</li>

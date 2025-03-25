@@ -226,9 +226,9 @@ export const Body = () => {
   };
 
   return (
-    <div className=" flex flex-col gap-8 h-[82px] ml-[280px] mt-[120px]">
+    <div className=" flex flex-col gap-8 h-[82px] px-4 md:px-0 md:ml-[280px] mt-[120px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
-        <p className="text-text_strong text-[22px]">Orders</p>
+        <p className="text-text_strong hidden md:block text-[22px]">Orders</p>
       </div>
 
       {(filteredOrders === null || filteredOrders === undefined) && (

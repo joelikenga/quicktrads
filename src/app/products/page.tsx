@@ -30,7 +30,7 @@ const Products = () => {
         visible={showFilter} 
         onFilterChange={handleFilterChange}
       />
-      <div className={`${showFilter ? "ml-[240px]" : "ml-0"} transition-all duration-300`}>
+      <div className={`${showFilter ? "ml-0 sm:ml-[240px]" : "ml-0"} transition-all duration-300`}>
         <Items 
           onFilterChange={setShowFilter} 
           filters={filters}

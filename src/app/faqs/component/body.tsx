@@ -56,9 +56,9 @@ export const Body = () => {
         <>
             <Navbar />
 
-            <div className="mt-[152px] px-2 lg:px-10">
-                <p className="text-xl text-text_weak pb-2 w-max mx-auto">FAQs</p>
-                <h1 className="w-full sm:w-[550px] text-3xl text-text_strong text-center sm:mx-auto pb-6">Quick answers to common questions</h1>
+            <div className="mt-[152px] px-4 sm:px-2 lg:px-10">
+                <p className="text-base sm:text-xl text-text_weak pb-2 w-max mx-auto">FAQs</p>
+                <h1 className="w-full sm:w-[550px] text-xl sm:text-3xl text-text_strong text-center sm:mx-auto pb-6">Quick answers to common questions</h1>
 
                 {/* searchbar */}
                 <div className="flex items-center gap-2 font-medium text-sm  bg-fill border-stroke_strong px-4 rounded-full border lg:w-[440px] lg:mx-auto w-full   text-text_strong">
