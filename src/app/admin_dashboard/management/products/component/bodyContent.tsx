@@ -524,7 +524,7 @@ export const BodyContent = () => {
   };
 
   return (
-    <div className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
+    <div className="mt-[120px] px-4 ml-0 md:px-0 md:ml-[240px] h-full max-w-[1040px] w-full">
       {allProducts.length === 0 ? (
         addProduct ? (
           <div className="h-full">
@@ -535,7 +535,8 @@ export const BodyContent = () => {
             >
               {arrowleft()}Add product
             </div>
-            <div className="flex gap-[73px]">
+
+            <div className="flex flex-col md:flex-row gap-[73px]">
               {/* the card sections where the images will be previewed and uploaded */}
               <div>
                 <p>Image</p>
@@ -548,7 +549,7 @@ export const BodyContent = () => {
 
                 <div className="pt-2">
                   {/* the images panel */}
-                  <div className="flex gap-6 pt-2">
+                  <div className="flex flex-col-reverse md:flex-row gap-6 pt-2">
                     {/* side images */}
                     <div className="flex flex-col gap-4">
                       {images.map((img, index) => (
@@ -596,7 +597,7 @@ export const BodyContent = () => {
                     {/* the main image */}
                     <div>
                       <div
-                        className="w-[492px] h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
+                        className="w-full md:w-[492px] h-[420px] md:h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={handleDrop}
                         onClick={() =>
@@ -638,7 +639,7 @@ export const BodyContent = () => {
               </div>
 
               {/* product options */}
-              <section className="w-[323px] h-[972px]">
+              <section className=" w-full md:w-[323px] h-[972px]">
                 {/* name */}
                 <div className="pb-4 w-full">
                   <label htmlFor="name">
@@ -918,7 +919,7 @@ export const BodyContent = () => {
         ) : (
           <div className="w-full flex flex-col">
             <div className="w-full flex items-center justify-start">
-              <div className="flex items-center text-[18px] font-medium text-text_strong">
+              <div className="md:flex items-center hidden text-[18px] font-medium text-text_strong">
                 Products
               </div>
             </div>

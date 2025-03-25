@@ -28,7 +28,7 @@ export const Body = () => {
     setChange(!change);
   };
 
-  const toggle = change ? "translate-x-[-90px]" : "translate-x-20";
+  const toggle = change ? "translate-x-20" : "translate-x-[-90px]";
 
   return (
     <>
@@ -46,7 +46,7 @@ export const Body = () => {
         <div className="flex items-center relative justify-evenly h-[40px] px-1 py-[6px] rounded-full w-full sm:w-[344px] sm:mx-auto bg-[#fafafa] gap-2">
             {/* indicator */}
             <div
-              className={`bg-white w-[48%] absolute  ease-in-out rounded-full transition-transform duration-300 ease-in-out h-[26px] sm:w-[153px] text-black ${toggle}`}
+              className={`bg-white w-[48%] absolute  ease-in-out rounded-full transition-transform duration-300  h-[26px] sm:w-[153px] text-black ${toggle}`}
             />
           <button
             className="w-full sm:w-[173px] z-10"

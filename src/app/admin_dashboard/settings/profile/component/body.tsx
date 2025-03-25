@@ -62,7 +62,7 @@ const Body = () => {
                     </div>
 
                     {/* phone and Country */}
-                    <div className="flex flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 justify-start items-center w-full">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-8 justify-start items-center w-full">
                         {/* Phone */}
                         <div className="flex flex-col gap-2 w-full max-w-[323px]">
                             <p className="text-sm leading-[22px] text-text_strong">Phone number</p>

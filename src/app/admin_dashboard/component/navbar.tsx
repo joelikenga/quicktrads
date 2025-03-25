@@ -21,7 +21,7 @@ export const Navbar = () => {
   const [profileOption, setProfileOption] = useState<boolean>(false);
 
   return (
-    <nav className="w-full px-10 fixed top-0 z-50 bg-white shadow-md">
+    <nav className="w-full px-10 fixed top-0 z-50 bg-white border-b border-b-stroke_weak">
       <div className="mx-auto w-full max-w-7xl h-20 flex justify-between items-center">
         <i>{logo()}</i>
 
