@@ -98,7 +98,7 @@ interface OrderRes {
 
 // Define the Flutterwave types locally based on the module's types
 type FlutterwaveConfig = {
-  public_key: string;
+  public_key: any;
   tx_ref: string;
   amount: number;
   currency?: string;
@@ -249,7 +249,7 @@ export const Body = () => {
   };
 
   const config: FlutterwaveConfig = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
+    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY ,
     tx_ref:
       Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")) + "",
     amount: total,
