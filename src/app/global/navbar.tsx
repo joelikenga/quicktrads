@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Link from "next/link";
 import {
@@ -29,7 +30,7 @@ import { useRouter } from "next/navigation";
 // import { useCart } from "../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
 import { loggedInUser } from "../../utils/api/user/auth";
-import { errorToast } from "../../utils/toast/toast";
+// import { errorToast } from "../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -97,7 +98,8 @@ export const Navbar = () => {
       const res = (await loggedInUser()) as any;
       setUserDetails(res);
     } catch (error) {
-      errorToast(error);
+      //errorToat(error);
+      console.log(error)
       setUserDetails(null);
     }
   };
@@ -197,12 +199,12 @@ export const Navbar = () => {
     if (profileOption) setProfileOption(false);
   };
 
-  const handleMobileProfileOption = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setProfileOption(!profileOption);
-    if (categoryOptions) setCategoryOptions(false);
-    if (currencyOptions) setCurrencyOptions(false);
-  };
+  // const handleMobileProfileOption = (event: React.MouseEvent) => {
+  //   event.stopPropagation();
+  //   setProfileOption(!profileOption);
+  //   if (categoryOptions) setCategoryOptions(false);
+  //   if (currencyOptions) setCurrencyOptions(false);
+  // };
 
   const { isLoggedIn,  hasAvatar, } = useLogin("user");
 
@@ -989,3 +991,4 @@ export const Navbar = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

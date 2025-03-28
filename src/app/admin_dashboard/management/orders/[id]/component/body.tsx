@@ -9,12 +9,12 @@ import {
   numberIcon,
   ordersIcon,
   orderSmallIcon,
-  successIcon,
+  // successIcon,
   successInfoIcon,
   unsuccessfulIcon,
   updateArrowIcon,
   vanIcon,
-  xIcon,
+  // xIcon,
 } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -123,8 +123,8 @@ export const Body = () => {
     try {
       setIsUpdating(true);
       const statusUpdate = await updateOrderStatus(id, {
-        status: selectedStatus || orderData?.status,
-        trackingID: trackingId
+        status: (selectedStatus ) as 'canceled' | 'processing' | 'refunded' | 'delivered' | 'shipped' | 'completed',
+        trackingNumber: trackingId
       });
       console.log(statusUpdate)
       if (statusUpdate) {
@@ -160,13 +160,13 @@ export const Body = () => {
   };
 
   // Add helper function to get shipping status text
-  const getShippingStatusText = (dhlStatus: any, status: string) => {
-    if (dhlStatus === null) {
-    } else if (dhlStatus === null && status !== 'processing') {
-    } else {
-      return dhlStatus; // Show actual DHL status if available
-    }
-  };
+  // const getShippingStatusText = (dhlStatus: any, status: string) => {
+  //   if (dhlStatus === null) {
+  //   } else if (dhlStatus === null && status !== 'processing') {
+  //   } else {
+  //     return dhlStatus; // Show actual DHL status if available
+  //   }
+  // };
 
   if (isLoading || !orderData || !orderData.order || orderData.order.length === 0) {
     return (

@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import Content from "./content";
-import EditContent from "./editcontent";
+import EditContent from "./heroContent";
 import ContentModal from "./contentmodal";
-import PromoteContent from "./promotecontent";
+import PromoteContent from "./promoteContent";
 
 const Body = () => {
   const [newPage, setNewPage] = useState<string>("content");

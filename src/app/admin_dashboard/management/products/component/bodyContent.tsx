@@ -10,30 +10,17 @@ import {
   previousIcon,
   review_1,
   searchIcon,
-  success,
   trash,
 } from "@/app/global/svg";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   createProduct,
   deleteProduct,
   fetchAllProducts,
 } from "../../../../../utils/api/admin/products";
-import { useRouter } from "next/navigation"; // Add this at the top with other imports
-import { errorToast, successToast } from "@/utils/toast/toast";
+import { useRouter } from "next/navigation";
 
-// interface ProductData {
-//   name: string;
-//   regularPrice: number;
-//   discountPrice?: number;
-//   sizes: string[];
-//   category: string;
-//   about: string;
-//   images: string[];
-// }
-
-// Add interface for pagination
 interface PaginationData {
   hasPreviousPage: boolean;
   has_next_page: boolean;
@@ -72,12 +59,11 @@ interface TransformedProduct {
 }
 
 export const BodyContent = () => {
-  const router = useRouter(); // Add this at the top with other imports
+  const router = useRouter();
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState("");
@@ -87,25 +73,12 @@ export const BodyContent = () => {
   const [selectedCategory, setSelectedCategory] = useState<
     "men" | "women" | "unisex"
   >("men");
-
-  const [currency] = useState<"NGN">("NGN"); // Remove USD option, default to NGN
+  const [currency] = useState<"NGN">("NGN");
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>("");
-
-  const subCategories = {
-    men: ["Tops", "Trousers", "Two-Piece"],
-    women: ["Bubu", "Tops", "Trousers", "Two-Piece"],
-    unisex: ["Tops", "Trousers", "Two-Piece"],
-  };
-
   const [addProduct, setAddProduct] = useState<boolean>(false);
   const [products, setProducts] = useState<TransformedProduct[]>([]);
-
   const [page, setPage] = useState<number>(1);
-  // const [size] = useState<number>(10);  // Remove setSize as it's now fixed
   const [searchQuery, setSearchQuery] = useState("");
-
-  // console.log("upload error", uploadError);
-
   const [paginationData, setPaginationData] = useState<PaginationData>({
     hasPreviousPage: false,
     has_next_page: false,
@@ -113,22 +86,27 @@ export const BodyContent = () => {
     size: 10,
     totalCount: 0,
   });
-
   const [allProducts, setAllProducts] = useState<TransformedProduct[]>([]);
   const ITEMS_PER_PAGE = 7;
 
-  // Update subcategory when main category changes
-  const handleCategoryChange = (category: "men" | "women" | "unisex") => {
-    setSelectedCategory(category);
-    setSelectedSubCategory(""); // Reset subcategory when main category changes
+  const subCategories = {
+    men: ["Tops", "Trousers", "Two-Piece"],
+    women: ["Bubu", "Tops", "Trousers", "Two-Piece"],
+    unisex: ["Tops", "Trousers", "Two-Piece"],
   };
 
-  const calculateDiscount = (): string | null => {
-    if (!price || !discountPrice) return null;
+  const handleCategoryChange = useCallback(
+    (category: "men" | "women" | "unisex") => {
+      setSelectedCategory(category);
+      setSelectedSubCategory("");
+    },
+    []
+  );
 
+  const calculateDiscount = useCallback((): string | null => {
+    if (!price || !discountPrice) return null;
     const regularPrice = parseFloat(price);
     const discountedPrice = parseFloat(discountPrice);
-
     if (
       regularPrice <= 0 ||
       discountedPrice <= 0 ||
@@ -136,33 +114,36 @@ export const BodyContent = () => {
     ) {
       return null;
     }
-
     const discount = ((regularPrice - discountedPrice) / regularPrice) * 100;
     return `-${Math.round(discount)}%`;
-  };
+  }, [price, discountPrice]);
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = event.target.files;
-    if (files && files.length > 0 && images.length < 3) {
-      const file = files[0];
-      const preview = URL.createObjectURL(file);
-      setImages((prev) => [...prev, { file, preview }]);
-    }
-  };
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (files && files.length > 0 && images.length < 3) {
+        const file = files[0];
+        const preview = URL.createObjectURL(file);
+        setImages((prev) => [...prev, { file, preview }]);
+      }
+    },
+    [images.length]
+  );
 
-  const handleDrop = async (event: React.DragEvent) => {
-    event.preventDefault();
-    const files = event.dataTransfer.files;
-    if (files && files.length > 0 && images.length < 3) {
-      const file = files[0];
-      const preview = URL.createObjectURL(file);
-      setImages((prev) => [...prev, { file, preview }]);
-    }
-  };
+  const handleDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      if (files && files.length > 0 && images.length < 3) {
+        const file = files[0];
+        const preview = URL.createObjectURL(file);
+        setImages((prev) => [...prev, { file, preview }]);
+      }
+    },
+    [images.length]
+  );
 
-  const handleDeleteImage = (index: number) => {
+  const handleDeleteImage = useCallback((index: number) => {
     setImages((prev) => {
       const newImages = prev.filter((_, i) => i !== index);
       if (prev[index].preview) {
@@ -170,84 +151,69 @@ export const BodyContent = () => {
       }
       return newImages;
     });
-  };
+  }, []);
 
-  const uploadImageToCloudinary = async (
-    base64Image: string
-  ): Promise<string> => {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+  const uploadImageToCloudinary = useCallback(
+    async (base64Image: string): Promise<string> => {
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-    if (!cloudName || !uploadPreset) {
-      throw new Error("Missing Cloudinary configuration");
-    }
-
-    const formData = new FormData();
-    formData.append("file", base64Image);
-    formData.append("upload_preset", uploadPreset);
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error?.message || "Error uploading to Cloudinary"
-        );
+      if (!cloudName || !uploadPreset) {
+        throw new Error("Missing Cloudinary configuration");
       }
 
-      const data = await response.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error("Cloudinary upload error:", error);
-      throw error;
-    }
-  };
+      const formData = new FormData();
+      formData.append("file", base64Image);
+      formData.append("upload_preset", uploadPreset);
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
+      try {
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error uploading to Cloudinary");
+        }
+
+        const data = await response.json();
+        return data.secure_url;
+      } catch (error) {
+        console.error("Cloudinary upload error:", error);
+        throw error;
+      }
+    },
+    []
+  );
+
+  const convertFileToBase64 = useCallback((file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (error) => reject(error);
     });
-  };
+  }, []);
 
-  const handleProductUpload = async () => {
-    if (isSaving) return; // Prevent upload if saving
+  const handleProductUpload = useCallback(async () => {
+    if (isSaving) return;
     try {
       setIsUploading(true);
-      setUploadError(null);
 
-      if (
-        !productName ||
-        !price ||
-        images.length === 0 ||
-        !selectedSubCategory
-      ) {
-        setUploadError(
-          "Please fill in all required fields including subcategory"
-        );
-        errorToast(uploadError)
+      if (!productName || !price || images.length === 0 || !selectedSubCategory) {
         return;
       }
 
-      // Upload all images to Cloudinary
       const uploadedImageUrls = await Promise.all(
         images.map(async (image) => {
           const base64 = await convertFileToBase64(image.file);
-          const cloudinaryUrl = await uploadImageToCloudinary(base64);
-          return cloudinaryUrl;
+          return uploadImageToCloudinary(base64);
         })
       );
 
-      // Create product data object matching the interface
       const productData = {
         addToInventory: true,
         category: selectedCategory,
@@ -259,14 +225,11 @@ export const BodyContent = () => {
         price: Number(price),
         priceDiscount: discountPrice ? Number(discountPrice) : undefined,
         size: selectedSizes.join(","),
-        subCategory: selectedSubCategory, // Add selected subcategory
+        subCategory: selectedSubCategory,
       };
 
-      // Send to backend using the createProduct function
-      const response = await createProduct(productData);
-      // console.log("Product uploaded successfully:", response);
+      await createProduct(productData);
 
-      // Clear form after successful upload
       setImages([]);
       setProductName("");
       setPrice("");
@@ -274,43 +237,41 @@ export const BodyContent = () => {
       setDescription("");
       setSelectedSizes([]);
     } catch (error) {
-      // console.error("Error uploading product:", error);
-      setUploadError("Failed to upload product. Please try again.");
-      errorToast(uploadError)
-
+      console.error("Error uploading product:", error);
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [
+    isSaving,
+    productName,
+    price,
+    images,
+    selectedSubCategory,
+    convertFileToBase64,
+    uploadImageToCloudinary,
+    selectedCategory,
+    currency,
+    description,
+    discountPrice,
+    selectedSizes,
+  ]);
 
-  const handleSaveToDraft = async () => {
-    if (isUploading) return; // Prevent saving if uploading
+  const handleSaveToDraft = useCallback(async () => {
+    if (isUploading) return;
     try {
       setIsSaving(true);
-      setUploadError(null);
 
-      if (
-        !productName ||
-        !price ||
-        images.length === 0 ||
-        !selectedSubCategory
-      ) {
-        setUploadError(
-          "Please fill in all required fields including subcategory"
-        );
+      if (!productName || !price || images.length === 0 || !selectedSubCategory) {
         return;
       }
 
-      // Upload all images to Cloudinary
       const uploadedImageUrls = await Promise.all(
         images.map(async (image) => {
           const base64 = await convertFileToBase64(image.file);
-          const cloudinaryUrl = await uploadImageToCloudinary(base64);
-          return cloudinaryUrl;
+          return uploadImageToCloudinary(base64);
         })
       );
 
-      // Create product data object matching the interface
       const productData = {
         addToInventory: false,
         category: selectedCategory,
@@ -322,14 +283,11 @@ export const BodyContent = () => {
         price: Number(price),
         priceDiscount: discountPrice ? Number(discountPrice) : undefined,
         size: selectedSizes.join(","),
-        subCategory: selectedSubCategory, // Add selected subcategory
+        subCategory: selectedSubCategory,
       };
 
-      // Send to backend using the createProduct function
-      const response = await createProduct(productData);
-      successToast("Product added to draft ");
+      await createProduct(productData);
 
-      // Clear form after successful upload
       setImages([]);
       setProductName("");
       setPrice("");
@@ -337,19 +295,28 @@ export const BodyContent = () => {
       setDescription("");
       setSelectedSizes([]);
     } catch (error) {
-     errorToast("Error drafting product");
-      setUploadError("Failed to draft product. Please try again.");
+      console.error("Error saving to draft:", error);
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [
+    isUploading,
+    productName,
+    price,
+    images,
+    selectedSubCategory,
+    convertFileToBase64,
+    uploadImageToCloudinary,
+    selectedCategory,
+    currency,
+    description,
+    discountPrice,
+    selectedSizes,
+  ]);
 
-  const getAllproducts = async () => {
+  const getAllproducts = useCallback(async () => {
     try {
-      const response = await fetchAllProducts(1, 1000); // Get all products at once
-
-      // console.log("All products response:", response);
-
+      const response = await fetchAllProducts(1, 1000);
       const transformedProducts =
         response?.data?.map(
           (product: Product): TransformedProduct => ({
@@ -368,18 +335,15 @@ export const BodyContent = () => {
         ) || [];
 
       setAllProducts(transformedProducts);
-
-      // Set pagination data
       setPaginationData({
         hasPreviousPage: page > 1,
-        has_next_page:
-          page < Math.ceil(transformedProducts.length / ITEMS_PER_PAGE),
+        has_next_page: page < Math.ceil(transformedProducts.length / ITEMS_PER_PAGE),
         page: page,
         size: ITEMS_PER_PAGE,
         totalCount: transformedProducts.length,
       });
     } catch (error) {
-      console.error("Error fetching all products:", error);
+      console.error("Error fetching products:", error);
       setAllProducts([]);
       setPaginationData({
         hasPreviousPage: false,
@@ -389,62 +353,43 @@ export const BodyContent = () => {
         totalCount: 0,
       });
     }
-  };
+  }, [page]);
 
-  // Add function to get current page items
-  const getCurrentPageItems = () => {
+  const getFilteredProducts = useCallback(
+    (productsToFilter: TransformedProduct[] = allProducts) => {
+      if (!searchQuery) return productsToFilter;
+      const searchTerm = searchQuery.toLowerCase();
+      return productsToFilter.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm) ||
+          product.subCategory.toLowerCase().includes(searchTerm) ||
+          product.status.toLowerCase().includes(searchTerm)
+      );
+    },
+    [searchQuery, allProducts]
+  );
+
+  const getCurrentPageItems = useCallback(() => {
     const filteredProducts = getFilteredProducts(allProducts);
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
-
-    // Update products state with paginated results
     setProducts(paginatedProducts);
 
     const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-
-    // Update pagination data based on filtered results
     setPaginationData((prev) => ({
       ...prev,
       hasPreviousPage: page > 1,
       has_next_page: page < totalPages,
       totalCount: filteredProducts.length,
-      page: page, // Ensure current page is set correctly
+      page: page,
     }));
-  };
+  }, [allProducts, page, getFilteredProducts]);
 
-  // Update page change handler
-  const handlePageChange = (newPage: number) => {
-    const totalPages = Math.ceil(allProducts.length / ITEMS_PER_PAGE);
-    if (newPage >= 1 && newPage <= totalPages) {
-      setPage(newPage);
-    }
-  };
-
-  // Update getFilteredProducts to work with allProducts
-  const getFilteredProducts = (
-    productsToFilter: TransformedProduct[] = allProducts
-  ) => {
-    if (!searchQuery) return productsToFilter;
-
-    const searchTerm = searchQuery.toLowerCase();
-    return productsToFilter.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm) ||
-        product.subCategory.toLowerCase().includes(searchTerm) ||
-        product.status.toLowerCase().includes(searchTerm)
-    );
-  };
-
-  // Update useEffect to handle pagination
   useEffect(() => {
     getCurrentPageItems();
-  }, [page, searchQuery, allProducts]);
-
-  // useEffect(() => {
-  //   console.log("addProduct state:", addProduct); // Debugging step
-  // }, [addProduct]);
+  }, [getCurrentPageItems, page, searchQuery, allProducts]);
 
   useEffect(() => {
     getAllproducts();
@@ -452,76 +397,85 @@ export const BodyContent = () => {
       getAllproducts();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [getAllproducts]);
 
-  // Add form input handlers
-  const handleSizeToggle = (size: string) => {
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      const totalPages = Math.ceil(allProducts.length / ITEMS_PER_PAGE);
+      if (newPage >= 1 && newPage <= totalPages) {
+        setPage(newPage);
+      }
+    },
+    [allProducts.length]
+  );
+
+  const handleSizeToggle = useCallback((size: string) => {
     setSelectedSizes((prev) =>
       prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
     );
-  };
+  }, []);
 
-  // Add this helper function after the component declaration
-  const generatePaginationRange = (currentPage: number, totalPages: number) => {
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    if (currentPage <= 4) {
-      return [1, 2, 3, 4, "...", totalPages - 1, totalPages];
-    }
-
-    if (currentPage >= totalPages - 3) {
+  const generatePaginationRange = useCallback(
+    (currentPage: number, totalPages: number) => {
+      if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+      }
+      if (currentPage <= 4) {
+        return [1, 2, 3, 4, "...", totalPages - 1, totalPages];
+      }
+      if (currentPage >= totalPages - 3) {
+        return [
+          1,
+          2,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
+      }
       return [
         1,
         2,
         "...",
-        totalPages - 3,
-        totalPages - 2,
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        "...",
         totalPages - 1,
         totalPages,
       ];
-    }
+    },
+    []
+  );
 
-    return [
-      1,
-      2,
-      "...",
-      currentPage - 1,
-      currentPage,
-      currentPage + 1,
-      "...",
-      totalPages - 1,
-      totalPages,
-    ];
-  };
+  const handleRowClick = useCallback(
+    (productId: string) => {
+      router.push(`/admin_dashboard/management/products/${productId}`);
+    },
+    [router]
+  );
 
-  // Add function to handle row click
-  const handleRowClick = (productId: string) => {
-    router.push(`/admin_dashboard/management/products/${productId}`);
-  };
+  const handleEditClick = useCallback(
+    (e: React.MouseEvent, productId: string) => {
+      e.stopPropagation();
+      router.push(`/admin_dashboard/management/products/${productId}?edit=true`);
+    },
+    [router]
+  );
 
-  // Add function to handle edit click
-  const handleEditClick = (e: React.MouseEvent, productId: string) => {
-    e.stopPropagation(); // Prevent row click event from firing
-    router.push(`/admin_dashboard/management/products/${productId}?edit=true`);
-  };
-
-  const handleDeleteClick = async (e: React.MouseEvent, productId: string) => {
-    e.stopPropagation(); // Prevent row click event from firing
-
-    try {
-      // Call the deleteProduct function from your API utility
-      await deleteProduct(productId);
-      successToast("Product deleted");
-
-      // Refresh the product list after deletion
-      getAllproducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("Failed to delete product. Please try again.");
-    }
-  };
+  const handleDeleteClick = useCallback(
+    async (e: React.MouseEvent, productId: string) => {
+      e.stopPropagation();
+      try {
+        await deleteProduct(productId);
+        getAllproducts();
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
+    },
+    [getAllproducts]
+  );
 
   return (
     <div className="mt-[120px] px-4 ml-0 md:px-0 md:ml-[240px] h-full max-w-[1040px] w-full">

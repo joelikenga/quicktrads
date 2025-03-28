@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-
 "use client";
 import { filterIcon } from "@/app/global/svg";
 import Image from "next/image";
@@ -13,7 +12,7 @@ import {
   getTrendingProducts,
 } from "../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
-import {  errorToast, successToast } from "../../../utils/toast/toast";
+// import { errorToast, successToast } from "../../../utils/toast/toast";
 
 interface Product {
   id: string;
@@ -57,15 +56,15 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
       let response;
 
       // Updated category checks to match SideCategory values
-      if (filters.category.includes( "trending")) {
-        response = await getTrendingProducts() as any;
+      if (filters.category.includes("trending")) {
+        response = (await getTrendingProducts()) as any;
       } else if (filters.category === "latestWear") {
-        response = await getLatestProducts()as any;
+        response = (await getLatestProducts()) as any;
       } else {
-        response = await getAllProducts()as any;
+        response = (await getAllProducts()) as any;
       }
 
-      console.log("response", response);
+      // console.log("response", response);
 
       const transformedProducts =
         response?.data?.map(
@@ -82,7 +81,8 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
 
       setAllProducts(transformedProducts);
     } catch (error) {
-      errorToast(error);
+      console.log(error)
+      // //errorToat(error);
       setAllProducts([]);
     } finally {
       setIsLoading(false);
@@ -198,7 +198,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
 
   const filteredProducts = filterProducts(allProducts);
   // console.log("filteredProducts", filteredProducts);
-  successToast("hello")
+  // //successToat("hello")
 
   if (isLoading) {
     return <ItemsSkeleton />;
@@ -251,7 +251,9 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
                 </p>
                 <div className="flex items-center gap-1 font-semibold">
                   <p className="text-base">{`$ ${item.price}`}</p>
-                  <del className="text-base text-text_weak">{`$ ${item.discountPrice}`}</del>
+                  {item.discountPrice ? (
+                    <del className="text-base text-text_weak">{`$ ${item.discountPrice}`}</del>
+                  ) : null}
                 </div>
               </div>
             </div>

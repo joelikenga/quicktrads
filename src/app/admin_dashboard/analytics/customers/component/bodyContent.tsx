@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState, useEffect } from "react";
 import { dates, arrowDown, usersIcon } from "@/app/global/svg";
 import { Line } from "react-chartjs-2";
-import { Lora } from "next/font/google";
+// import { Lora } from "next/font/google";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,10 +14,10 @@ import {
 } from "chart.js/auto";
 import { getUserAnalytics } from "@/utils/api/admin/products";
 
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-});
+// const lora = Lora({
+//   variable: "--font-lora",
+//   subsets: ["latin"],
+// });
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title);
 
@@ -296,3 +297,4 @@ export const BodyContent = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */
