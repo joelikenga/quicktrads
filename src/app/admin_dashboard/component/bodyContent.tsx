@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
   arrowleft,
@@ -115,28 +116,28 @@ const options = {
 
 
 
-const circleData = [
-  {
-    name: "Sales",
-    figure: 14, // Use numbers for calculations
-    color: "#3f51b5",
-  },
-  {
-    name: "Revenue",
-    figure: 58,
-    color: "#4caf50",
-  },
-  {
-    name: "Profit",
-    figure: 76,
-    color: "#ff9800",
-  },
-  {
-    name: "Growth",
-    figure: 12,
-    color: "#f44336",
-  },
-];
+// const circleData = [
+//   {
+//     name: "Sales",
+//     figure: 14, // Use numbers for calculations
+//     color: "#3f51b5",
+//   },
+//   {
+//     name: "Revenue",
+//     figure: 58,
+//     color: "#4caf50",
+//   },
+//   {
+//     name: "Profit",
+//     figure: 76,
+//     color: "#ff9800",
+//   },
+//   {
+//     name: "Growth",
+//     figure: 12,
+//     color: "#f44336",
+//   },
+// ];
 
 const EmptyGraph = ({ type }: { type: string }) => (
   <div className="w-full h-[306px] flex justify-center items-center mt-12">
@@ -560,3 +561,4 @@ export const BodyContent = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

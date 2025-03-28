@@ -4,7 +4,7 @@
 
 import {
   filterIcon,
-  ordersIcon,
+  // ordersIcon,
   searchIcon,
   totalOrdersIcon,
 } from "../../../../global/svg";

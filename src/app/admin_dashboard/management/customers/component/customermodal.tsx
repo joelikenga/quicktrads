@@ -45,7 +45,7 @@ interface ApiUser {
 interface User {
   id: string;
   name: string;
-  image: string;  // Change avatar to image
+  image: string;
   mail: string;
   total_orders: number;
   last_purchase: string;
@@ -73,24 +73,10 @@ interface User {
   createdAt: string;
 }
 
-interface PageInfo {
-  page: number;
-  size: number;
-  has_next_page: boolean;
-  hasPreviousPage: boolean;
-  totalCount: number;
-}
-
-interface ApiResponse {
-  data: User[];
-  page: PageInfo;
-}
-
 const ITEMS_PER_PAGE = 10;
 
 export const CustomerModal = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -125,7 +111,7 @@ export const CustomerModal = () => {
     return {
       id: apiUser.id,
       name: apiUser.fullName,
-      image: apiUser.avatar , // Change to image
+      image: apiUser.avatar,
       mail: apiUser.email,
       total_orders: apiUser.totalOrders || 0,
       last_purchase: apiUser.lastOrderedAt
@@ -166,24 +152,6 @@ export const CustomerModal = () => {
     return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
   };
 
-  const getCurrentPageItems = () => {
-    const filteredUsers = getFilteredUsers(allUsers);
-    const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
-    setUsers(paginatedUsers);
-    const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
-
-    setPageInfo({
-      page,
-      size: ITEMS_PER_PAGE,
-      hasPreviousPage: page > 1,
-      has_next_page: page < totalPages,
-      totalCount: filteredUsers.length
-    });
-  };
-
   const handlePageChange = (newPage: number) => {
     const totalPages = Math.ceil(allUsers.length / ITEMS_PER_PAGE);
     if (newPage >= 1 && newPage <= totalPages) {
@@ -211,8 +179,6 @@ export const CustomerModal = () => {
       setLoading(true);
       const response = await getCustomers(1, 10);
 
-
-      // Handle the API response correctly
       const apiData = response?.data;
       if (apiData && Array.isArray(apiData)) {
         const transformedUsers = apiData.map((user: ApiUser) => {
@@ -222,13 +188,9 @@ export const CustomerModal = () => {
         
         setAllUsers(transformedUsers);
         setUsers(transformedUsers);
-
-        if (response.data.page) {
-          setPageInfo(response.data.page);
-        }
-      } else {
       }
     } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -244,14 +206,6 @@ export const CustomerModal = () => {
       const startIndex = (page - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
       setUsers(filteredUsers.slice(startIndex, endIndex));
-      
-      setPageInfo({
-        page,
-        size: ITEMS_PER_PAGE,
-        hasPreviousPage: page > 1,
-        has_next_page: endIndex < filteredUsers.length,
-        totalCount: filteredUsers.length
-      });
     }
   }, [page, search, selectedFilter, allUsers]);
 
@@ -268,7 +222,6 @@ export const CustomerModal = () => {
     );
   }
 
-
   if (!allUsers.length) {
     return (
       <main className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
@@ -276,7 +229,6 @@ export const CustomerModal = () => {
           Customers
         </p>
 
-        {/* no customer display */}
         <section className="flex justify-center text-center items-center">
           <div>
             <div className="w-max max-w-full mx-auto pb-4">{userGroup()}</div>

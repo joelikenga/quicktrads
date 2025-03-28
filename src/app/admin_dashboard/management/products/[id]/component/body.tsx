@@ -22,7 +22,7 @@ import Link from "next/link";
 // import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { errorToast, successToast } from "../../../../../../utils/toast/toast";
+// import { errorToast, successToast } from "../../../../../../utils/toast/toast";
 
 // interface TransformedProduct {
 //   id: string;
@@ -94,7 +94,6 @@ export const Body = ({ id }: BodyProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState("");
@@ -197,8 +196,8 @@ export const Body = ({ id }: BodyProps) => {
 
       setProduct(transformedData);
       console.log("Product details:", transformedData);
-    } catch (error: unknown) {
-      throw error;
+    } catch {
+      throw new Error("Failed to fetch product");
     }
   };
 
@@ -278,13 +277,10 @@ export const Body = ({ id }: BodyProps) => {
         }
       );
 
-
-
       const data = await response.json();
       return data.secure_url;
-    } catch (error) {
-      errorToast(error);
-      throw error;
+    } catch {
+      throw new Error("Failed to upload image");
     }
   };
 
@@ -301,7 +297,6 @@ export const Body = ({ id }: BodyProps) => {
     if (isSaving) return; // Prevent upload if saving
     try {
       setIsUploading(true);
-      setUploadError(null);
 
       if (
         !productName ||
@@ -309,35 +304,32 @@ export const Body = ({ id }: BodyProps) => {
         images.length === 0 ||
         !selectedSubCategory
       ) {
-        setUploadError(
-          "Please fill in all required fields including subcategory"
-        );
-        return;
+        throw new Error("Please fill in all required fields including subcategory");
       }
 
-      // Upload all images to Cloudinary
-      const uploadedImageUrls = await Promise.all(
-        images.map(async (image) => {
-          const base64 = await convertFileToBase64(image.file);
-          const cloudinaryUrl = await uploadImageToCloudinary(base64);
-          return cloudinaryUrl;
-        })
-      );
+      // // Upload all images to Cloudinary
+      // const uploadedImageUrls = await Promise.all(
+      //   images.map(async (image) => {
+      //     const base64 = await convertFileToBase64(image.file);
+      //     const cloudinaryUrl = await uploadImageToCloudinary(base64);
+      //     return cloudinaryUrl;
+      //   })
+      // );
 
-      // Create product data object matching the interface
-      const productData = {
-        addToInventory: true,
-        category: selectedCategory,
-        currency: currency,
-        description: description,
-        images: uploadedImageUrls,
-        isFeatured: false,
-        name: productName,
-        price: Number(price),
-        priceDiscount: discountPrice ? Number(discountPrice) : undefined,
-        size: selectedSizes.join(","),
-        subCategory: selectedSubCategory, // Add selected subcategory
-      };
+      // // Create product data object matching the interface
+      // const productData = {
+      //   addToInventory: true,
+      //   category: selectedCategory,
+      //   currency: currency,
+      //   description: description,
+      //   images: uploadedImageUrls,
+      //   isFeatured: false,
+      //   name: productName,
+      //   price: Number(price),
+      //   priceDiscount: discountPrice ? Number(discountPrice) : undefined,
+      //   size: selectedSizes.join(","),
+      //   subCategory: selectedSubCategory, // Add selected subcategory
+      // };
 
       // Send to backend using the createProduct function
       // const response = await updateProduct(id, productData);
@@ -350,11 +342,9 @@ export const Body = ({ id }: BodyProps) => {
       setDescription("");
       setSelectedSizes([]);
 
-      successToast("Product uploaded successfully");
-    } catch (error) {
-      errorToast(uploadError || error);
-
-      setUploadError("Failed to upload product. Please try again.");
+      //successToat("Product uploaded successfully");
+    } catch {
+      //errorToat("Failed to upload product. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -364,7 +354,6 @@ export const Body = ({ id }: BodyProps) => {
     if (isUploading) return; // Prevent saving if uploading
     try {
       setIsSaving(true);
-      setUploadError(null);
 
       if (
         !productName ||
@@ -372,10 +361,7 @@ export const Body = ({ id }: BodyProps) => {
         images.length === 0 ||
         !selectedSubCategory
       ) {
-        setUploadError(
-          "Please fill in all required fields including subcategory"
-        );
-        return;
+        throw new Error("Please fill in all required fields including subcategory");
       }
 
       // Upload all images to Cloudinary
@@ -413,9 +399,8 @@ export const Body = ({ id }: BodyProps) => {
       setDiscountPrice("");
       setDescription("");
       setSelectedSizes([]);
-    } catch (error) {
-      console.error("Error drafting product:", error);
-      setUploadError("Failed to draft product. Please try again.");
+    } catch {
+      console.error("Error drafting product");
     } finally {
       setIsSaving(false);
     }
@@ -428,9 +413,9 @@ export const Body = ({ id }: BodyProps) => {
 
     try {
       await updateProductStatus(id, status);
-      successToast("Product status changed ");
-    } catch (error) {
-      errorToast(error);
+      //successToat("Product status changed ");
+    } catch {
+      //errorToat("Failed to change product status");
     }
   };
 
@@ -724,9 +709,9 @@ export const Body = ({ id }: BodyProps) => {
                               </p>
                             </div>
                             <p className="font-normal text-base text-text_weak">
-                              {`10 days from the date of delivery. We ask you make sure
+                              {`10 days from the date of delivery. We ask you make sure
                           the items have not been worn, washed, or damaged, and that
-                          you ship the item(s) back in their original packaging and
+                          you ship the item(s) back in their original packaging and
                           box`}
                             </p>
 

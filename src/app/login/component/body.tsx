@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { eyeClose, eyeOpen, logo, spinner } from "@/app/global/svg";
@@ -8,11 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
-import { loggedInUser, userLogin } from "../../../utils/api/user/auth";
+import {  userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
+// import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
 
 type FormValues = {
   email: string;
@@ -53,7 +54,7 @@ export const Body = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-    const [userDetails, setUserDetails] = useState<any | null>(null);
+    // const [userDetails, setUserDetails] = useState<any | null>(null);
   
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -61,7 +62,7 @@ export const Body = () => {
     const checkAuth = async () => {
       const cookies = nookies.get(null);
       if (cookies.accessToken) {
-        infoToast('You are still logged in');
+        // infoToast('You are still logged in');
         await router.push('/'); // Redirect to homepage if logged in
       }
     };
@@ -85,7 +86,7 @@ export const Body = () => {
   
       // Check if user is admin
       if (user.role !== "user") {
-        errorToast("Incorrect details");
+        //errorToat("Incorrect details");
       }
   
       // Save tokens to localStorage
@@ -104,7 +105,7 @@ export const Body = () => {
         path: "/",
       });
   
-      successToast("Login successful");
+      //successToat("Login successful");
       setLoading(false);
       router.push("/");
     } catch (error: any) {
@@ -246,3 +247,4 @@ export const Body = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

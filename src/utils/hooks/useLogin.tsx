@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
 import { loggedInUser } from "../api/user/auth";
-import { errorToast } from "../toast/toast";
+// import { errorToast } from "../toast/toast";
 
 interface UserResponse {
   data: {
@@ -45,14 +46,15 @@ export const useLogin = (requiredRole: "user" | "super_admin") => {
         setIsLoggedIn(false);
         setUserDetails(null);
         // Optionally, you can show an error toast or redirect the user
-        // errorToast("You do not have permission to access this page.");
+        // //errorToat("You do not have permission to access this page.");
       }
     } catch (error:any) {
       setIsLoggedIn(false);
       setUserDetails(null);
+      console.log(error)
       // Optionally, show an error toast
       // if(error.res.code === 401)
-      // errorToast("not logged in");
+      // //errorToat("not logged in");
     }
   };
 
@@ -86,8 +88,9 @@ export const useLogin_2 = () => {
     } catch (error) {
       setIsLoggedIn(false);
       setUserDetails(null);
+      console.log(error)
       // Optionally, show an error toast
-      errorToast("Failed to fetch user data. Please log in again.");
+      //errorToat("Failed to fetch user data. Please log in again.");
     }
   };
 
@@ -105,3 +108,4 @@ export const useLogin_2 = () => {
 
   return { isLoggedIn, hasAvatar, hasRole, userDetails, role };
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

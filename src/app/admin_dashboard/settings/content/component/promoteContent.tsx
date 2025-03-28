@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client'
 import { arrowleft, info } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
@@ -53,7 +55,7 @@ const uploadImageToCloudinary = async (
     const data = await response.json();
     return data.secure_url;
   } catch (error) {
-    // errorToast(error);
+    // //errorToat(error);
     throw error;
   }
 };
@@ -84,10 +86,7 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
   });
   const [isNewContent, setIsNewContent] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
-    const [imageError, setImageError] = useState(false);
-      const [isLoading, setIsLoading] = useState(true);
-    
-  
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -128,7 +127,6 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
       setIsUploading(false);
     }
   };
-
 
   const handleRemoveImage = () => {
     setFormData(prev => ({
@@ -213,12 +211,11 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
                 Remove
               </button>
             </div>
-            <img
+            <Image
               src={formData.heroImage}
               alt="hero"
               className="w-full h-full object-contain z-[1] relative"
-              onError={() => setImageError(true)}
-              // style={{ display: imageError ? 'none' : 'block' }}
+              fill
             />
           </>
         ) : (
@@ -233,7 +230,6 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
   if (isLoading) {
     return <LoadingSkeleton />;
   }
-
 
   return (
     <>
@@ -488,12 +484,11 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
               Cancel
             </div>
           </div>
-
         </section>
-        
       </div>
     </>
   );
 };
 
 export default PromoteContent;
+/* eslint-disable @typescript-eslint/no-explicit-any */

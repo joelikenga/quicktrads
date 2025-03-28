@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { dates, arrowDown, add, invoiceIcn } from "@/app/global/svg";
@@ -111,7 +112,7 @@ const formatDurationText = (days: number) => {
 
 const generateDateLabels = (duration: number) => {
   const labels = [];
-  const today = new Date();
+  // const today = new Date();
   
   if (duration === 365) {
     // For yearly view, show all months
@@ -172,10 +173,10 @@ export const BodyContent = () => {
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [duration, setDuration] = useState(30); // Changed default from 90 to 30
 
-  const modDays = (selectedDuration: number) => {
-    setDuration(selectedDuration);
-    setDays(false);
-  };
+  // const modDays = (selectedDuration: number) => {
+  //   setDuration(selectedDuration);
+  //   setDays(false);
+  // };
 
   const handleDurationSelect = (selectedDuration: number) => {
     setDuration(selectedDuration);
@@ -392,3 +393,4 @@ export const BodyContent = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

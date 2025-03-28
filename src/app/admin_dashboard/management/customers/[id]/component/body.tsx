@@ -3,16 +3,16 @@
 "use client";
 
 import {
-  add,
+  // add,
   arrowleft,
   filterIcon,
   maiIcon,
   numberIcon,
-  ordersIcon,
+  // ordersIcon,
   orderSmallIcon,
   searchIcon,
-  updateArrowIcon,
-  xIcon,
+  // updateArrowIcon,
+  // xIcon,
 } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";

@@ -1,5 +1,5 @@
 // components/UserTable.tsx
-import { edit, bin, userGroup, restoreIcn } from "@/app/global/svg";
+import {  bin, userGroup, restoreIcn } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";

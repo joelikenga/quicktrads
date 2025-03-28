@@ -1,6 +1,5 @@
 "use client";
 
-import { div } from "framer-motion/client";
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";

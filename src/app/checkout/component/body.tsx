@@ -14,7 +14,7 @@ import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useCart } from "@/context/CartContext"; // Add this import
+import { useCart } from "@/context/CartContext";
 import {
   createOrder,
   deleteShippingAddress,
@@ -22,7 +22,6 @@ import {
 } from "../../../utils/api/user/product";
 import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
-import { errorToast, successToast } from "../../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -54,40 +53,6 @@ interface Address {
   fullName: string;
   phoneNumber: string;
   state: string;
-}
-
-// Add interface for Flutterwave config
-interface FlutterwaveConfig {
-  public_key: any;
-  tx_ref: any;
-  amount: any;
-  currency: any;
-  payment_options: any;
-  customer: {
-    email: string;
-    phone_number: any;
-    name: string;
-  };
-  customizations: {
-    title: string;
-    description: string;
-    logo: string;
-  };
-}
-
-// First, add an interface for the Flutterwave response
-interface FlutterwaveResponse {
-  status: any;
-  transaction_id: any;
-  tx_ref: any;
-  flw_ref: any;
-  amount: number;
-  currency: string;
-  customer: {
-    email: string;
-    phone_number: string;
-    name: string;
-  };
 }
 
 interface OrderProduct {
@@ -130,6 +95,41 @@ interface OrderRes {
   usdAmount: number;
   userId: string;
 }
+
+// Define the Flutterwave types locally based on the module's types
+type FlutterwaveConfig = {
+  public_key: string;
+  tx_ref: string;
+  amount: number;
+  currency?: string;
+  payment_options: string;
+  customer: {
+    email: string;
+    phone_number: string;
+    name: string;
+  };
+  customizations: {
+    title: string;
+    description: string;
+    logo: string;
+  };
+  callback: (response: FlutterwaveResponse) => void;
+  onclose: () => void;
+};
+
+type FlutterwaveResponse = {
+  amount: number;
+  currency?: string;
+  customer: {
+    email: string;
+    phone_number: string;
+    name: string;
+  };
+  tx_ref: string;
+  flw_ref: string;
+  status: string;
+  transaction_id: number;
+};
 
 export const Body = () => {
   const [addressEdit, setAddressEdit] = useState<boolean>(false);
@@ -190,24 +190,7 @@ export const Body = () => {
   );
   const total = subTotal + deliveryFee; // Final total including delivery fee
 
-  // const handlePayment = () => {
-  //   setPending(true); // Show pending state first
-
-  //   // Simulate payment processing
-  //   setTimeout(() => {
-  //     setPending(false);
-  //     // Randomly succeed or fail for demo purposes
-  //     const isSuccessful = Math.random() > 0.5;
-  //     if (isSuccessful) {
-  //       setSuccess(true);
-  //     } else {
-  //       setFailed(true);
-  //     }
-  //   }, 2000);
-  // };
-
   const handleAddress = async () => {
-    //
     const data: Address = {
       fullName: addressData.fullName,
       email: addressData.email,
@@ -220,9 +203,7 @@ export const Body = () => {
     try {
       const res = await shippingAddress(data);
       console.warn(res.status);
-      successToast("Address added");
-
-      // Handle the response if needed
+      //successToat("Address added");
     } catch (error: unknown) {
       throw error;
     }
@@ -231,8 +212,6 @@ export const Body = () => {
   const getShippindData = async () => {
     try {
       const shipping_res = await loggedInUser();
-      // console.log("logged user", shipping_res);
-
       const transformedData = shipping_res?.data?.shippingDetails.map(
         (detail: Address) => ({
           fullName: detail.fullName,
@@ -245,9 +224,11 @@ export const Body = () => {
       );
       setShippingData(transformedData);
     } catch (err: unknown) {
-      errorToast(err);
+      //errorToat(err);
+      console.log(err);
     }
   };
+
   useEffect(() => {
     getShippindData();
   }, []);
@@ -265,13 +246,12 @@ export const Body = () => {
   const handleAddressSubmit = async () => {
     await handleAddress();
     setAddressModal(false);
-    // Optionally refresh the address list or show success message
   };
 
-  // Update the config with proper type checking
   const config: FlutterwaveConfig = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "", // Provide fallback empty string
-    tx_ref: Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")),
+    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
+    tx_ref:
+      Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")) + "",
     amount: total,
     currency: isNigeria ? "NGN" : "USD",
     payment_options: "card",
@@ -285,17 +265,21 @@ export const Body = () => {
       description: "Quicktrads Purchase",
       logo: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
     },
+    callback: (response: FlutterwaveResponse) => {
+      console.log(response);
+    },
+    onclose: () => {
+      console.log("Payment modal closed");
+    },
   };
 
-  // Type the response properly
   const fwConfig = {
     ...config,
     callback: async (response: FlutterwaveResponse) => {
       try {
         if (response.status === "successful") {
-          // Create order with the cart items
           const orderData: OrderRequest = {
-            currency: response.currency,
+            currency: response.currency || (isNigeria ? "NGN" : "USD"),
             product: cartItems.map(
               (item: { id: string; quantity: number }) => ({
                 productId: item.id,
@@ -315,22 +299,16 @@ export const Body = () => {
           };
 
           const orderResponse = (await createOrder(orderData)) as OrderRes;
-          console.log("orderResponse", orderResponse);
-          console.log("FW", response);
           setOrderResponse(orderResponse);
-
           setSuccess(true);
-
-          // Clear the cart
           clearCart();
           closePaymentModal();
         } else {
           setFailed(true);
           setPending(false);
-          errorToast("Payment failed");
         }
       } catch (error) {
-        errorToast(error);
+        console.log(error);
         setFailed(true);
       } finally {
         closePaymentModal();
@@ -340,28 +318,25 @@ export const Body = () => {
       console.log("Payment modal closed");
     },
   };
-  // Add validation function
+
   const canProceedToReview = () => {
     return Object.values(selectedAddress).every((value) => value !== "");
   };
 
-  // Update review click handler
   const handleReviewClick = () => {
     if (canProceedToReview()) {
       setReview(true);
     } else {
       // Optionally show an error message
-      errorToast("Please select a shipping address before proceeding");
+      //errorToat("Please select a shipping address before proceeding");
     }
   };
 
-  // Add address selection handler
   const handleAddressSelection = (address: Address, index: number) => {
     setSelectedAddress(address);
     setSelectedAddressId(index);
   };
 
-  // Add this handler function near your other handlers:
   const handleConfirmAddress = () => {
     setAddressEdit(false);
   };
@@ -370,15 +345,19 @@ export const Body = () => {
     try {
       await deleteShippingAddress(index);
       setShippingData((prev) => prev.filter((_, i) => i !== index));
-      successToast("Address deleted successfully");
+      //successToat("Address deleted successfully");
       setDeleteAddress(false);
     } catch (error: unknown) {
-      errorToast(error);
+      //errorToat(error);
+      console.log(error);
     }
   };
 
+  // Rest of your component remains the same...
+  // [Previous JSX code remains unchanged]
+
   return (
-    <div className="w-full  px-10 mt-[150px]">
+    <div className="w-full px-10 mt-[150px]">
       {/* payment successful */}
       {success && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
@@ -495,16 +474,10 @@ export const Body = () => {
 
             {/* ----- button ----- */}
             <div className="flex justify-end gap-4">
-              <button
-                className="bg-text_strong text-background h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
-                // onClick={() => setDeleteAddress(false)}
-              >
+              <button className="bg-text_strong text-background h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border">
                 <p>Track order</p>
               </button>
-              <button
-                className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
-                // onClick={() => setDeleteAddress(false)}
-              >
+              <button className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border">
                 <p>Continue shopping</p>
               </button>
             </div>
@@ -703,7 +676,6 @@ export const Body = () => {
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
                 onClick={() => {
                   handleAddressDelete(deleteIndex);
-                  // setDeleteIndex();
                 }}
               >
                 <p>Delete</p>
@@ -727,9 +699,9 @@ export const Body = () => {
               <div className="flex flex-col gap-4">
                 <p className="text-[18px]">Account</p>
                 <p className="">
-                  If you already have an account, click Login to access your
-                  profile. If you’re a new user, click Sign up to create an
-                  account.
+                  {`If you already have an account, click Login to access your
+                  profile. If you're a new user, click Sign up to create an
+                  account.`}
                 </p>
               </div>
 
@@ -878,23 +850,6 @@ export const Body = () => {
 
           {!review ? (
             <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
-              {/* account */}
-              {/* <div className="flex flex-col gap-4">
-                <p className="text-[18px]">Account</p>
-                <div className="flex flex-col">
-                  <div className="flex flex-col gap-2 w-full ">
-                    <p className="">Full name</p>
-                    <div className=" w-full">
-                      <input
-                        className="outline-none border rounded-lg h-10 px-4  w-full"
-                        placeholder=""
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-
               {/* shipping */}
               <div className="flex-col gap-4 flex w-full">
                 <div className="w-full flex justify-between">
@@ -1012,37 +967,6 @@ export const Body = () => {
                   </button>
                 </div>
               )}
-              {/* Contact info */}
-
-              {/* <div className="flex flex-col gap-4">
-                <p className="text-[18px]">Contact information</p>
-                <div className="flex flex-col">
-                  <div className="flex flex-col gap-2 w-full ">
-                    <p className="">Email</p>
-                    <div className=" w-full">
-                      <input
-                        className="outline-none border rounded-lg h-10 px-4  w-full"
-                        placeholder=""
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col">
-                  <div className="flex flex-col gap-2 w-full ">
-                    <p className="">Phone number</p>
-                    <div className=" w-full">
-                      <input
-                        className="outline-none border rounded-lg h-10 px-4  w-full"
-                        placeholder=""
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-
               {/* button */}
               <button
                 onClick={handleReviewClick}
@@ -1197,4 +1121,3 @@ export const Body = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */

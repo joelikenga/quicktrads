@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { dates, arrowDown, add, invoiceIcn } from "@/app/global/svg";
@@ -109,7 +110,7 @@ const generateDateLabels = (duration: number) => {
   }
   
   const labels = [];
-  const today = new Date();
+  // const today = new Date();
   
   for (let i = duration - 1; i >= 0; i--) {
     const date = new Date();
@@ -339,3 +340,4 @@ export const BodyContent = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */

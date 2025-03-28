@@ -1,6 +1,6 @@
 import axios from "axios";
 import nookies from "nookies";
-import { errorToast } from "../toast/toast";
+// import { errorToast } from "../toast/toast";
 // import toast from "react-hot-toast";
 
 // Create an Axios instance
@@ -43,13 +43,13 @@ axiosInstance.interceptors.response.use(
     if (!error.response) {
       // Network error (no response)
       if (error.code === 'ECONNABORTED') {
-        // errorToast("Network timeout. Please check your internet connection.");
+        // //errorToat("Network timeout. Please check your internet connection.");
       }
     }
 
     // Check for 401 Unauthorized
     // if (error.response.status === 401) {
-    //   errorToast("Invalid login details");
+    //   //errorToat("Invalid login details");
       
     // }
 
@@ -61,11 +61,11 @@ axiosInstance.interceptors.response.use(
 
     // Server down or 5xx errors
     if (error.response.status >= 500) {
-      // errorToast("Server down. Please try again later.");
+      // //errorToat("Server down. Please try again later.");
     }
 
     // Other error cases (e.g., 4xx errors)
-    // errorToast(error.response.data.message || "An error occurred.");
+    // //errorToat(error.response.data.message || "An error occurred.");
   }
 );
 

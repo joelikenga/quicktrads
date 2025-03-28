@@ -51,7 +51,8 @@ export const Body = () => {
           <button
             className="w-full sm:w-[173px] z-10"
             onClick={() => {
-              activeModal("terms"), changedBar();
+              activeModal("terms");
+               changedBar();
             }}
           >
             Terms of service
@@ -59,7 +60,8 @@ export const Body = () => {
           <button
             className="w-full sm:w-[173px] z-10"
             onClick={() => {
-              activeModal("privacy"), changedBar();
+              activeModal("privacy");
+               changedBar();
             }}
           >
             Privacy policy

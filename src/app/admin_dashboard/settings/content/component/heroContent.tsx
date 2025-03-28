@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { arrowleft, info } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
@@ -54,7 +55,6 @@ const uploadImageToCloudinary = async (
     const data = await response.json();
     return data.secure_url;
   } catch (error) {
-    // errorToast(error);
     throw error;
   }
 };
@@ -72,7 +72,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
   const [selectedColor, setSelectedColor] = useState<string>("#E9C46A");
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -87,23 +87,23 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
     heroBtnCTA: "",
     heroPageName: "heroPageMain" as const,
   });
-  // const [heroPage, setHeroPage] = useState<any | null>(null);
   const [isNewContent, setIsNewContent] = useState(true);
 
-  // Upload all images to Cloudinary
   const handleHeroImageUpload = async (file: File) => {
     try {
-      setIsUploading(true); // Set loader to true
+      setIsUploading(true);
       const base64 = await convertFileToBase64(file);
       const cloudinaryUrl = await uploadImageToCloudinary(base64);
       setFormData((prev) => ({
         ...prev,
         heroImage: cloudinaryUrl,
       }));
+      setImageError(null);
     } catch (error) {
       console.error("Failed to upload hero image:", error);
+      setImageError("Failed to upload image");
     } finally {
-      setIsUploading(false); // Set loader to false
+      setIsUploading(false);
     }
   };
 
@@ -150,13 +150,12 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
   };
 
   const handleSubmit = async () => {
-    // Validate all required fields
     if (
       !formData.heroTitle ||
       !formData.heroSubTitle ||
       !formData.heroBtnText ||
-      !formData.heroBtnCTA
-      || !formData.heroImage
+      !formData.heroBtnCTA ||
+      !formData.heroImage
     ) {
       alert("Please fill in all fields before updating");
       return;
@@ -166,7 +165,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
       const updatedData = {
         ...formData,
         backgroundColor: selectedColor,
-        heroImage: formData.heroImage, // Use temp image if available
+        heroImage: formData.heroImage,
       };
 
       if (isNewContent) {
@@ -196,7 +195,6 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
     setSelectedColor(color);
   }
 
-  // Image upload UI component
   const ImageUploadUI = () => (
     <div className="relative group">
       <div
@@ -221,12 +219,12 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                 Remove
               </button>
             </div>
-            <img
+            <Image
               src={formData.heroImage}
               alt="hero"
-              className="w-full h-full object-contain z-[1] relative"
-              onError={() => setImageError(true)}
-              // style={{ display: imageError ? 'none' : 'block' }}
+              fill
+              className="object-contain z-[1] relative"
+              onError={() => setImageError("Failed to load image")}
             />
           </>
         ) : (
@@ -235,6 +233,9 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
           </div>
         )}
       </div>
+      {imageError && (
+        <p className="text-red-500 text-sm mt-1">{imageError}</p>
+      )}
     </div>
   );
 
@@ -304,7 +305,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                   </p>
                   <input
                     type="text"
-                    value={formData.heroTitle || ""} // Add fallback empty string
+                    value={formData.heroTitle || ""}
                     onChange={handleInputChange("heroTitle")}
                     className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4"
                     id="header-text"
@@ -320,7 +321,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                   </p>
                   <input
                     type="text"
-                    value={formData.heroSubTitle || ""} // Add fallback empty string
+                    value={formData.heroSubTitle || ""}
                     onChange={handleInputChange("heroSubTitle")}
                     className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4"
                     id="description-text"
@@ -336,7 +337,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                   </p>
                   <input
                     type="text"
-                    value={formData.heroBtnText || ""} // Add fallback empty string
+                    value={formData.heroBtnText || ""}
                     onChange={handleInputChange("heroBtnText")}
                     className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4"
                     id="button-text"
@@ -427,7 +428,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
                   </p>
                   <input
                     type="text"
-                    value={formData.heroBtnCTA || ""} // Add fallback empty string
+                    value={formData.heroBtnCTA || ""}
                     onChange={handleInputChange("heroBtnCTA")}
                     className="w-[323px] h-[40px] border border-1 stroke-stroke_strong outline-none focus:border-black rounded-lg py-[9px] px-4"
                     id="button-link-text"
@@ -495,13 +496,10 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
               Cancel
             </div>
           </div>
-
         </section>
-        
       </div>
     </>
   );
 };
 
 export default EditContent;
-

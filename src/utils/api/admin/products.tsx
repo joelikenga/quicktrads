@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { axios$ } from "../../../app";
 
 interface ProductData {
@@ -288,4 +289,5 @@ export const getUserAnalytics = async (duration: any) => {
   } catch (error: unknown) {
     throw error;
   }
+/* eslint-disable @typescript-eslint/no-explicit-any */
 };

@@ -1,8 +1,8 @@
 "use client";
-import { arrowDown, closeIcon, mapIcon } from "@/app/global/svg";
+import {  closeIcon, mapIcon } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import { useEffect, useState } from "react";
-import { errorToast, successToast } from "../../../utils/toast/toast";
+// import { errorToast, successToast } from "../../../utils/toast/toast";
 import { loggedInUser } from "../../../utils/api/user/auth";
 import { deleteShippingAddress, shippingAddress } from "../../../utils/api/user/product";
 
@@ -32,16 +32,16 @@ export const Body = () => {
       country: "",
     });
   
-    const [selectedAddress, setSelectedAddress] = useState<Address>({
-      fullName: "",
-      email: "",
-      phoneNumber: "",
-      address: "",
-      state: "",
-      country: "",
-    });
+    // const [selectedAddress, setSelectedAddress] = useState<Address>({
+    //   fullName: "",
+    //   email: "",
+    //   phoneNumber: "",
+    //   address: "",
+    //   state: "",
+    //   country: "",
+    // });
     const [shippingData, setShippingData] = useState<Address[]>([]);
-    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    const [selectedAddressId] = useState<number | null>(
       null
     );
   const [deleteIndex, setDeleteIndex] = useState<number>(0);
@@ -63,7 +63,7 @@ export const Body = () => {
         try {
           const res = await shippingAddress(data);
           console.warn(res.status);
-          successToast("Address added");
+          //successToat("Address added");
     
           // Handle the response if needed
         } catch (error: unknown) {
@@ -86,10 +86,10 @@ export const Body = () => {
           );
           setShippingData(transformedData);
         } catch (err: unknown) {
-          const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-          errorToast(errorMessage);
+          // const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+          //errorToat(errorMessage);
           // if (process.env.NODE_ENV === 'development') {
-          //   console.error(err);
+            console.error(err);
           // }
         }
       };
@@ -98,10 +98,11 @@ export const Body = () => {
           try {
             await deleteShippingAddress(index);
             setShippingData((prev) => prev.filter((_, i) => i !== index));
-            successToast("Address deleted successfully");
+            //successToat("Address deleted successfully");
             setDeleteAddress(false);
           } catch (error: unknown) {
-            errorToast(error);
+            //errorToat(error);
+            console.log(error)
           }
         };
 

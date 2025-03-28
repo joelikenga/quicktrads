@@ -9,13 +9,13 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
-export default function body() {
+export const Body = () => {
   const [change, setChange] = useState<boolean>(false);
 
   const Categories = ["XS(Extra small)", "S(Small)", "M(Medium)", "L(Large)", "XL(Extra large)"];
   // const femaleCategories = ["Bubu", "Tops", "Trousers", "Two Piece"];
 
-  const sizes = ["Chest", "Waist", "Hip", "Height"];
+  // const sizes = ["Chest", "Waist", "Hip", "Height"];
 
   const updateCategories = () => (change ? Categories : Categories);
 

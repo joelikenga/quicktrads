@@ -315,7 +315,7 @@ export const USAIcon = () => {
 export const arrowDown = () => {
   return (
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19.1992 8.40015C19.1992 8.40015 13.8965 15.6001 11.9992 15.6001C10.1018 15.6001 4.79922 8.4001 4.79922 8.4001" stroke="#B8B8B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M19.1992 8.40015C19.1992 8.40015 13.8965 15.6001 11.9992 15.6001C10.1018 15.6001 4.79922 8.4001 4.79922 8.4001" stroke="#B8B8B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
   );
 };
@@ -1539,7 +1539,7 @@ export const leftCarousel = () => {
           width="176"
           height="176"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood flood-opacity="0" result="BackgroundImageFix" />
           <feGaussianBlur in="BackgroundImageFix" stdDeviation="34" />
@@ -1587,7 +1587,7 @@ export const rightCarousel = () => {
           width="176"
           height="176"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood flood-opacity="0" result="BackgroundImageFix" />
           <feGaussianBlur in="BackgroundImageFix" stdDeviation="34" />
@@ -2757,7 +2757,7 @@ export const unsuccessfulIcon = () => {
       <path
         d="M12.6562 18.7504C8.92833 18.7504 5.90625 15.7283 5.90625 12.0004C5.90625 8.27247 8.92833 5.2504 12.6562 5.2504C16.3842 5.2504 19.4062 8.27247 19.4062 12.0004C19.4062 15.7283 16.3842 18.7504 12.6562 18.7504Z"
         stroke="#D6D6D6"
-        stroke-width="8"
+        strokeWidth="8"
       />
     </svg>
   );

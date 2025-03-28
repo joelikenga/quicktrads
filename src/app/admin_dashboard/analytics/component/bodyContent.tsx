@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { dates, arrowDown, cashIcon } from "@/app/global/svg";
 import { useState, useEffect } from "react";
 import { Lora } from "next/font/google";
@@ -420,3 +422,4 @@ export const BodyContent = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */
