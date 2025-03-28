@@ -1,9 +1,9 @@
 import { ProfileAvatar } from "@/app/global/profileGenerator";
-import { arrowDown, redInfoSmall, uploadIcon } from "@/app/global/svg";
+import { arrowDown,  uploadIcon } from "@/app/global/svg";
 
 export const Body = () => {
   return (
-    <div className=" flex flex-col gap-8 h-[82px] border-b  ml-[280px] mt-[150px]">
+    <div className=" flex flex-col gap-8 h-[82px] border-b px-4 md:px-0  md:ml-[280px] mt-[150px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
         <p className="text-text_strong text-[22px]">Profile</p>
         <p className="text-text_weak text-base ">Update your profile details</p>
@@ -14,7 +14,7 @@ export const Body = () => {
       <div className="flex flex-col justify-start items-start gap-8 max-w-[800px] w-full">
         {/* info */}
 
-        {
+        {/* {
           <div className="w-full h-11 flex justify-start items-center border-l-4 rounded-l-xl bg-fill border-error_1 px-2 gap-2">
             <i>{redInfoSmall()}</i>
             <p>
@@ -22,7 +22,7 @@ export const Body = () => {
               profile
             </p>
           </div>
-        }
+        } */}
 
         {/* image upload */}
         <div className="flex flex-col gap-4 justify-center items-center w-full">
@@ -37,7 +37,7 @@ export const Body = () => {
 
         <div className="flex flex-col items-start gap-4 w-full ">
           {/* fullName and Email */}
-          <div className="flex gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row gap-8 justify-start items-center w-full">
             {/* fullName */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
               <p className="">Full name</p>
@@ -64,7 +64,7 @@ export const Body = () => {
           </div>
 
           {/* phone and Gender */}
-          <div className="flex gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row  gap-8 justify-start items-center w-full">
             {/* Phone */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
               <p className="">Phone number</p>
@@ -85,7 +85,7 @@ export const Body = () => {
                   className="outline-none border rounded-lg h-10 px-4  w-full"
                   placeholder=""
                   type="text"
-                  value={`male`}
+                  // value={`male`}
                 />
                 <span className="  absolute top-[42px] right-4">
                   {arrowDown()}
@@ -105,7 +105,7 @@ export const Body = () => {
           </div>
 
           {/* country and DOB */}
-          <div className="flex gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row  gap-8 justify-start items-center w-full">
             {/* Phone */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
               <p className="">Date of birth</p>
@@ -141,7 +141,7 @@ export const Body = () => {
           </div>
 
           {/* State and Address */}
-          <div className="flex gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row  gap-8 justify-start items-center w-full">
             {/* State */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
               <p className="">State</p>

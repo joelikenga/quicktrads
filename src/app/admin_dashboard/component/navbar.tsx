@@ -8,7 +8,7 @@ import {
   dashborad,
   logo,
   management,
-  notification,
+  // notification,
 } from "@/app/global/svg";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -21,7 +21,7 @@ export const Navbar = () => {
   const [profileOption, setProfileOption] = useState<boolean>(false);
 
   return (
-    <nav className="w-full px-10 fixed top-0 z-50 bg-white shadow-md">
+    <nav className="w-full px-10 fixed top-0 z-50 bg-white border-b border-b-stroke_weak">
       <div className="mx-auto w-full max-w-7xl h-20 flex justify-between items-center">
         <i>{logo()}</i>
 
@@ -64,17 +64,17 @@ export const Navbar = () => {
             <p className={`text-text_strong font-medium`}>Analytics</p>
           </div>
 
-          <div
-            onClick={() => router.push("/admin_dashboard/notification")}
+          {/* <div
+            onClick={() => router.push("/admin_dashboard/settings/notification")}
             className={` ${
-              pathname.includes("admin_dashboard/notification")
+              pathname.includes("admin_dashboard/settings/notification")
                 ? " border-b-2  border-text_strong text-text_weak"
                 : "text-text_strong"
             } flex gap-2 items-center h-full cursor-pointer`}
           >
             <i>{notification()}</i>
             <p className={`text-text_strong font-medium`}>Notification</p>
-          </div>
+          </div> */}
 
           <div className="flex items-center relative">
             <div className="flex items-center justify-center gap-2 cursor-pointer" onClick={() => setProfileOption(!profileOption)}>
@@ -84,12 +84,12 @@ export const Navbar = () => {
             </div>
             {profileOption && (
               <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-16 right-0 bg-background  h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
-                <Link
+                {/* <Link
                   href={`/admin_dashboard/settings/profile`}
                   className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                 >
                   Profile
-                </Link>
+                </Link> */}
                 <Link
                   href={`/admin_dashboard/settings/password`}
                   className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"

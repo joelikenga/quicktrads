@@ -1,12 +1,17 @@
-import React from 'react'
-import Body from './component/body'
+import { Navbar } from "../../component/navbar";
+import { SideNav } from "../component/sideNav";
+import { Body } from "./component/body";
 
-function Page() {
-    return (
-        <>
-           <Body />
-        </>
-    )
-}
+const Orders = () => {
+  return (
+    <div className="">
+      <Navbar />
+      <div className="w-full max-w-7xl mx-auto">
+      <SideNav />
+      <Body />
+      </div>
+    </div>
+  );
+};
 
-export default Page
+export default Orders;

@@ -1,4 +1,4 @@
-import { SettingsideNav } from "@/app/global/settingsideNav";
+import { SettingsideNav } from "@/app/admin_dashboard/settings/component/settingsideNav";
 import { Navbar } from "../component/navbar";
 
 const Page = () => {

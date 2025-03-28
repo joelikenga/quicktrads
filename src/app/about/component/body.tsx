@@ -52,9 +52,9 @@ export default function body() {
       <Navbar />
 
       {/* hero  */}
-      <section className="z-[10000000] mt-[152px]">
-        <h3 className="text-center text-text_weak text-lg pb-2">About Us</h3>
-        <h1 className="text-[32px] leading-[38px] mx-4 w-[280px] text-center sm:mx-auto sm:w-[524px]">
+      <section className=" mt-[108px] md:mt-[152px] max-w-7xl mx-auto">
+        <h3 className="text-center text-text_weak text-base sm:text-lg pb-2">About Us</h3>
+        <h1 className="text-[24px] sm:text-[32px] leading-[38px] mx-4 w-[280px] text-center sm:mx-auto sm:w-[524px]">
           Celebrating African heritage through timeless fashion
         </h1>
 
@@ -64,9 +64,9 @@ export default function body() {
             height={600}
             width={1280}
             src={
-              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739190791/journey_pwwiqc.png"
+              "https://res.cloudinary.com/dymkfk58k/image/upload/v1739189874/hero_hvzlma.png"
             }
-            className="h-[600px] w-full object-cover md:object-contain bg-center"
+            className="h-[300px] sm:h-[500px] md:h-[600px] w-full object-cover bg-center"
             alt="hero image"
           />
         </div>
@@ -82,15 +82,15 @@ export default function body() {
             src={
               "https://res.cloudinary.com/dymkfk58k/image/upload/v1739190791/journey_pwwiqc.png"
             }
-            className="h-[500px] w-full object-cover lg:object-cover bg-center"
+            className="h-[400px] sm:h-[500px] px-2 w-full object-cover lg:object-cover bg-center"
             alt="journey image"
           />
         </div>
 
         <div className="w-full md:w-[432px] md:flex md:items-center md:justify-left">
-          <div className="h-[364px] px-2 lg:pr-10">
-            <h3 className="pb-2 text-text_weak py-3 text-sm">Our journey</h3>
-            <p className="text-[22px] text-text_strong leading-[28px]">
+          <div className=" h-auto sm:h-[364px] px-2 lg:pr-10">
+            <h3 className="pb-2 pl-2 sm:pl-0 text-text_weak py-3 text-sm">Our journey</h3>
+            <p className="text-[18px] px-2 sm:text-[22px] text-text_strong leading-[28px]">
               At Quicktrads, we’re proud to bring Africa’s rich textile heritage
               to life. From handcrafted adire to timeless garments, we cater to
               both men and women, delivering authentic African fashion to local
@@ -101,11 +101,11 @@ export default function body() {
       </section>
 
       {/* mission and vision */}
-      <section className="pt-20 lg:w-max mx-auto">
-        <h2 className="text-2xl text-text_strong px-2 pb-6 lg:px-10">
+      <section className="pt-14 px-2 sm:pt-10 lg:w-max mx-auto">
+        <h2 className=" text-[20px] sm:text-2xl text-text_strong px-2 pb-4 sm:pb-6 lg:px-10">
           Mission & vision
         </h2>
-        <div className="flex flex-col md:flex-row md:justify-between gap-7">
+        <div className="flex flex-col md:flex-row md:justify-between gap-3">
           {vision_mission.map((vm, index) => {
             return (
               <div key={index} className="">
@@ -123,7 +123,7 @@ export default function body() {
                   <h3 className="text-base text-text_weak pt-4 pb-2">
                     {vm.title}
                   </h3>
-                  <p className="text-2xl font-[400] text-text_strong w-full">
+                  <p className="text-[18px] sm:text-2xl font-[400] text-text_strong w-full">
                     {vm.body}
                   </p>
                 </div>
@@ -134,8 +134,8 @@ export default function body() {
       </section>
 
       {/* what we offer */}
-      <section className="pt-20 w-full lg:w-max lg:mx-auto px-2 lg:px-10">
-        <h2 className="text-2xl text-text_strong pb-6">What we offer</h2>
+      <section className="pt-12 sm:px-20 px-4 w-full  lg:px-10 max-w-7xl mx-auto">
+        <h2 className="text-[20px] sm:text-2xl text-text_strong pb-3 sm:pb-6">What we offer</h2>
 
         <div className="flex flex-col gap-4 md:justify-between md:flex-row">
           {offers.map((offer, index) => {
@@ -148,10 +148,10 @@ export default function body() {
                   className="w-full object-cover lg:w-[628px]"
                   alt={offer.alt}
                 />
-                <h3 className="text-base text-text_weak pt-4 pb-2">
+                <h3 className="text-base text-text_weak pt-2 sm:pt-4 pb-1 sm:pb-2">
                   {offer.title}
                 </h3>
-                <p className="text-2xl text-text_strong">{offer.body}</p>
+                <p className="text-[20px] sm:text-2xl text-text_strong">{offer.body}</p>
               </div>
             );
           })}

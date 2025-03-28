@@ -18,7 +18,7 @@ export const Body = () => {
                             <div>
                                 <p className="text-text_gray text-sm pb-2">Contact us</p>
 
-                                <h1 className="text-[32px] leading-[38px] font-[400] w-full sm:w-[376px] pb-8">We’re here to help with anything you need</h1>
+                                <h1 className="text-[24px] sm:text-[32px] leading-[38px] font-[400] w-full sm:w-[376px] pb-8">We’re here to help with anything you need</h1>
                             </div>
 
                             <form action="">
@@ -51,7 +51,7 @@ export const Body = () => {
                                     </div>
                                 </div>
 
-                                <div className="pb-8 w-full">
+                                <div className="pb-3 sm:pb-4 md:pb-8 w-full">
                                     {/* message */}
                                     <div>
                                         <label htmlFor="subject">
@@ -61,7 +61,7 @@ export const Body = () => {
                                     </div>
                                 </div>
 
-                                <input type="submit" className="mt-8 h-10 w-full md:w-[432px] text-white bg-text_strong rounded-full" value="Submit" />
+                                <input type="submit" className="mt-2 sm:mt-4 md:mt-8 h-10 w-full md:w-[432px] text-white bg-text_strong rounded-full" value="Submit" />
                             </form>
                         </div>
 

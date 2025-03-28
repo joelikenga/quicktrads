@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Link from "next/link";
 import {
   arrowDown,
   cart,
+  cartActiveIcon,
   category,
   checked,
   closeBtn,
@@ -21,15 +23,43 @@ import {
 import { Lora } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useLogin } from "../utils/hooks/useLogin";
+import { useLogin } from "../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
+// import { useCart } from "../../../utils/hooks/useCart";
+import { useCart } from "@/context/CartContext";
+import { loggedInUser } from "../../utils/api/user/auth";
+// import { errorToast } from "../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
 });
+
+interface UserResponse {
+  data: {
+    avatar: string;
+    country: string;
+    createdAt: string; // ISO Date string
+    dob: string; // ISO Date string
+    email: string;
+    emailVerified: boolean;
+    fullName: string;
+    gender: string;
+    id: string; // UUID
+    lastLoggedInAt: string; // ISO Date string
+    lastOrderedAt: string | null; // ISO Date string or null
+    password: string;
+    phoneNumber: string;
+    role: string; // Add other roles if needed
+    shippingDetails: string | null;
+    state: string;
+    status: string; // Add other statuses if needed
+    totalOrders: number | null;
+    updatedAt: string; // ISO Date string
+  };
+}
 
 export const Navbar = () => {
   const [searchOptions, setSearchOptions] = useState<boolean>(false);
@@ -39,6 +69,7 @@ export const Navbar = () => {
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const [profileOption, setProfileOption] = useState<boolean>(false);
   const [logoutModal, setLogoutModal] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<UserResponse | null>(null);
 
   // ----- for mobile -----
   const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
@@ -61,6 +92,21 @@ export const Navbar = () => {
       router.push("/categories");
     }
   };
+
+  const fetchUserData = async () => {
+    try {
+      const res = (await loggedInUser()) as any;
+      setUserDetails(res);
+    } catch (error) {
+      //errorToat(error);
+      console.log(error)
+      setUserDetails(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   const handleCollectionDropdown = () => {
     setCollectionDropdown(!collectionDropdown);
@@ -153,19 +199,18 @@ export const Navbar = () => {
     if (profileOption) setProfileOption(false);
   };
 
-  const handleMobileProfileOption = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setProfileOption(!profileOption);
-    if (categoryOptions) setCategoryOptions(false);
-    if (currencyOptions) setCurrencyOptions(false);
-  };
-
-  // const handleMouseLeaveCategory = (event: React.MouseEvent) => {
+  // const handleMobileProfileOption = (event: React.MouseEvent) => {
   //   event.stopPropagation();
-  //   setCategoryOptions(false);
+  //   setProfileOption(!profileOption);
+  //   if (categoryOptions) setCategoryOptions(false);
+  //   if (currencyOptions) setCurrencyOptions(false);
   // };
 
-  const { isLoggedIn, userDetails } = useLogin();
+  const { isLoggedIn,  hasAvatar, } = useLogin("user");
+
+  // console.log("isLogged", isLoggedIn);
+  // console.log("hasAvatar", hasAvatar);
+  const { getCartCount } = useCart();
 
   return (
     <div className="w-full left-0 top-0 fixed z-50  ">
@@ -236,7 +281,7 @@ export const Navbar = () => {
         </div>
       </div>
       {/* ----- Navbar Desktop----- */}
-      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px]   items-center border-b border">
+      <nav className="hidden lg:flex w-full px-10 bg-background h-[72px] items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
           {/* ----- search and currency ----- */}
           <div className="flex gap-6 items-center">
@@ -291,17 +336,17 @@ export const Navbar = () => {
               {currencyOptions && (
                 <div
                   // onMouseLeave={handleCurrencyOptions}
-                  className="flex flex-col gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
+                  className="flex flex-col gap-2 sm:gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
                 >
-                  <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
-                    <div className="gap-2 flex">
+                  <div className="rounded-lg h-10 w-full px-[.4] sm:px-1 md:px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
+                    <div className="gap-1 items-center flex">
                       {nigeriaIcon()}
                       <p className="">NGN ₦</p>
                     </div>
                     {checked()}
                   </div>
-                  <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
-                    <div className="gap-2 flex">
+                  <div className="rounded-lg h-10 w-full px-[.4] sm:px-1 md:px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
+                    <div className="gap-1 flex">
                       {USAIcon()}
                       <p className="">USA $</p>
                     </div>
@@ -386,9 +431,7 @@ export const Navbar = () => {
                           Unisex
                         </p>
                         <div
-                          onClick={(event) =>
-                            handleNavigation("u-Tops", event)
-                          }
+                          onClick={(event) => handleNavigation("u-Tops", event)}
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
                           Tops
@@ -413,9 +456,7 @@ export const Navbar = () => {
 
                       {/* ----- men ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                        <p
-                          className="text-base font-semibold cursor-pointer"
-                        >
+                        <p className="text-base font-semibold cursor-pointer">
                           Men
                         </p>
                         <div
@@ -444,9 +485,7 @@ export const Navbar = () => {
 
                       {/* ----- Women ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
-                        <p
-                          className="text-base font-semibold cursor-pointer"
-                        >
+                        <p className="text-base font-semibold cursor-pointer">
                           Women
                         </p>
                         <div
@@ -487,14 +526,19 @@ export const Navbar = () => {
             {/* ----- cart ----- */}
             <Link
               href={`/cart`}
-              className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1"
+              className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1 relative"
             >
-              {cart()}
+              {getCartCount() > 0 ? cartActiveIcon() : cart()}
               <p className="">Cart</p>
+              {getCartCount() > 0 && (
+                <span className="absolute -top-3 right-6 bg-error_1 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {getCartCount()}
+                </span>
+              )}
             </Link>
 
             {/* ----- profile----- */}
-            {isLoggedIn && userDetails ? (
+            {isLoggedIn ? (
               <div
                 ref={profileWrapperRef}
                 className="border-l pl-6 relative flex justify-center  py-1"
@@ -505,8 +549,7 @@ export const Navbar = () => {
                     profileOption ? "border-text_strong" : "border-transparent"
                   }`}
                 >
-                  {userDetails.data.avatar === "" ||
-                  userDetails.data.avatar === null ? (
+                  {hasAvatar === true ? (
                     <ProfileAvatar
                       name={userDetails?.data?.fullName || "User"}
                       size="small"
@@ -514,14 +557,14 @@ export const Navbar = () => {
                   ) : (
                     <Image
                       className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px]  rounded-full"
-                      src={userDetails.data.avatar}
+                      src={userDetails?.data?.avatar || ""}
                       priority
                       width={25}
                       height={25}
                       alt=""
                     />
                   )}
-                  <p className="">{userDetails?.data?.fullName}</p>
+                  <p className="capitalize">{userDetails?.data?.fullName}</p>
                   <i
                     className={`${profileOption && "rotate-180"} duration-300`}
                   >
@@ -537,28 +580,24 @@ export const Navbar = () => {
                     >
                       Profile
                     </Link>
-
                     <Link
                       href={`/orders`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Orders
                     </Link>
-
                     <Link
                       href={`/address`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Address
                     </Link>
-
                     <Link
                       href={`/password`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Password
                     </Link>
-                    
                     <div
                       onClick={() => setLogoutModal(true)}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
@@ -594,7 +633,14 @@ export const Navbar = () => {
 
       {/* ----- Navbar Mobile----- */}
       <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4  bg-background h-[72px] relative">
-        <Link href={`/cart`}>{cart()}</Link>
+        <Link href={`/cart`}>
+          {cart()}
+          {getCartCount() > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {getCartCount()}
+            </span>
+          )}
+        </Link>
         <Link href={`/`}>{logo()}</Link>
         <div onClick={() => setMobileDropdown(!mobileDropdown)} className="">
           {humbuger()}
@@ -636,7 +682,7 @@ export const Navbar = () => {
                       className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1`}
                     >
                       {nigeriaIcon()}
-                      <p className="">NGN ₦</p>
+                      <p className="selection:bg-none">NGN ₦</p>
                     </div>
                     {/*  */}
                     <i
@@ -654,14 +700,14 @@ export const Navbar = () => {
                       <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
                         <div className="gap-2 flex">
                           {nigeriaIcon()}
-                          <p className="">NGN ₦</p>
+                          <p className="selection:bg-none">NGN ₦</p>
                         </div>
                         {checked()}
                       </div>
                       <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
                         <div className="gap-2 flex">
                           {USAIcon()}
-                          <p className="">USA $</p>
+                          <p className="selection:bg-none">USA $</p>
                         </div>
                         {unChecked()}
                       </div>
@@ -679,7 +725,7 @@ export const Navbar = () => {
                       className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                     >
                       {category()}
-                      <p className="">Category</p>
+                      <p className="selection:bg-none">Category</p>
                     </div>
                     {/*  */}
                     <i
@@ -706,7 +752,7 @@ export const Navbar = () => {
                             <div
                               className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                             >
-                              <p className="">Collections</p>
+                              <p className="selection:bg-none">Collections</p>
                             </div>
                             {/*  */}
                             <i
@@ -720,13 +766,13 @@ export const Navbar = () => {
                           {/* ----- collections dropdown ----- */}
                           {collectionDropdown && (
                             <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Features
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Trending
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Latest wear
                               </Link>
                             </div>
@@ -745,7 +791,7 @@ export const Navbar = () => {
                             <div
                               className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
                             >
-                              <p className="">Men</p>
+                              <p className="selection:bg-none">Men</p>
                             </div>
                             {/*  */}
                             <i
@@ -759,13 +805,13 @@ export const Navbar = () => {
                           {/* ----- Men dropdown ----- */}
                           {menDropdown && (
                             <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Features
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Trending
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Latest wear
                               </Link>
                             </div>
@@ -798,13 +844,13 @@ export const Navbar = () => {
                           {/* ----- Women dropdown ----- */}
                           {womenDropdown && (
                             <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Features
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Trending
                               </Link>
-                              <Link href={``} className="">
+                              <Link href={``} className="selection:bg-none">
                                 Latest wear
                               </Link>
                             </div>
@@ -815,23 +861,35 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* -----profile----- */}
-                {isLoggedIn && userDetails != null ? (
+                {isLoggedIn ? (
                   <div
                     ref={profileWrapperRef}
-                    className="w-full gap-6 flex flex-col  border-b pb-6"
+                    className="border-l pl-6 relative flex justify-center py-1"
                   >
-                    <div className=" h-[46px flex justify-between items-start  ">
-                      <div
-                        onClick={handleMobileProfileOption}
-                        className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1 text-nowrap`}
-                      >
+                    <div
+                      onClick={handleProfileOption}
+                      className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b-2 py-1 text-nowrap ${
+                        profileOption
+                          ? "border-text_strong"
+                          : "border-transparent"
+                      }`}
+                    >
+                      {hasAvatar  ? (
+                        <Image
+                          className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
+                          src={userDetails?.data?.avatar || ""}
+                          priority
+                          width={25}
+                          height={25}
+                          alt=""
+                        />
+                      ) : (
                         <ProfileAvatar
-                          name={userDetails?.data?.fullName || "User"}
+                          name={userDetails?.data?.fullName || ""}
                           size="small"
                         />
-                        <p className="">{userDetails?.data.fullName}</p>
-                      </div>
-                      {/*  */}
+                      )}
+                      <p className="">{userDetails?.data?.fullName}</p>
                       <i
                         className={`${
                           profileOption && "rotate-180"
@@ -841,64 +899,59 @@ export const Navbar = () => {
                       </i>
                     </div>
                     {/* ----- profile dropdown ----- */}
-
                     {profileOption && (
-                      <div className="flex flex-col gap-4 ">
+                      <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
                         <Link
-                          href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/profile`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Profile
-                        </Link>{" "}
+                        </Link>
                         <Link
-                          href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/orders`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Orders
-                        </Link>{" "}
+                        </Link>
                         <Link
-                          href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/address`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Address
-                        </Link>{" "}
+                        </Link>
                         <Link
-                          href={``}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          href={`/password`}
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Password
-                        </Link>{" "}
+                        </Link>
                         <div
                           onClick={() => setLogoutModal(true)}
-                          className="h-10 w-full px-6 text-text_strong items-center flex justify-start cursor-pointer"
+                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                         >
                           Logout
-                        </div>{" "}
+                        </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="min-h-[8rem] flex flex-col gap-6 justify-end">
-                    {/* text */}
-                    {/* <div className="font-base text-base text-text_weak">
-                    If you already have an account, click Login to access your profile. If you’re a new user, click Sign up to create an account.
-                    </div> */}
-                    {/* signup */}
-                    <div className="flex font-medium text-sm w-full justify-between">
-                      <Link
-                        href={`/login`}
-                        className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer bg-text_strong text-background"
-                      >
-                        <p className="">Signup</p>
-                      </Link>
+                  // login and signup
+                  <div className="border-l pl-6 flex gap-6 items-center">
+                    {/* ----- Login ----- */}
+                    <Link
+                      href={`/login`}
+                      className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b border-text_strong py-1"
+                    >
+                      <p className="">Login</p>
+                    </Link>
 
-                      <Link
-                        href={`/login`}
-                        className="flex items-center gap-2 rounded-full font-medium text-sm w-full max-w-[120px] h-8 justify-center cursor-pointer border"
-                      >
-                        <p className="">Login</p>
-                      </Link>
-                    </div>
+                    {/* ----- Signup ----- */}
+                    <Link
+                      href={`/sign_up`}
+                      className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
+                    >
+                      <p className="">Signup</p>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -907,7 +960,7 @@ export const Navbar = () => {
             </div>
 
             {/*------------ socials ----------*/}
-            <div className="w-full bg-[red] flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
+            <div className="w-full bg-[red] selection:bg-none flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
               {/* ----- map ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{map()}</i>
@@ -919,13 +972,17 @@ export const Navbar = () => {
               {/* ----- whatsapp ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{whatsapp()}</i>
-                <p className="text-sm text-text_strong">+234 704 451 4049</p>
+                <p className="text-sm selection:bg-none text-text_strong">
+                  +234 704 451 4049
+                </p>
               </div>
 
               {/* ----- instagram ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{instagram()}</i>
-                <p className="text-sm text-text_strong">Quicktrads</p>
+                <p className="text-sm selection:bg-none text-text_strong">
+                  Quicktrads
+                </p>
               </div>
             </div>
           </div>
@@ -934,3 +991,4 @@ export const Navbar = () => {
     </div>
   );
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */
