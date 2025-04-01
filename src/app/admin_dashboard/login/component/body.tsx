@@ -14,10 +14,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
 import nookies from "nookies";
 // import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { adminLogin } from "../../../../utils/api/admin/auth";
-// import { errorToast } from "../../../../utils/toast/toast";
-
+// import { cookies } from 'next/headers';
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
@@ -37,6 +36,7 @@ interface LoginResponse {
     id: string;
     fullName: string;
     role: string;
+    avatar:string
   };
 }
 
@@ -44,6 +44,7 @@ const Body = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const cookies = nookies.get(null);
 
   const {
     register,
@@ -53,12 +54,16 @@ const Body = () => {
     resolver: zodResolver(login),
   });
 
-  useEffect(() => {
-    const cookies = nookies.get(null);
-    if (cookies.accessToken) {
-      router.push("/admin_dashboard");
+  const checkAdminAuth = () => {
+    const pathname = usePathname();
+    if (!cookies.accessToken && pathname.startsWith('/admin_dashboard')) {
+      router.replace('/admin_dashboard/login');
     }
-  }, [router]);
+  };
+
+  // useEffect(() => {
+  //   checkAdminAuth
+  // }, [router,cookies]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
@@ -67,7 +72,7 @@ const Body = () => {
         data
       )) as AxiosResponse<LoginResponse>;
       const loginData = res.data;
-      const { accessToken, refreshToken, user } = loginData;
+      const { accessToken, refreshToken, user } = loginData;   
 
       console.log(res);
       // Check if user is admin
@@ -78,40 +83,46 @@ const Body = () => {
 
       // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      // localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("user", JSON.stringify(user)); // Store user details
 
-      // Set cookies using nookies
       nookies.set(null, "accessToken", accessToken, {
         maxAge: 1 * 24 * 60 * 60,
-        path: "/admin_dashboard",
+        path: "/admin_dashboard",  // Changed from ""
       });
-
+      
       nookies.set(null, "refreshToken", refreshToken, {
         maxAge: 3 * 24 * 60 * 60,
-        path: "/admin_dashboard",
+        path: "/admin_dashboard",  // Changed from "/admin_dashboard"
       });
+
+      nookies.set(null, "role", JSON.stringify(user?.role.trim()), {
+        maxAge: 3 * 24 * 60 * 60,
+        path: "/admin_dashboard", 
+      });
+
 
       if (!accessToken) {
         throw new Error("Access token not found in the login response");
       }
 
       setLoading(false);
-      router.refresh();
-      router.push("/admin_dashboard");
-      router.refresh();
+      router.replace("/admin_dashboard");
     } catch (error: unknown) {
       console.error("Login error:", error);
       setLoading(false);
-      // Add error message to UI
       if (error instanceof Error && error.message.includes('Unauthorized')) {
-        // Handle unauthorized access attempt
-        // alert('Access denied: Admin privileges required');
-        // Optionally redirect to a different page
-        router.push('/admin_dashboard/login');
+        router.replace('/admin_dashboard/login');
       }
     }
   };
+
+  // const cookieStore = await cookies();
+  // const accessToken = cookieStore.get('accessToken')?.value;
+
+  // if (!accessToken) {
+  //   redirect('/admin_dashboard/login'); // Server-side redirect
+  // }
 
   return (
     <>
@@ -220,3 +231,4 @@ const Body = () => {
   );
 };
 export default Body;
+
