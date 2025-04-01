@@ -1,7 +1,100 @@
+"use client";
 import { ProfileAvatar } from "@/app/global/profileGenerator";
-import { arrowDown,  uploadIcon } from "@/app/global/svg";
+import { SafeImage } from "@/app/global/SafeImage";
+import { arrowDown, uploadIcon } from "@/app/global/svg";
+import { useEffect, useState } from "react";
 
 export const Body = () => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [userData, setUserData] = useState<any | null>(null);
+
+  useEffect(() => {
+    setUserData(localStorage.getItem("user"));
+  });
+
+  const [formData, setFormData] = useState({
+    address: "",
+    avatar: "",
+    country: "#E9C46A",
+    dob: "",
+    email: "",
+    fullName: "",
+    gender: "",
+    password: "",
+    phoneNumber: "",
+    state: "",
+  });
+
+  const uploadImageToCloudinary = async (
+    base64Image: string
+  ): Promise<string> => {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error("Missing Cloudinary configuration");
+    }
+
+    const formData = new FormData();
+    formData.append("file", base64Image);
+    formData.append("upload_preset", uploadPreset);
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      return data.secure_url;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      setIsUploading(true);
+      const base64 = await convertFileToBase64(file);
+      const cloudinaryUrl = await uploadImageToCloudinary(base64);
+      setFormData((prev) => ({
+        ...prev,
+        avatar: cloudinaryUrl,
+      }));
+      setImageError(null);
+    } catch (error) {
+      console.error("Failed to upload hero image:", error);
+      setImageError("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleImageClick = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) handleImageUpload(file);
+    };
+    input.click();
+  };
+
   return (
     <div className=" flex flex-col gap-8 h-[82px] border-b px-4 md:px-0  md:ml-[280px] mt-[150px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
@@ -12,22 +105,24 @@ export const Body = () => {
       {/* input */}
 
       <div className="flex flex-col justify-start items-start gap-8 max-w-[800px] w-full">
-        {/* info */}
-
-        {/* {
-          <div className="w-full h-11 flex justify-start items-center border-l-4 rounded-l-xl bg-fill border-error_1 px-2 gap-2">
-            <i>{redInfoSmall()}</i>
-            <p>
-              Please compete your profile details and upload an image for your
-              profile
-            </p>
-          </div>
-        } */}
-
         {/* image upload */}
         <div className="flex flex-col gap-4 justify-center items-center w-full">
-          {<ProfileAvatar name={"User"} size="large" />}
-          <div className="flex gap-2 pr-6 pl-5 h-8 justify-center items-center border rounded-full font-medium text-sm">
+          {!userData?.avatar ? (
+            <ProfileAvatar name={JSON.parse(userData)?.fullName || "User"} size="large" />
+          ) : (
+            <SafeImage
+            className="rounded-full w-16 h-16"
+              src={userData?.avatar}
+              alt=""
+              width={50}
+              height={50}
+              priority
+            />
+          )}
+          <div
+            onClick={handleImageClick}
+            className="flex gap-2 pr-6 pl-5 h-8 justify-center items-center border rounded-full font-medium text-sm"
+          >
             <i>{uploadIcon()}</i>
             <p>Upload image</p>
           </div>
