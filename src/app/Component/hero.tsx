@@ -12,7 +12,7 @@ export const Hero = () => {
     <div className="w-full lg:px-10 mt-4 md:mt-[152px] my-8">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-brand_yellow   md:h-[440px] px-6 md:px-10  lg:px-20 mx-auto w-full max-w-7xl">
         {/*----- text and button container -----*/}
-        <div className=" w-full md:w-1/2 flex items-center ">
+        <div className=" w-full mt-12 lg:mt-0 md:w-1/2 flex items-center ">
           <div className="w-[485px] flex flex-col items-start mt-12 md:mt-0 gap-8">
             {/* ----- text ----- */}
             <div className="flex flex-col font-normal gap-4 items-start">

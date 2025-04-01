@@ -51,7 +51,7 @@ export const Tops = () => {
         </div>
 
         {/* ----- item grids ----- */}
-        <div className="flex overflow-y-hidde overflow-x-scroll hidden_scroll gap-6  h-fit">
+        <div className="flex overflow-y-hidden overflow-x-scroll hidden_scroll gap-6  h-fit">
           {/*----- mapped items ----- */}
           {content.map((item, index) => {
             return (
