@@ -12,26 +12,26 @@ const content = [
   {
     image:
       "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png",
-    name: "Tops",
+    name: "Men",
     price: 62.9,
     discount: 69.9,
-    linkTo: "m-tops",
+    linkTo: "m-",
   },
   {
     image:
       "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737098056/quicktrads/nkejpkehave5elvjq6ty.png",
-    name: "Trousers",
+    name: "Women",
     price: 62.9,
     discount: 69.9,
-    linkTo: "w-trousers",
+    linkTo: "w-",
   },
   {
     image:
       "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737098303/quicktrads/hsebtpkiqjw4meu2ga5m.png",
-    name: "Two pieces",
+    name: "Unisex",
     price: 62.9,
     discount: 69.9,
-    linkTo: "u-two-pieces",
+    linkTo: "u-",
   },
 ];
 
