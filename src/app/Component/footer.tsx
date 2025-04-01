@@ -48,31 +48,35 @@ export const Footer = () => {
               {/* ----- logo ----- */}
               {logo()}
             </i>
-            <div className="flex flex-row flex-wrap justify-center gap-6  font-medium">
-              <Link href={`/about`}>
-                <p className="text-text_strong text-base">About us</p>
-              </Link>
-              <Link href={`/contact`}>
-                <p className="text-text_strong text-base">Contact us</p>
-              </Link>
+            <div className="flex flex-col sm:flex-row justify-center gap-6  font-medium">
+              <div className="flex justify-between gap-4">
+                <Link href={`/about`}>
+                  <p className="text-text_strong text-base">About us</p>
+                </Link>
+                <Link href={`/contact`}>
+                  <p className="text-text_strong text-base">Contact us</p>
+                </Link>
 
-              <Link href={`/sizing-guide`}>
-                <p className="text-text_strong text-base">Sizing guide</p>
-              </Link>
+                <Link href={`/sizing-guide`}>
+                  <p className="text-text_strong text-base">Sizing guide</p>
+                </Link>
+              </div>
 
-              <Link href={`/shopping_&_delivery`}>
-                <p className="text-text_strong text-base">
-                  Shipping & delivery
-                </p>
-              </Link>
+              <div className="flex justify-between gap-4">
+                <Link href={`/shopping_&_delivery`}>
+                  <p className="text-text_strong text-base">
+                    Shipping & delivery
+                  </p>
+                </Link>
 
-              <Link href={`/legals`}>
-                <p className="text-text_strong text-base">Legals</p>
-              </Link>
+                <Link href={`/legals`}>
+                  <p className="text-text_strong text-base">Legals</p>
+                </Link>
 
-              <Link href={`/faqs`}>
-                <p className="text-text_strong text-base">FAQs</p>
-              </Link>
+                <Link href={`/faqs`}>
+                  <p className="text-text_strong text-base">FAQs</p>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
