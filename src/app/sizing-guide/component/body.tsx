@@ -35,7 +35,7 @@ export const Body = () => {
         </section>
 
         {/* Gender Tabs */}
-        <div className="max-w-3xl mx-auto mt-10 p-4">
+        <div className="max-w-3xl mx-auto mt-10 md:p-4">
           <div className="relative flex items-center justify-between w-full sm:w-[344px] mx-auto bg-[#fafafa] p-1 rounded-full">
             <div
               className={`absolute left-1 top-1 w-1/2 h-[30px] bg-white rounded-full transition-transform duration-300 ease-in-out ${

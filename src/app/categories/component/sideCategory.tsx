@@ -195,7 +195,7 @@ export const SideCategory = ({
     <>
       <div
         className={`
-          hidden md:block
+        
         max-w-[240px] w-full bg-white h-[calc(100vh-7.5rem)] z-20 fixed top-[72px] xl:top-[110px]
         transform transition-all duration-300 ease-in-out
         ${
@@ -609,7 +609,7 @@ export const SideCategory = ({
       <div className="flex md:hidden justify-between py-3 px-4">
         <button>Gender</button>
         <button>size</button>
-        <button>Price</button>
+        <button onClick={() => setShowPrice(!showPrice)}>Price</button>
       </div>
     </>
   );

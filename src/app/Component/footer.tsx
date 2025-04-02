@@ -16,7 +16,7 @@ export const Footer = () => {
   const pathname = usePathname();
 
   return (
-    <div className="w-full mt-[102px] mb-12 pb-4 md:pb-0">
+    <div className="w-full sm:mt-[102px] mb-12 pb-4 md:pb-0">
       {/* ----- instagram connect ----- */}
       {pathname !== "/" ? null : (
         <div className="w-full max-w-[725px] mx-auto text-center items-center flex flex-col gap-8 mb-[77px]">
