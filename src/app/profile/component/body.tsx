@@ -35,12 +35,12 @@ export const Body = () => {
 
         {/* inputs */}
 
-        <div className="flex flex-col items-start gap-4 w-full ">
+        <div className="flex flex-col items-start gap-2 sm:gap-4 w-full ">
           {/* fullName and Email */}
-          <div className="flex flex-col sm:flex-row gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-8 justify-start items-center w-full">
             {/* fullName */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Full name</p>
+              <p className="text-sm sm:text-base">Full name</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -52,7 +52,7 @@ export const Body = () => {
 
             {/* Email */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Email</p>
+              <p className="text-sm sm:text-base">Email</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -64,11 +64,11 @@ export const Body = () => {
           </div>
 
           {/* phone and Gender */}
-          <div className="flex flex-col sm:flex-row  gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row gap-2  md:gap-8 justify-start items-center w-full">
             {/* Phone */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Phone number</p>
-              <div className=" w-full">
+              <p className="text-sm sm:text-base">Phone number</p>
+              <div className="w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
                   placeholder=""
@@ -79,8 +79,8 @@ export const Body = () => {
 
             {/* Gender */}
             <div className="flex flex-col gap-2 w-full max-w-[323px] relative">
-              <p className="">Gender</p>
-              <div className=" w-full">
+              <p className="text-sm sm:text-base">Gender</p>
+              <div className="w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
                   placeholder=""
@@ -105,10 +105,10 @@ export const Body = () => {
           </div>
 
           {/* country and DOB */}
-          <div className="flex flex-col sm:flex-row  gap-8 justify-start items-center w-full">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-8 justify-start items-center w-full">
             {/* Phone */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Date of birth</p>
+              <p className="text-sm sm:text-base">Date of birth</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -120,7 +120,7 @@ export const Body = () => {
 
             {/* Gender */}
             <div className="flex flex-col gap-2 w-full max-w-[323px] relative">
-              <p className="">Country</p>
+              <p className="text-sm sm:text-base">Country</p>
               <div className=" w-full">
                 <div className="outline-none border rounded-lg h-10 px-4  w-full flex items-center">
                   Nigeria
@@ -144,7 +144,7 @@ export const Body = () => {
           <div className="flex flex-col sm:flex-row  gap-8 justify-start items-center w-full">
             {/* State */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">State</p>
+              <p className="text-sm sm:text-base">State</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -155,7 +155,7 @@ export const Body = () => {
             </div>
             {/* State */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Address</p>
+              <p className="text-sm sm:text-base">Address</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -168,7 +168,7 @@ export const Body = () => {
         </div>
         {/* button */}
 
-        <div className="flex gap-8 justify-start items-center w-full text-base font-medium  mt-2 mb-8">
+        <div className="flex md:gap-8 gap-2 justify-start items-center w-full text-base font-medium  mt-2 mb-8">
           <button className="max-w-[153px] w-full text-background bg-text_strong rounded-full px-6 h-10 flex justify-center items-center">
             Update
           </button>

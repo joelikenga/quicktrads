@@ -357,7 +357,7 @@ export const Body = () => {
   // [Previous JSX code remains unchanged]
 
   return (
-    <div className="w-full px-10 mt-[150px]">
+    <div className="w-full px-4 md:px-10 mt-[150px]">
       {/* payment successful */}
       {success && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
@@ -530,7 +530,7 @@ export const Body = () => {
       {/* add address modal */}
       {addressModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-start backdrop-blur px-4 md:px-0 overflow-y-auto">
-          <div className="bg-white max-w-[480px] w-full h-fit p-4 md:p-8 flex flex-col gap-8 rounded-lg  mt-20 mb-6">
+          <div className="bg-white max-w-[480px] w-full h-fit p-4 md:p-8 flex flex-col gap-8 rounded-lg mt-4  md:mt-20 mb-6">
             <div className="w-full flex justify-between items-center">
               <p className="text-text_strong  text-[18px] font-medium">
                 Add address
@@ -544,10 +544,10 @@ export const Body = () => {
             </div>
 
             {/* address modal content */}
-            <div className="w-full flex flex-col gap-4">
+            <div className="w-full flex flex-col gap-2 sm:gap-4">
               {/* fullname */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Full name</p>
+                <p className="sm:text-base text-sm">Full name</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -560,7 +560,7 @@ export const Body = () => {
               </div>
               {/* Email */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Email</p>
+                <p className="sm:text-base text-sm">Email</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -573,7 +573,7 @@ export const Body = () => {
               </div>
               {/* phone */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Phone number</p>
+                <p className="sm:text-base text-sm">Phone number</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -586,7 +586,7 @@ export const Body = () => {
               </div>
               {/* Address */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Address</p>
+                <p className="sm:text-base text-sm">Address</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -598,10 +598,10 @@ export const Body = () => {
                 </div>
               </div>
 
-              <div className="flex gap-8 justify-start items-center w-full">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-8 justify-start items-center w-full">
                 {/* State */}
-                <div className="flex flex-col gap-2 w-full max-w-[323px] relative">
-                  <p className="">State</p>
+                <div className="flex flex-col gap-2 w-full md:max-w-[323px] relative">
+                  <p className="sm:text-base text-sm">State</p>
                   <div className="w-full">
                     <input
                       className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -614,8 +614,8 @@ export const Body = () => {
                 </div>
 
                 {/* Country */}
-                <div className="flex flex-col gap-2 w-full max-w-[323px] relative">
-                  <p className="">Country</p>
+                <div className="flex flex-col gap-2 w-full md:max-w-[323px] relative">
+                  <p className="sm:text-base text-sm">Country</p>
                   <div className="w-full">
                     <input
                       className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -629,16 +629,16 @@ export const Body = () => {
               </div>
             </div>
             {/* buttons */}
-            <div className="flex gap-6 justify-between items-center w-full font-medium text-base mt-2">
+            <div className="flex gap-2 sm:gap-6 justify-between items-center w-full font-medium text-base mt-2">
               <button
                 onClick={handleAddressSubmit}
-                className="w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"
+                className="w-full text-nowrap sm:text-wrap text-background bg-text_strong rounded-full px-4 sm:px-6 h-12 flex justify-center items-center"
               >
                 Add address
               </button>
               <button
                 onClick={() => setAddressModal(false)}
-                className="w-full text-text_strong border bg-background rounded-full px-6 h-12 flex justify-center items-center"
+                className="w-full text-nowrap sm:text-wrap text-text_strong border bg-background rounded-full px-4 sm:px-6 h-12 flex justify-center items-center"
               >
                 Cancel
               </button>
@@ -692,7 +692,7 @@ export const Body = () => {
       )}
 
       <div className="mx-auto w-full max-w-7xl">
-        <div className=" flex justify-start gap-[108px]">
+        <div className=" flex flex-col md:flex-row justify-start gap-[40px] md:gap-[108px]">
           {/* not logged in */}
           {false && (
             <div className="flex flex-col gap-6 text-text_strong w-1/2 font-normal text-sm">
@@ -902,7 +902,7 @@ export const Body = () => {
                       shippingData.map((data, index) => (
                         <div
                           key={index}
-                          className={`max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
+                          className={`max-w-[600px] rounded-2xl border border-text_strong p-4 sm:p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
                             selectedAddressId === index
                               ? "bg-fill overflow-hidden"
                               : "bg-white"
@@ -947,10 +947,10 @@ export const Body = () => {
               </div>
 
               {addressEdit && (
-                <div className="flex justify-between px-6 gap-6">
+                <div className="flex justify-between gap-2 sm:gap-6">
                   <button
                     onClick={handleConfirmAddress}
-                    className={`border rounded-full items-center flex h-10 w-full justify-center px-6 ${
+                    className={`border rounded-full text-nowrap sm:text-wrap items-center flex h-10 w-full justify-center px-4 sm:px-6 ${
                       selectedAddressId !== null
                         ? "bg-text_strong text-background border-text_strong"
                         : "text-gray-400 border-gray-300 cursor-not-allowed"
@@ -961,7 +961,7 @@ export const Body = () => {
                   </button>
                   <button
                     onClick={() => setAddressModal(true)}
-                    className="border rounded-full items-center flex h-10 w-full justify-center px-6"
+                    className="border text-nowrap sm:text-wrap rounded-full items-center flex h-10 w-full justify-center px-4 sm:px-6"
                   >
                     Add address
                   </button>
@@ -983,7 +983,7 @@ export const Body = () => {
           ) : null}
 
           {/* container 2 */}
-          <div className="flex flex-col gap-20 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
+          <div className="flex flex-col gap-10 sm:gap-20 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
             {!review ? (
               <div className="flex flex-col gap-4">
                 <p className="text-[18px]">Order summary</p>
@@ -1054,7 +1054,7 @@ export const Body = () => {
                 cartItems.map((item: CartItem) => (
                   <div
                     key={item.id}
-                    className="flex justify-start gap-6 w-full mb-6"
+                    className="flex flex-col md:flex-row justify-start gap-6 w-full mb-6"
                   >
                     <Image
                       src={item.image}
@@ -1062,7 +1062,7 @@ export const Body = () => {
                       height={180}
                       priority
                       alt={item.name}
-                      className="w-[154.29px] h-[180px] object-cover"
+                      className="w-full md:w-[154.29px] h-[180px] object-cover"
                     />
 
                     <div className="flex flex-col gap-4">

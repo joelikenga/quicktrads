@@ -244,7 +244,7 @@ export const Body = () => {
                   onClick={() => setMobileCheckout(true)}
                   className="md:hidden outline-none border-none rounded-lg px-4 h-8 text-background bg-text_strong font-medium"
                 >
-                  <p className=" text-base">Checkout</p>
+                  <p className="text-base">Checkout</p>
                 </button>
               </div>
               {/* ----- items list ----- */}
@@ -255,7 +255,7 @@ export const Body = () => {
                     className="max-w-[600px] w-full bg-white flex flex-col md:flex-row gap-6"
                   >
                     {/* image */}
-                    <div className="w-[240px] h-[280px]">
+                    <div className="w-full sm:w-[240px] h-[280px]">
                       <Image
                         className="w-full h-full"
                         width={240}
@@ -267,10 +267,10 @@ export const Body = () => {
                     {/* details */}
                     <div className="flex flex-col items-start w-full truncate gap-6">
                       <div className="w-full text-text_strong text-ellipsis gap-2 ">
-                        <p className="text-lg font- truncate font-medium">
+                        <p className="text-lg truncate font-medium">
                           {item.name}
                         </p>
-                        <div className="text-lg font- truncate flex gap-2 font-medium">
+                        <div className="text-lg truncate flex gap-2 font-medium">
                           <p>{`$ ${item.price}`}</p>
                           <del className="text-text_weak">{`$ ${item.price}`}</del>
                         </div>
