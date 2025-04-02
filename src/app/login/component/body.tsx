@@ -12,9 +12,8 @@ import { AxiosResponse } from "axios";
 import { userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { errorToast,  successToast } from "@/utils/toast/toast";
-// import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type FormValues = {
   email: string;
@@ -43,6 +42,8 @@ const currentYear = new Date().getFullYear();
 
 export const Body = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from') || '/';
 
   const {
     register,
@@ -63,7 +64,7 @@ export const Body = () => {
       const cookies = nookies.get(null);
       if (cookies.accessToken) {
         successToast("You are still logged in");
-        await router.push("/"); // Redirect to homepage if logged in
+        await router.replace(from); // Redirect to homepage if logged in
       }
     };
 
@@ -110,7 +111,7 @@ export const Body = () => {
 
       successToast("Login successful");
       setLoading(false);
-      router.push("/");
+      router.replace(from);
     } catch (error: any) {
       errorToast(error);
       setLoading(false);

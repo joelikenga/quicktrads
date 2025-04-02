@@ -48,12 +48,11 @@ axiosInstance.interceptors.response.use(
     }
 
     // Check for 401 Unauthorized
-    if (error.response.status === 401) {
+    if (error?.response?.status === 401) {
       if (cookies?.role?.replaceAll("%22", "") === "super_admin") {
         window.location.href = "/admin_dashboard/login";
-      } else {
-        window.location.href = "/";
-      }
+      } 
+      
       // errorToast("Invalid login details");
     }
 

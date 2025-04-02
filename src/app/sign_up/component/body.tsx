@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signup_Step_1, signup_Step_2 } from "@/app/validationSchemas";
 import { useEffect, useState } from "react";
 import { resendOTP, userSignup, verifyOtp } from "../../../utils/api/user/auth";
-// import { set } from "zod";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type step_1 = {
   fullName: string;
@@ -47,6 +47,9 @@ const lora = Lora({
 const currentYear = new Date().getFullYear();
 
 export const Body = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from') || '/';
   const [step, setStep] = useState<number>(1);
   const [data, setData] = useState<steps>({
     step1: { fullName: "", email: "", password: "", confirmPassword: "" },
@@ -488,7 +491,7 @@ export const Body = () => {
                         }
                       </p>
                     </div>
-                    <Link className="w-full" href={`/login`}>
+                    <Link className="w-full" href={from}>
                       <button
                         type="submit"
                         className=" w-full bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"

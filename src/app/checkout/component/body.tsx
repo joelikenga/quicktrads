@@ -22,6 +22,7 @@ import {
 } from "../../../utils/api/user/product";
 import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
+import { usePathname, useRouter } from "next/navigation";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -132,6 +133,8 @@ type FlutterwaveResponse = {
 };
 
 export const Body = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [addressEdit, setAddressEdit] = useState<boolean>(false);
   const [addressModal, setAddressModal] = useState<boolean>(false);
   const [deleteAddress, setDeleteAddress] = useState<boolean>(false);
@@ -714,17 +717,19 @@ export const Body = () => {
               </div>
 
               <div className="flex gap-4 justify-start items-center">
-                <Link href={`/sign_up`}>
-                  <button className="border rounded-full items-center flex h-8 px-6">
-                    Sign up
-                  </button>
-                </Link>
+                <button
+                  onClick={() => router.push(`/sign_up?from=${pathname}`)}
+                  className="border rounded-full items-center flex h-8 px-6"
+                >
+                  Sign up
+                </button>
 
-                <Link href={`/login`}>
-                  <button className="border rounded-full items-center flex h-8 px-6">
-                    Login
-                  </button>
-                </Link>
+                <button
+                  onClick={() => router.push(`/login?from=${pathname}`)}
+                  className="border rounded-full items-center flex h-8 px-6"
+                >
+                  Login
+                </button>
               </div>
             </div>
           )}
