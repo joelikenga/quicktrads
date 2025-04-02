@@ -539,7 +539,7 @@ export const Navbar = () => {
                     profileOption ? "border-text_strong" : "border-transparent"
                   }`}
                 >
-                  {!userData?.avatar ? (
+                  {!JSON.parse(userData)?.avatar ? (
                     <ProfileAvatar
                       name={JSON.parse(userData)?.fullName || "User"}
                       size="small"
@@ -547,7 +547,7 @@ export const Navbar = () => {
                   ) : (
                     <Image
                       className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px]  rounded-full"
-                      src={userData.avatar || ""}
+                      src={JSON.parse(userData)?.avatar || ""}
                       priority
                       width={25}
                       height={25}

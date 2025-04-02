@@ -101,4 +101,13 @@ export const loggedInUser = async () => {
   }
 };
 
+export const UpdateUserDetails = async (data:any) => {    
+  try {
+    const response = await axios$.patch("/auth/user",data);
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
 
