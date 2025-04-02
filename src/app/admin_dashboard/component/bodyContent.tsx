@@ -20,7 +20,7 @@ import {
   Title,
 } from "chart.js/auto";
 // import StackedCircles from "./stackedCircles";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { adminDashboard, getOrders } from "@/utils/api/admin/products";
@@ -179,24 +179,39 @@ export const BodyContent = () => {
   const [adminData, setAdminData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const getAdminDashboard = async () => {
+  // const getAdminDashboard = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = (await getOrders()) as any;
+  //     const admin = await adminDashboard();
+  //     setAdminData(admin?.data);
+  //     setOrderData(response?.data);
+  //     // console.log("order response", response.data);
+  //   } catch (err: unknown) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const getAdminDashboard = useCallback(async () => {
     try {
       setLoading(true);
-      const response = (await getOrders()) as any;
-      const admin = await adminDashboard();
-      setAdminData(admin?.data);
-      setOrderData(response?.data);
-      console.log("order response", response.data);
-    } catch (err: unknown) {
+      const [orders, admin] = await Promise.all([getOrders(), adminDashboard()]);
+      // if (isMounted) {
+        setOrderData(orders.data);
+        setAdminData(admin.data);
+      // }
+    } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
-
+  }, []);
+  
   useEffect(() => {
     getAdminDashboard();
-  }, []);
+  }, [getAdminDashboard]); 
 
   const OrderSkeleton = () => (
     <tr>
@@ -478,7 +493,7 @@ export const BodyContent = () => {
                       (_, index) => loading && <OrderSkeleton key={index} />
                     )}
                   </>
-                ) : orderData === null || orderData.length === 0 ? (
+                ) : orderData === null || orderData?.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="p-4 text-center text-text_weak">
                       {/* no order */}
@@ -501,7 +516,7 @@ export const BodyContent = () => {
                   orderData?.slice(0, 4).map((item: any) => (
                     <tr
                       onClick={() => handleRowClick(item?.order.id)}
-                      key={item.order.id}
+                      key={item?.order?.id}
                       className=""
                     >
                       <td className="p-4">

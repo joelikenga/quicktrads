@@ -2,20 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
-import { useLogin } from "../../utils/hooks/useLogin";
-import { useEffect } from "react";
+
 
 export const useLogout = () => {
   const router = useRouter();
-  const { isLoggedIn, hasRole } = useLogin("user");
+  // const { isLoggedIn, hasRole } = useLogin("user");
 
-  useEffect(() => {
-    if (isLoggedIn) return; // Wait until the user data is fully loaded
-
-    if (isLoggedIn && hasRole && !hasRole("user")) {
-     logout();
-    }
-  }, [isLoggedIn, hasRole, router]);
 
   const logout = () => {
     // Clear cookies
@@ -35,14 +27,7 @@ export const useLogout = () => {
 
 export const useLogoutAdmin = () => {
   const router = useRouter();
-  const { isLoggedIn, hasRole } = useLogin("super_admin");
-
-  useEffect(() => {
-    // Ensure hook runs only when authentication is fully loaded
-    if (isLoggedIn === false && hasRole && hasRole("super_admin")) {
-      logoutAdmin();
-    }
-  }, [isLoggedIn, hasRole, router]);
+  // const { isLoggedIn, hasRole } = useLogin("super_admin");
 
   const logoutAdmin = () => {
     // Clear cookies

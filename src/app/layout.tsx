@@ -5,8 +5,9 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 // import { Toaster } from "react-hot-toast";
-import RouteGuard from "@/utils/routeGuard";
+// import RouteGuard from "@/utils/routeGuard";
 import InternetConnection from "@/components/InternetConnection";
+import { Toaster } from "react-hot-toast";
 
 const openSans = Open_Sans({
   variable: "--font-raleway",
@@ -42,10 +43,8 @@ export default function RootLayout({
       <body suppressHydrationWarning data-qb-installed className={`${openSans.className}  antialiased`}>
               <InternetConnection />
           <CartProvider>
-            <RouteGuard>
               {children}
-            </RouteGuard>
-            {/* <Toaster /> */}
+            <Toaster position="bottom-center" />
           </CartProvider>
       </body>
     </html>

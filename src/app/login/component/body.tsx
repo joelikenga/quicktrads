@@ -9,11 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
-import {  userLogin } from "../../../utils/api/user/auth";
+import { userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-// import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
+import { errorToast,  successToast } from "@/utils/toast/toast";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type FormValues = {
   email: string;
@@ -29,10 +29,9 @@ interface LoginResponse {
     id: string;
     fullName: string;
     role: string;
+    avatar: string;
   };
 }
-
-
 
 const lora = Lora({
   variable: "--font-lora",
@@ -43,6 +42,8 @@ const currentYear = new Date().getFullYear();
 
 export const Body = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from') || '/';
 
   const {
     register,
@@ -54,16 +55,16 @@ export const Body = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-    // const [userDetails, setUserDetails] = useState<any | null>(null);
-  
+  // const [userDetails, setUserDetails] = useState<any | null>(null);
+
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const cookies = nookies.get(null);
       if (cookies.accessToken) {
-        // infoToast('You are still logged in');
-        await router.push('/'); // Redirect to homepage if logged in
+        successToast("You are still logged in");
+        await router.replace(from); // Redirect to homepage if logged in
       }
     };
 
@@ -77,18 +78,16 @@ export const Body = () => {
         data
       )) as AxiosResponse<LoginResponse>;
 
-            // const userD = (await loggedInUser()) as any;
-            // setUserDetails(res);
+      // const userD = (await loggedInUser()) as any;
+      // setUserDetails(res);
       const loginData = res.data;
       const { accessToken, refreshToken, user } = loginData;
 
-      
-  
       // Check if user is admin
       if (user.role !== "user") {
-        //errorToat("Incorrect details");
+        errorToast("Incorrect details");
       }
-  
+
       // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
@@ -99,17 +98,22 @@ export const Body = () => {
         maxAge: 1 * 24 * 60 * 60, // 1 day
         path: "/",
       });
-  
+
       nookies.set(null, "refreshToken", refreshToken, {
         maxAge: 3 * 24 * 60 * 60, // 3 days
         path: "/",
       });
-  
-      //successToat("Login successful");
+
+      nookies.set(null, "role", JSON.stringify(user?.role.trim()), {
+        maxAge: 3 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      successToast("Login successful");
       setLoading(false);
-      router.push("/");
+      router.replace(from);
     } catch (error: any) {
-      console.log(error);
+      errorToast(error);
       setLoading(false);
     }
   };

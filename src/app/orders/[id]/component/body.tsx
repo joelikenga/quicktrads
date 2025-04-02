@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
@@ -7,7 +6,7 @@ import { arrowleft, ordersIcon, orderSmallIcon, xIcon } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getOrder } from "../../../../utils/api/user/product";
-
+import { useParams } from "next/navigation";
 
 interface Product {
   id: string;
@@ -15,8 +14,8 @@ interface Product {
   description: string;
   price: number;
   priceConvert: number;
-  priceDiscount: number;
-  priceDiscountConvert: number;
+  priceDiscount: number | null;
+  priceDiscountConvert: number | null;
   images: string[];
   currency: string;
   currencyConvert: string;
@@ -26,48 +25,74 @@ interface Product {
   addToInventory: boolean;
   isFeatured: boolean;
   isPaid: boolean;
+  isReviewed: boolean;
   paidAt: string;
   status: string;
   stars: number;
   ordersCount: number;
-  isReviewed: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-// interface OrderItem {
-//   product: Product;
-//   quantity: number;
-//   currency: string;
-//   amount: number;
-// }
+interface OrderItem {
+  product: Product;
+  quantity: number;
+  currency: string;
+  amount: number;
+}
 
-// interface OrderResponse {
-//   order: OrderItem[];
-// }
+interface ShippingDetails {
+  address: string;
+  country: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  state: string;
+}
 
+interface OrderResponse {
+  id: string;
+  createdAt: string;
+  currency: string;
+  dhlStatus: string | null;
+  dhlStatusCode: string | null;
+  order: OrderItem[];
+  paymentMethod: string;
+  reason: string | null;
+  shippingDetails: ShippingDetails;
+  shippingFee: number;
+  status: string;
+  subTotal: number;
+  tax: number;
+  totalAmount: number;
+  trackingID: string | null;
+  updatedAt: string;
+  usdAmount: number;
+  userId: string;
+}
 
 export const Body = () => {
+  const { id } = useParams();
   const [tab, setTab] = useState<string>("order items");
   const [cancelOrder, setCancelOrder] = useState<boolean>(false);
-  const [orderData, setOrderData] = useState<Product | null>(null)
+  const [orderData, setOrderData] = useState<OrderResponse | null>(null);
 
-
-  const order = async (id:string) => {
+  const order = async (id: string) => {
     try {
       const response = await getOrder(id) as any;
-
-      setOrderData(response?.data?.order);
-      // console.log(orderData)
-      
-    }catch(err:unknown){
+      if (response.code === 200) {
+        setOrderData(response.data);
+      }
+    } catch (err: unknown) {
       throw err;
     }
-  }
+  };
 
-  useEffect(()=>{
-    order("b50c62a8-3ba0-4376-9139-1b6fe09dcc22");
-  })
+  useEffect(() => {
+    if (typeof id === 'string') {
+      order(id);
+    }
+  }, [id]);
 
   return (
     <div className="md:ml-[280px] mt-[150px]">
@@ -82,10 +107,8 @@ export const Body = () => {
               {/* reason */}
               <div className="w-full flex flex-col items-start gap-2">
                 <p className="">Reason <span className="">{`(optional)`}</span></p>
-
-                <textarea  className="border outline-none rounded-lg w-full resize-none h-[88px] px-4 py-2"/>
+                <textarea className="border outline-none rounded-lg w-full resize-none h-[88px] px-4 py-2"/>
               </div>
-
             </div>
 
             {/* ----- button ----- */}
@@ -93,7 +116,7 @@ export const Body = () => {
               <button className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border">
                 <p>Yes, cancel order</p>
               </button>
-              <button onClick={()=> setCancelOrder(false)} className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border">
+              <button onClick={() => setCancelOrder(false)} className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border">
                 <p>Go back</p>
               </button>
             </div>
@@ -106,7 +129,7 @@ export const Body = () => {
           {arrowleft()}
           <>Order details</>
         </div>
-        <div onClick={()=> setCancelOrder(true)} className="flex gap-2 items-center cursor-pointer">
+        <div onClick={() => setCancelOrder(true)} className="flex gap-2 items-center cursor-pointer">
           <i>{xIcon()}</i>
           <p className="text-text_weak text-base underline">{`Cancel order`}</p>
         </div>
@@ -120,35 +143,37 @@ export const Body = () => {
             <i>{orderSmallIcon()}</i>
             <div className="flex-col items-center justify-center ">
               <p className="text-text_weak">Items</p>
-              <p className="text-text_strong">3</p>
+              <p className="text-text_strong">{orderData?.order.length || 0}</p>
             </div>
           </div>
 
           <div className="flex gap-8  items-center col-span-1 border-x-2 px-6">
             <div className="flex-col items-center justify-center ">
               <p className="text-text_weak">Order status</p>
-              <p className="text-text_strong">3</p>
+              <p className="text-text_strong capitalize">{orderData?.status || "N/A"}</p>
             </div>
           </div>
 
           <div className="flex gap-8  items-center col-span-1  px-6">
             <div className="flex-col items-center justify-center ">
               <p className="text-text_weak">Payment method</p>
-              <p className="text-text_strong">Bank transfer</p>
+              <p className="text-text_strong">{orderData?.paymentMethod || "N/A"}</p>
             </div>
           </div>
 
           <div className="flex gap-8  items-center col-span-1 border-x-2 px-6">
             <div className="flex-col items-end justify-center flex-end ">
               <p className="text-text_weak">Tracking ID</p>
-              <p className="text-text_strong">3</p>
+              <p className="text-text_strong">{orderData?.trackingID || "N/A"}</p>
             </div>
           </div>
 
           <div className="flex gap-8  items-center col-span-1  px-6">
             <div className="flex-col items-center justify-center ">
               <p className="text-text_weak">Date</p>
-              <p className="text-text_strong">3</p>
+              <p className="text-text_strong">
+                {orderData?.createdAt ? new Date(orderData.createdAt).toLocaleDateString() : "N/A"}
+              </p>
             </div>
           </div>
         </div>
@@ -210,38 +235,39 @@ export const Body = () => {
               </thead>
 
               <tbody className=" divide-stroke_weak ">
-                <tr className="border-b">
-                  <td className="pl-4 ">
-                    <div className="flex gap-6 items-start w-[360px]">
-                      <Image
-                        className="w-[69px] h-[68px]"
-                        src={orderData?.images[0] || ""}
-                        width={69}
-                        height={80}
-                        alt={orderData?.name || ""}
-                      />
-                      <div className="text-text_strong text-sm font-normal text-wrap ">
-                      {orderData?.name || ""}
+                {orderData?.order.map((item, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="pl-4 ">
+                      <div className="flex gap-6 items-start w-[360px]">
+                        <Image
+                          className="w-[70px] h-[85px]"
+                          src={item.product.images[0] || "/heroFallback.jpg"}
+                          width={69}
+                          height={80}
+                          alt={item.product.name}
+                        />
+                        <div className="text-text_strong text-sm font-normal text-wrap ">
+                          {item.product.name}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-text_strong text-sm font-normal text-nowrap w-[120px] capitalize">
-                    {orderData?.size || ""}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-text_strong text-sm font-normal text-nowrap y">
-                      $80.83 x 1 item
-                      
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                      $80.83
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-text_strong text-sm font-normal text-nowrap w-[120px] capitalize">
+                        {item.product.size}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-text_strong text-sm font-normal text-nowrap y">
+                        {item.currency} {item.amount} x {item.quantity} item
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
+                        {item.currency} {item.amount * item.quantity}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
                 {/* total and subtotal delivery */}
 
@@ -260,7 +286,7 @@ export const Body = () => {
                   </td>
                   <td className="p-4">
                     <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                      $100
+                      {orderData?.currency} {orderData?.shippingFee || 0}
                     </div>
                   </td>
                 </tr>
@@ -280,7 +306,7 @@ export const Body = () => {
                   </td>
                   <td className="p-4">
                     <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                      $100
+                      {orderData?.currency} {orderData?.subTotal || 0}
                     </div>
                   </td>
                 </tr>
@@ -299,7 +325,7 @@ export const Body = () => {
                   </td>
                   <td className="p-4">
                     <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                      $100
+                      {orderData?.currency} {orderData?.totalAmount || 0}
                     </div>
                   </td>
                 </tr>
@@ -311,5 +337,3 @@ export const Body = () => {
     </div>
   );
 };
-
-/* eslint-disable @typescript-eslint/no-explicit-any */

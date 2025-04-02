@@ -1,6 +1,7 @@
 "use client";
 import {
   arrowDown,
+  arrowleft,
   // arrowleft,
   cart,
   deliveryIcon,
@@ -24,6 +25,7 @@ import { getProduct } from "../../../../utils/api/user/product";
 import { ProductSkeleton } from "./skeleton";
 // import { useCart } from "../../../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
+import { errorToast } from "@/utils/toast/toast";
 // import { errorToast, successToast } from "../../../../utils/toast/toast";
 
 const lora = Lora({
@@ -103,7 +105,7 @@ export const Body = () => {
       };
 
       setProduct(transformedData);
-      console.log("Product details:", transformedData);
+      // console.log("Product details:", transformedData);
     } catch (error: unknown) {
       throw error;
     }
@@ -163,7 +165,7 @@ export const Body = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      //errorToat("Please select a size");
+      errorToast("Please select a size");
       return;
     }
 
@@ -178,7 +180,6 @@ export const Body = () => {
     };
 
     addToCart(cartItem);
-    //successToat("Added to cart");
   };
 
   if (!product) {
@@ -189,12 +190,12 @@ export const Body = () => {
     <div className="px-4 md:px-10 mt-[150px]">
       {product && (
         <div className="mx-auto max-w-7xl w-full">
-          {/* <div className="w-full flex justify-start items-center ">
-          <div className="w-fit h-full items-center flex justify-between gap-1 py-4">
+          <div className="w-full flex justify-start items-center ">
+          <div onClick={()=> history.back()} className="w-fit h-full items-center flex justify-between gap-1 pb-4">
             <i>{arrowleft()}</i>
             <p className="text-base ">Products</p>
           </div>
-        </div> */}
+        </div>
 
           <div className="w-full flex flex-col md:flex-row justify-start gap-8">
             {/* image container */}
@@ -330,7 +331,7 @@ export const Body = () => {
                       handleAddToCart();
                       window.location.href = "/checkout";
                     } else {
-                      // //errorToat("Please select a size");
+                      errorToast("Please select a size");
                     }
                   }}
                   className=" w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"

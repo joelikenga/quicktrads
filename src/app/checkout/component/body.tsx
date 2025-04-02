@@ -22,6 +22,7 @@ import {
 } from "../../../utils/api/user/product";
 import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
+import { usePathname, useRouter } from "next/navigation";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -98,7 +99,7 @@ interface OrderRes {
 
 // Define the Flutterwave types locally based on the module's types
 type FlutterwaveConfig = {
-  public_key: string;
+  public_key: any;
   tx_ref: string;
   amount: number;
   currency?: string;
@@ -132,6 +133,8 @@ type FlutterwaveResponse = {
 };
 
 export const Body = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [addressEdit, setAddressEdit] = useState<boolean>(false);
   const [addressModal, setAddressModal] = useState<boolean>(false);
   const [deleteAddress, setDeleteAddress] = useState<boolean>(false);
@@ -163,6 +166,8 @@ export const Body = () => {
     null
   );
   const [orderResponse, setOrderResponse] = useState<OrderRes | null>(null);
+
+  const [userData, setUserData] = useState<any | null>(null);
 
   const isNigeria = selectedAddress.country?.toLowerCase() === "nigeria";
   const deliveryFee = isNigeria ? FEES.NIGERIA.DELIVERY : FEES.USA.DELIVERY;
@@ -249,7 +254,7 @@ export const Body = () => {
   };
 
   const config: FlutterwaveConfig = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
+    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
     tx_ref:
       Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")) + "",
     amount: total,
@@ -352,6 +357,12 @@ export const Body = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    // const { isLoggedIn, hasAvatar } = useLogin("user");
+    setUserData(localStorage.getItem("user"));
+    // console.log(JSON.parse(userData)?.fullName);
+  });
 
   // Rest of your component remains the same...
   // [Previous JSX code remains unchanged]
@@ -694,8 +705,8 @@ export const Body = () => {
       <div className="mx-auto w-full max-w-7xl">
         <div className=" flex flex-col md:flex-row justify-start gap-[40px] md:gap-[108px]">
           {/* not logged in */}
-          {false && (
-            <div className="flex flex-col gap-6 text-text_strong w-1/2 font-normal text-sm">
+          {!userData && (
+            <div className="flex flex-col gap-6 text-text_strong font-normal text-sm w-full max-w-[480px]">
               <div className="flex flex-col gap-4">
                 <p className="text-[18px]">Account</p>
                 <p className="">
@@ -706,282 +717,292 @@ export const Body = () => {
               </div>
 
               <div className="flex gap-4 justify-start items-center">
-                <Link href={`/sign_up`}>
-                  <button className="border rounded-full items-center flex h-8 px-6">
-                    Sign up
-                  </button>
-                </Link>
+                <button
+                  onClick={() => router.push(`/sign_up?from=${pathname}`)}
+                  className="border rounded-full items-center flex h-8 px-6"
+                >
+                  Sign up
+                </button>
 
-                <Link href={`/login`}>
-                  <button className="border rounded-full items-center flex h-8 px-6">
-                    Login
-                  </button>
-                </Link>
+                <button
+                  onClick={() => router.push(`/login?from=${pathname}`)}
+                  className="border rounded-full items-center flex h-8 px-6"
+                >
+                  Login
+                </button>
               </div>
             </div>
           )}
 
           {/* ---------- review container---------- */}
-          {review ? (
-            <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
-              {/* contact info */}
-              <div className="flex-col gap-4 flex w-full">
-                <div className="w-full flex justify-between">
-                  <p className="font-normal text-[18px] text-text_strong">
-                    Contact information
-                  </p>
-                  <p
-                    onClick={() => setReview(!review)}
-                    className="font-normal text-sm text-text_weak underline cursor-pointer "
-                  >
-                    {"Change"}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 font-normal">
-                  <p className="text-text_strong text-base ">
-                    {selectedAddress.fullName}
-                  </p>
-                  <div className="flex justify-start items-center text-text_weak text-base gap-4">
-                    <p>{selectedAddress.phoneNumber}</p>
-                    <p>{selectedAddress.email}</p>
+
+          {userData && (
+            <>
+              {review ? (
+                <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
+                  {/* contact info */}
+                  <div className="flex-col gap-4 flex w-full">
+                    <div className="w-full flex justify-between">
+                      <p className="font-normal text-[18px] text-text_strong">
+                        Contact information
+                      </p>
+                      <p
+                        onClick={() => setReview(!review)}
+                        className="font-normal text-sm text-text_weak underline cursor-pointer "
+                      >
+                        {"Change"}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-2 font-normal">
+                      <p className="text-text_strong text-base ">
+                        {selectedAddress.fullName}
+                      </p>
+                      <div className="flex justify-start items-center text-text_weak text-base gap-4">
+                        <p>{selectedAddress.phoneNumber}</p>
+                        <p>{selectedAddress.email}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* shipping */}
-              <div className="flex-col gap-4 flex w-full">
-                <div className="w-full flex justify-between">
-                  <p className="font-normal text-[18px] text-text_strong">
-                    Shipping
-                  </p>
-                  <p
-                    onClick={() => setReview(!review)}
-                    className="font-normal text-sm text-text_weak underline cursor-pointer "
-                  >
-                    {"Change"}
-                  </p>
-                </div>
+                  {/* shipping */}
+                  <div className="flex-col gap-4 flex w-full">
+                    <div className="w-full flex justify-between">
+                      <p className="font-normal text-[18px] text-text_strong">
+                        Shipping
+                      </p>
+                      <p
+                        onClick={() => setReview(!review)}
+                        className="font-normal text-sm text-text_weak underline cursor-pointer "
+                      >
+                        {"Change"}
+                      </p>
+                    </div>
 
-                <div className="inline-flex gap-2 w-full">
-                  <i>{info()}</i>
-                  <p className="text-sm font-normal text-text_weak">
-                    {`International shipping takes up to 20 working days. While 3-4
+                    <div className="inline-flex gap-2 w-full">
+                      <i>{info()}</i>
+                      <p className="text-sm font-normal text-text_weak">
+                        {`International shipping takes up to 20 working days. While 3-4
                   days within Lagos, based on your address for delivery outside
                   Lagos`}
-                  </p>
-                </div>
-                <p className="text-text_strong text-base ml-8">
-                  {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <p className="text-[18px]">Order summary</p>
-                <div className="flex flex-col gap-6">
-                  {/* Product Total */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Products ({totalQuantity.toLocaleString()} items)
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(productTotal)}
+                      </p>
+                    </div>
+                    <p className="text-text_strong text-base ml-8">
+                      {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
                     </p>
                   </div>
 
-                  {/* VAT */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      VAT ({(vatRate * 100).toFixed(1)}%)
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(vatAmount)}
-                    </p>
-                  </div>
-
-                  {/* Delivery Fee */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Estimated delivery & handling
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(deliveryFee)}
-                    </p>
-                  </div>
-
-                  {/* Subtotal */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Subtotal
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(subTotal)}
-                    </p>
-                  </div>
-                  <div className="inline-flex gap-2 w-full">
-                    <i>{info()}</i>
-                    <p className="text-sm font-normal text-text_weak w-full max-w-[343px]">
-                      {`The subtotal reflects the total price of your order, including taxes, before any applicable discounts. It does not include shipping costs.`}
-                    </p>
-                  </div>
-
-                  {/* Total */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Total
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(total)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* button */}
-              <FlutterWaveButton
-                {...fwConfig}
-                className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6"
-              >
-                Pay Now
-              </FlutterWaveButton>
-            </div>
-          ) : null}
-
-          {/* container 1 */}
-
-          {!review ? (
-            <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
-              {/* shipping */}
-              <div className="flex-col gap-4 flex w-full">
-                <div className="w-full flex justify-between">
-                  <p className="font-normal text-[18px] text-text_strong">
-                    Shipping
-                  </p>
-                  <p
-                    onClick={() => setAddressEdit(!addressEdit)}
-                    className="font-normal text-sm text-text_weak underline cursor-pointer "
-                  >
-                    {addressEdit ? "Close" : "Select address"}
-                  </p>
-                </div>
-
-                <div className="inline-flex gap-2 w-full">
-                  <i>{info()}</i>
-                  <p className="text-sm font-normal text-text_weak">
-                    {`International shipping takes up to 20 working days. While 3-4
-                  days within Lagos, based on your address for delivery outside
-                  Lagos`}
-                  </p>
-                </div>
-                {/* shipping addresses */}
-                {!addressEdit && selectedAddress.address && (
-                  <div className="mt-8 w-full">
-                    <div className="max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2">
-                      <div className="w-full flex justify-between ">
-                        <p className="text-text_strong font-medium text-base">
-                          {selectedAddress.fullName}
+                  <div className="flex flex-col gap-4">
+                    <p className="text-[18px]">Order summary</p>
+                    <div className="flex flex-col gap-6">
+                      {/* Product Total */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Products ({totalQuantity.toLocaleString()} items)
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          ${formatPrice(productTotal)}
                         </p>
                       </div>
 
-                      <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
-                        <div className="flex gap-4 font-medium text-sm">
-                          <div className="">{selectedAddress.phoneNumber}</div>
-                          <div className="">{selectedAddress.email}</div>
-                        </div>
-                        <p className="font-medium text-sm">
-                          {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
+                      {/* VAT */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          VAT ({(vatRate * 100).toFixed(1)}%)
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          ${formatPrice(vatAmount)}
+                        </p>
+                      </div>
+
+                      {/* Delivery Fee */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Estimated delivery & handling
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          ${formatPrice(deliveryFee)}
+                        </p>
+                      </div>
+
+                      {/* Subtotal */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Subtotal
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          ${formatPrice(subTotal)}
+                        </p>
+                      </div>
+                      <div className="inline-flex gap-2 w-full">
+                        <i>{info()}</i>
+                        <p className="text-sm font-normal text-text_weak w-full max-w-[343px]">
+                          {`The subtotal reflects the total price of your order, including taxes, before any applicable discounts. It does not include shipping costs.`}
+                        </p>
+                      </div>
+
+                      {/* Total */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Total
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          ${formatPrice(total)}
                         </p>
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Show address list only when editing */}
-                {addressEdit && (
-                  <div className="mt-8 w-full flex flex-col gap-2">
-                    {shippingData &&
-                      shippingData.map((data, index) => (
-                        <div
-                          key={index}
-                          className={`max-w-[600px] rounded-2xl border border-text_strong p-4 sm:p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
-                            selectedAddressId === index
-                              ? "bg-fill overflow-hidden"
-                              : "bg-white"
-                          }`}
-                          onClick={() => handleAddressSelection(data, index)}
-                        >
-                          {selectedAddressId === index && (
-                            <div className="h-12 w-5 bg-black absolute rotate-[45deg] -top-4 -translate-x-[30px]"></div>
-                          )}
+                  {/* button */}
+                  <FlutterWaveButton
+                    {...fwConfig}
+                    className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6"
+                  >
+                    Pay Now
+                  </FlutterWaveButton>
+                </div>
+              ) : null}
+
+              {/* container 1 */}
+
+              {!review ? (
+                <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
+                  {/* shipping */}
+                  <div className="flex-col gap-4 flex w-full">
+                    <div className="w-full flex justify-between">
+                      <p className="font-normal text-[18px] text-text_strong">
+                        Shipping
+                      </p>
+                      <p
+                        onClick={() => setAddressEdit(!addressEdit)}
+                        className="font-normal text-sm text-text_weak underline cursor-pointer "
+                      >
+                        {addressEdit ? "Close" : "Select address"}
+                      </p>
+                    </div>
+
+                    <div className="inline-flex gap-2 w-full">
+                      <i>{info()}</i>
+                      <p className="text-sm font-normal text-text_weak">
+                        {`International shipping takes up to 20 working days. While 3-4
+                  days within Lagos, based on your address for delivery outside
+                  Lagos`}
+                      </p>
+                    </div>
+                    {/* shipping addresses */}
+                    {!addressEdit && selectedAddress.address && (
+                      <div className="mt-8 w-full">
+                        <div className="max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2">
                           <div className="w-full flex justify-between ">
                             <p className="text-text_strong font-medium text-base">
-                              {data.fullName}
+                              {selectedAddress.fullName}
                             </p>
-                            <div className="flex gap-4 font-medium text-sm">
-                              <div className="cursor-pointer">Edit</div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDeleteIndex(index);
-                                  setDeleteAddress(true);
-                                }}
-                                className="cursor-pointer"
-                              >
-                                Delete
-                              </div>
-                            </div>
                           </div>
 
                           <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
                             <div className="flex gap-4 font-medium text-sm">
-                              <div className="">{data.phoneNumber}</div>
-                              <div className="">{data.email}</div>
+                              <div className="">
+                                {selectedAddress.phoneNumber}
+                              </div>
+                              <div className="">{selectedAddress.email}</div>
                             </div>
-                            <p className=" font-medium text-sm">
-                              {`${data.address}, ${data.state},${data.country}`}
+                            <p className="font-medium text-sm">
+                              {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
                             </p>
                           </div>
                         </div>
-                      ))}
-                  </div>
-                )}
-              </div>
+                      </div>
+                    )}
 
-              {addressEdit && (
-                <div className="flex justify-between gap-2 sm:gap-6">
+                    {/* Show address list only when editing */}
+                    {addressEdit && (
+                      <div className="mt-8 w-full flex flex-col gap-2">
+                        {shippingData &&
+                          shippingData.map((data, index) => (
+                            <div
+                              key={index}
+                              className={`max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
+                                selectedAddressId === index
+                                  ? "bg-fill overflow-hidden"
+                                  : "bg-white"
+                              }`}
+                              onClick={() =>
+                                handleAddressSelection(data, index)
+                              }
+                            >
+                              {selectedAddressId === index && (
+                                <div className="h-12 w-5 bg-black absolute rotate-[45deg] -top-4 -translate-x-[30px]"></div>
+                              )}
+                              <div className="w-full flex justify-between ">
+                                <p className="text-text_strong font-medium text-base">
+                                  {data.fullName}
+                                </p>
+                                <div className="flex gap-4 font-medium text-sm">
+                                  <div className="cursor-pointer">Edit</div>
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteIndex(index);
+                                      setDeleteAddress(true);
+                                    }}
+                                    className="cursor-pointer"
+                                  >
+                                    Delete
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
+                                <div className="flex gap-4 font-medium text-sm">
+                                  <div className="">{data.phoneNumber}</div>
+                                  <div className="">{data.email}</div>
+                                </div>
+                                <p className=" font-medium text-sm">
+                                  {`${data.address}, ${data.state},${data.country}`}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {addressEdit && (
+                    <div className="flex justify-between px-6 gap-6">
+                      <button
+                        onClick={handleConfirmAddress}
+                        className={`border rounded-full items-center flex h-10 w-full justify-center px-6 ${
+                          selectedAddressId !== null
+                            ? "bg-text_strong text-background border-text_strong"
+                            : "text-gray-400 border-gray-300 cursor-not-allowed"
+                        }`}
+                        disabled={selectedAddressId === null}
+                      >
+                        Confirm address
+                      </button>
+                      <button
+                        onClick={() => setAddressModal(true)}
+                        className="border rounded-full items-center flex h-10 w-full justify-center px-6"
+                      >
+                        Add address
+                      </button>
+                    </div>
+                  )}
+                  {/* button */}
                   <button
-                    onClick={handleConfirmAddress}
-                    className={`border rounded-full text-nowrap sm:text-wrap items-center flex h-10 w-full justify-center px-4 sm:px-6 ${
-                      selectedAddressId !== null
-                        ? "bg-text_strong text-background border-text_strong"
-                        : "text-gray-400 border-gray-300 cursor-not-allowed"
+                    onClick={handleReviewClick}
+                    className={`h-10 rounded-full font-medium text-base flex justify-center items-center w-full px-6 ${
+                      canProceedToReview()
+                        ? "bg-text_strong text-background"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
-                    disabled={selectedAddressId === null}
+                    disabled={!canProceedToReview()}
                   >
-                    Confirm address
-                  </button>
-                  <button
-                    onClick={() => setAddressModal(true)}
-                    className="border text-nowrap sm:text-wrap rounded-full items-center flex h-10 w-full justify-center px-4 sm:px-6"
-                  >
-                    Add address
+                    Review orders
                   </button>
                 </div>
-              )}
-              {/* button */}
-              <button
-                onClick={handleReviewClick}
-                className={`h-10 rounded-full font-medium text-base flex justify-center items-center w-full px-6 ${
-                  canProceedToReview()
-                    ? "bg-text_strong text-background"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                disabled={!canProceedToReview()}
-              >
-                Review orders
-              </button>
-            </div>
-          ) : null}
-
+              ) : null}
+            </>
+          )}
           {/* container 2 */}
           <div className="flex flex-col gap-10 sm:gap-20 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
             {!review ? (
@@ -994,7 +1015,11 @@ export const Body = () => {
                       Products ({totalQuantity.toLocaleString()} items)
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(productTotal)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(productTotal)
+                      }`}
                     </p>
                   </div>
 
@@ -1004,7 +1029,11 @@ export const Body = () => {
                       VAT ({(vatRate * 100).toFixed(1)}%)
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(vatAmount)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(vatAmount)
+                      }`}
                     </p>
                   </div>
 
@@ -1014,7 +1043,11 @@ export const Body = () => {
                       Estimated delivery & handling
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(deliveryFee)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(deliveryFee)
+                      }`}
                     </p>
                   </div>
 
@@ -1040,7 +1073,11 @@ export const Body = () => {
                       Total
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(total)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(total)
+                      }`}
                     </p>
                   </div>
                 </div>

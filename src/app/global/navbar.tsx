@@ -21,15 +21,15 @@ import {
   whatsapp,
 } from "./svg";
 import { Lora } from "next/font/google";
-import { useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useLogin } from "../../utils/hooks/useLogin";
+// import { useLogin } from "../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
 // import { useCart } from "../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
-import { loggedInUser } from "../../utils/api/user/auth";
+// import { loggedInUser } from "../../utils/api/user/auth";
 // import { errorToast } from "../../utils/toast/toast";
 
 const lora = Lora({
@@ -37,29 +37,29 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
-interface UserResponse {
-  data: {
-    avatar: string;
-    country: string;
-    createdAt: string; // ISO Date string
-    dob: string; // ISO Date string
-    email: string;
-    emailVerified: boolean;
-    fullName: string;
-    gender: string;
-    id: string; // UUID
-    lastLoggedInAt: string; // ISO Date string
-    lastOrderedAt: string | null; // ISO Date string or null
-    password: string;
-    phoneNumber: string;
-    role: string; // Add other roles if needed
-    shippingDetails: string | null;
-    state: string;
-    status: string; // Add other statuses if needed
-    totalOrders: number | null;
-    updatedAt: string; // ISO Date string
-  };
-}
+// interface UserResponse {
+//   data: {
+//     avatar: string;
+//     country: string;
+//     createdAt: string; // ISO Date string
+//     dob: string; // ISO Date string
+//     email: string;
+//     emailVerified: boolean;
+//     fullName: string;
+//     gender: string;
+//     id: string; // UUID
+//     lastLoggedInAt: string; // ISO Date string
+//     lastOrderedAt: string | null; // ISO Date string or null
+//     password: string;
+//     phoneNumber: string;
+//     role: string; // Add other roles if needed
+//     shippingDetails: string | null;
+//     state: string;
+//     status: string; // Add other statuses if needed
+//     totalOrders: number | null;
+//     updatedAt: string; // ISO Date string
+//   };
+// }
 
 export const Navbar = () => {
   const [searchOptions, setSearchOptions] = useState<boolean>(false);
@@ -69,7 +69,6 @@ export const Navbar = () => {
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const [profileOption, setProfileOption] = useState<boolean>(false);
   const [logoutModal, setLogoutModal] = useState<boolean>(false);
-  const [userDetails, setUserDetails] = useState<UserResponse | null>(null);
 
   // ----- for mobile -----
   const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
@@ -89,24 +88,10 @@ export const Navbar = () => {
       window.location.reload();
     } else {
       // Navigate to the /categories page
-      router.push("/categories");
+      router.replace("/categories");
     }
   };
 
-  const fetchUserData = async () => {
-    try {
-      const res = (await loggedInUser()) as any;
-      setUserDetails(res);
-    } catch (error) {
-      //errorToat(error);
-      console.log(error)
-      setUserDetails(null);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
 
   const handleCollectionDropdown = () => {
     setCollectionDropdown(!collectionDropdown);
@@ -141,6 +126,7 @@ export const Navbar = () => {
   const profileWrapperRef = useRef<HTMLDivElement>(null);
   const currencyWrapperRef = useRef<HTMLDivElement>(null);
   const categoryWrapperRef = useRef<HTMLDivElement>(null);
+  const [userData, setUserData]=useState<any|null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -206,7 +192,11 @@ export const Navbar = () => {
   //   if (currencyOptions) setCurrencyOptions(false);
   // };
 
-  const { isLoggedIn,  hasAvatar, } = useLogin("user");
+  useEffect(() => {
+    // const { isLoggedIn, hasAvatar } = useLogin("user");
+    setUserData(localStorage.getItem('user'));
+    // console.log(JSON.parse(userData)?.fullName);
+  });
 
   // console.log("isLogged", isLoggedIn);
   // console.log("hasAvatar", hasAvatar);
@@ -538,7 +528,7 @@ export const Navbar = () => {
             </Link>
 
             {/* ----- profile----- */}
-            {isLoggedIn ? (
+            {userData ? (
               <div
                 ref={profileWrapperRef}
                 className="border-l pl-6 relative flex justify-center  py-1"
@@ -549,22 +539,22 @@ export const Navbar = () => {
                     profileOption ? "border-text_strong" : "border-transparent"
                   }`}
                 >
-                  {hasAvatar === true ? (
+                  {!JSON.parse(userData)?.avatar ? (
                     <ProfileAvatar
-                      name={userDetails?.data?.fullName || "User"}
+                      name={JSON.parse(userData)?.fullName || "User"}
                       size="small"
                     />
                   ) : (
                     <Image
                       className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px]  rounded-full"
-                      src={userDetails?.data?.avatar || ""}
+                      src={JSON.parse(userData)?.avatar || ""}
                       priority
                       width={25}
                       height={25}
                       alt=""
                     />
                   )}
-                  <p className="capitalize">{userDetails?.data?.fullName}</p>
+                  <p className="capitalize">{JSON.parse(userData)?.fullName}</p>
                   <i
                     className={`${profileOption && "rotate-180"} duration-300`}
                   >
@@ -861,7 +851,7 @@ export const Navbar = () => {
                   )}
                 </div>
                 {/* -----profile----- */}
-                {isLoggedIn ? (
+                {userData ? (
                   <div
                     ref={profileWrapperRef}
                     className="border-l pl-6 relative flex justify-center py-1"
@@ -874,10 +864,10 @@ export const Navbar = () => {
                           : "border-transparent"
                       }`}
                     >
-                      {hasAvatar  ? (
+                      {!userData?.avatar ? (
                         <Image
                           className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
-                          src={userDetails?.data?.avatar || ""}
+                          src={userData.avatar || ""}
                           priority
                           width={25}
                           height={25}
@@ -885,11 +875,11 @@ export const Navbar = () => {
                         />
                       ) : (
                         <ProfileAvatar
-                          name={userDetails?.data?.fullName || ""}
+                          name={JSON.parse(userData)?.fullName || ""}
                           size="small"
                         />
                       )}
-                      <p className="">{userDetails?.data?.fullName}</p>
+                      <p className="">{JSON.parse(userData)?.fullName}</p>
                       <i
                         className={`${
                           profileOption && "rotate-180"
