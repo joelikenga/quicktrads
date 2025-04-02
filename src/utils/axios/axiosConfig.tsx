@@ -1,8 +1,8 @@
 import axios from "axios";
 import nookies from "nookies";
 // import { errorToast } from "../toast/toast";
-// import toast from "react-hot-toast";
 
+const cookies = nookies.get(null);
 // Create an Axios instance
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -14,7 +14,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = nookies.get(null)['accessToken'];
+    const accessToken = nookies.get(null)["accessToken"];
     // console.log("Access Token:", accessToken); // Debugging
 
     // const refreshToken = nookies.get(null)['refreshToken'];
@@ -42,16 +42,20 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (!error.response) {
       // Network error (no response)
-      if (error.code === 'ECONNABORTED') {
+      if (error.code === "ECONNABORTED") {
         // //errorToat("Network timeout. Please check your internet connection.");
       }
     }
 
     // Check for 401 Unauthorized
-    // if (error.response.status === 401) {
-    //   //errorToat("Invalid login details");
-      
-    // }
+    if (error.response.status === 401) {
+      if (cookies?.role?.replaceAll("%22", "") === "super_admin") {
+        window.location.href = "/admin_dashboard/login";
+      } else {
+        window.location.href = "/";
+      }
+      // errorToast("Invalid login details");
+    }
 
     if (error.response.status === 413) {
       // toast.error(

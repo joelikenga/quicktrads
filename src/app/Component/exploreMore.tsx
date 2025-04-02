@@ -1,3 +1,4 @@
+"use client";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,26 +12,26 @@ const content = [
   {
     image:
       "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737097911/quicktrads/wzrtdhey3djfhopwuciq.png",
-    name: "Tops",
+    name: "Men",
     price: 62.9,
     discount: 69.9,
-    link: "",
+    linkTo: "m-",
   },
   {
     image:
       "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737098056/quicktrads/nkejpkehave5elvjq6ty.png",
-    name: "Trousers",
+    name: "Women",
     price: 62.9,
     discount: 69.9,
-    link: "",
+    linkTo: "w-",
   },
   {
     image:
       "https://res.cloudinary.com/dtjf6sic8/image/upload/v1737098303/quicktrads/hsebtpkiqjw4meu2ga5m.png",
-    name: "Two pieces",
+    name: "Unisex",
     price: 62.9,
     discount: 69.9,
-    link: "",
+    linkTo: "u-",
   },
 ];
 
@@ -49,14 +50,15 @@ export const ExploreMore = () => {
           {content.map((item, index) => {
             return (
               <Link
-                href={item.link}
+                href={"/categories"}
+                onClick={() =>
+                  localStorage.setItem("category", `${item.linkTo}`)
+                }
                 key={index}
                 className="flex flex-col items-center gap-4 h-full w-full min-w-[302px] md:min-w-[410.67px] max-h-[462px h-fit overflow-hidden  
                 "
               >
-                <div
-                 className="w-full h-[400px] border relative flex items-center "
-                 >
+                <div className="w-full h-[400px] border relative flex items-center ">
                   <Image
                     className="h-[400px] w-full object-cover bg-center"
                     src={item.image}
