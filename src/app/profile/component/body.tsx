@@ -9,8 +9,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export const Body = () => {
   const [isUploading, setIsUploading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [imageError, setImageError] = useState<string | null>(null);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [imageError, setImageError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any | null>(null);
   const [showGender, setShowGender] = useState<any | null>(null);
   const [imgLink, setImgLink] = useState<string | null>(null);
@@ -123,10 +123,10 @@ export const Body = () => {
         ...prev,
         avatar: cloudinaryUrl,
       }));
-      setImageError(null);
+      // setImageError(null);
     } catch (error) {
       console.error("Failed to upload hero image:", error);
-      setImageError("Failed to upload image");
+      // setImageError("Failed to upload image");
     } finally {
       setIsUploading(false);
     }

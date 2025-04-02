@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   eyeClose,
   eyeOpen,
@@ -44,7 +44,7 @@ const Body = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const cookies = nookies.get(null);
+  // const cookies = nookies.get(null);
 
   const {
     register,
@@ -54,12 +54,12 @@ const Body = () => {
     resolver: zodResolver(login),
   });
 
-  const checkAdminAuth = () => {
-    const pathname = usePathname();
-    if (!cookies.accessToken && pathname.startsWith('/admin_dashboard')) {
-      router.replace('/admin_dashboard/login');
-    }
-  };
+  // const checkAdminAuth = () => {
+  //   const pathname = usePathname();
+  //   if (!cookies.accessToken && pathname.startsWith('/admin_dashboard')) {
+  //     router.replace('/admin_dashboard/login');
+  //   }
+  // };
 
   // useEffect(() => {
   //   checkAdminAuth

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import nookies from "nookies";
+// import nookies from "nookies";
 import { useLogin_2 } from "../utils/hooks/useLogin";
 
 interface RouteGuardProps {

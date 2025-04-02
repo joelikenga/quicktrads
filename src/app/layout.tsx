@@ -5,7 +5,7 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 // import { Toaster } from "react-hot-toast";
-import RouteGuard from "@/utils/routeGuard";
+// import RouteGuard from "@/utils/routeGuard";
 import InternetConnection from "@/components/InternetConnection";
 import { Toaster } from "react-hot-toast";
 

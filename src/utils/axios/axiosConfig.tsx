@@ -1,6 +1,6 @@
 import axios from "axios";
 import nookies from "nookies";
-import { errorToast } from "../toast/toast";
+// import { errorToast } from "../toast/toast";
 
 const cookies = nookies.get(null);
 // Create an Axios instance

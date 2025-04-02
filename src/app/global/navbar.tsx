@@ -21,7 +21,7 @@ import {
   whatsapp,
 } from "./svg";
 import { Lora } from "next/font/google";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import Image from "next/image";
 // import { useLogin } from "../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
@@ -29,7 +29,7 @@ import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
 // import { useCart } from "../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
-import { loggedInUser } from "../../utils/api/user/auth";
+// import { loggedInUser } from "../../utils/api/user/auth";
 // import { errorToast } from "../../utils/toast/toast";
 
 const lora = Lora({
