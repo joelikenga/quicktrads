@@ -36,12 +36,6 @@ interface Product {
   createdAt: string;
   updatedAt: string;
 }
-// interface Product {
-//   product: Record<string, any>; // Adjust this based on actual product structure
-//   quantity: number;
-//   currency: string;
-//   amount: number;
-// }
 
 interface ShippingDetails {
   address: string;
@@ -79,7 +73,7 @@ interface User {
   email: string;
   password: string;
   gender: string;
-  [key: string]: any; // Allow additional properties if needed
+  [key: string]: any;
 }
 
 interface DataItem {
@@ -104,8 +98,7 @@ interface APIResponse {
 }
 
 export const Body = () => {
-  const router = useRouter(); // Add this at the top with other imports
-
+  const router = useRouter();
   const [orderData, setOrderData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -129,7 +122,53 @@ export const Body = () => {
     orders();
   }, []);
 
-  // Close filter dropdown when clicking outside
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return {
+          bg: "bg-warning_1 bg-opacity-10",
+          text: "text-warning_1",
+          dot: "bg-warning_1",
+        };
+      case "processing":
+        return {
+          bg: "bg-[#1F0EC9] bg-opacity-10",
+          text: "text-[#1F0EC9]",
+          dot: "bg-[#1F0EC9]",
+        };
+      case "delivered":
+        return {
+          bg: "bg-success_1 bg-opacity-10",
+          text: "text-success_1",
+          dot: "bg-success_1",
+        };
+      case "refunded":
+        return {
+          bg: "bg-black bg-opacity-10",
+          text: "text-black",
+          dot: "bg-black",
+        };
+      case "cancelled":
+        return {
+          bg: "bg-error_1 bg-opacity-10",
+          text: "text-error_1",
+          dot: "bg-error_1",
+        };
+      case "shipped": // Adding shipped if needed
+        return {
+          bg: "bg-[#1F0EC9] bg-opacity-10", // Same as processing or customize
+          text: "text-[#1F0EC9]",
+          dot: "bg-[#1F0EC9]",
+        };
+      default:
+        return {
+          bg: "bg-[#1F0EC9] bg-opacity-10",
+          text: "text-[#1F0EC9]",
+          dot: "bg-[#1F0EC9]",
+        };
+    }
+  };
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -220,283 +259,322 @@ export const Body = () => {
     router.push(`/orders/${id}`);
   };
 
-
   return (
-    <div className=" flex flex-col px-4 md:px-0 gap-8 h-[82px] border-b md:ml-[280px] mt-[150px]">
+    <div className="flex flex-col px-4 md:px-0 gap-8 md:ml-[280px] mt-[150px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
         <p className="text-text_strong text-[22px]">Orders</p>
         <p className="text-text_weak sm:text-base text-[12px]">{`Add, update and select your address information`}</p>
       </div>
 
-      {(filteredOrders === null || filteredOrders === undefined) && (
-        <div className="flex flex-col justify-start items-start gap-8 max-w-[800px] w-full">
-          {/* no order */}
-          <div className=" w-full flex justify-center items-center mt-4 md:mt-12">
-            <div className="w-full max-w-[400px] flex flex-col gap-8 items-center">
-              {ordersIcon()}
-
-              <div className="flex flex-col gap-4 font-normal text-center">
-                <p className="text-text_strong text-[22px]">{`There are currently no order`}</p>
-                <p className="text-text_weak text-base">{`Discover the latest trends and start building your dream wardrobe today!`}</p>
-              </div>
-              <button className="bg-text_strong text-background font-medium text-base h-12 w-full px-6 flex rounded-full items-center justify-center">
-                Continue shopping
-              </button>
-            </div>
+      {loading ? (
+        <div className="w-full">
+          <div className="overflow-x-auto">
+            <table className="w-full divide-y divide-stroke_weak mt-12 overflow-x-auto">
+              <thead className="text-start bg-background border-y">
+                <tr className="">
+                  <th
+                    scope="col"
+                    className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                  >
+                    Product details
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                  >
+                    Quantity
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                  >
+                    Subtotal
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                  >
+                    Date
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                  >
+                    Review
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stroke_weak">
+                {[...Array(5)].map((_, index) => (
+                  <OrderSkeleton key={index} />
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      )}
-
-      {/* ------ content ------- */}
-
-      {(Array.isArray(filteredOrders) && filteredOrders.length > 0) &&
-        <div className="mt-6 md:mt-12 w-full">
-          {/* search and filter */}
-          <div className="flex w-full justify-start items-center gap-4">
-            <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
-              {searchIcon()}
-              <input
-                className="h-full w-full bg-transparent text-text_strong placeholder:text-text_strong outline-none"
-                placeholder="Search by name"
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <div className="relative" ref={filterRef}>
-              <button
-                onClick={() => setShowFilter(!showFilter)}
-                className="h-8 text-text_strong border border-stroke_weak flex rounded-full items-center px-4 gap-2"
-              >
-                {filterIcon()}
-                <span>
-                  {selectedFilter === "all" ? "Filter" : selectedFilter}
-                </span>
-              </button>
-
-              {showFilter && (
-                <div className="absolute top-10 right-0 bg-background border border-stroke_weak rounded-lg shadow-lg w-[150px] z-10">
-                  <div className="p-2 flex flex-col gap-1">
-                    {[
-                      "all",
-                      "pending",
-                      "processing",
-                      "shipped",
-                      "delivered",
-                      "cancelled",
-                    ].map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => {
-                          setSelectedFilter(status);
-                          setShowFilter(false);
-                        }}
-                        className={`text-left px-3 py-2 rounded-md hover:bg-fill ${
-                          selectedFilter === status ? "bg-fill" : ""
-                        }`}
-                      >
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
-                      </button>
-                    ))}
+      ) : (
+        <>
+          {!orderData?.data || orderData.data.length === 0 ? (
+            <div className="flex flex-col justify-start items-start gap-8 max-w-[800px] w-full">
+              <div className="w-full flex justify-center items-center mt-12">
+                <div className="w-full max-w-[400px] flex flex-col gap-8 items-center">
+                  {ordersIcon()}
+                  <div className="flex flex-col gap-4 font-normal text-center">
+                    <p className="text-text_strong text-[22px]">{`There are currently no order`}</p>
+                    <p className="text-text_weak text-base">{`Discover the latest trends and start building your dream wardrobe today!`}</p>
                   </div>
+                  <button className="bg-text_strong text-background font-medium text-base h-12 w-full px-6 flex rounded-full items-center justify-center">
+                    Continue shopping
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mt-12 w-full">
+              <div className="flex w-full justify-start items-center gap-4">
+                <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
+                  {searchIcon()}
+                  <input
+                    className="h-full w-full bg-transparent text-text_strong placeholder:text-text_strong outline-none"
+                    placeholder="Search by name"
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+                <div className="relative" ref={filterRef}>
+                  <button
+                    onClick={() => setShowFilter(!showFilter)}
+                    className="h-8 text-text_strong border border-stroke_weak flex rounded-full items-center px-4 gap-2"
+                  >
+                    {filterIcon()}
+                    <span>
+                      {selectedFilter === "all" ? "Filter" : selectedFilter}
+                    </span>
+                  </button>
 
-          {/* table */}
-          <div className="w-full">
-            <div className="overflow-x-auto">
-              <table className="w-full divide-y divide-stroke_weak mt-4 md:mt-12 overflow-x-auto">
-                <thead className="text-start bg-background border-y">
-                  <tr className="">
-                    <th
-                      scope="col"
-                      className="px-4 py-[12px] text-start  font-normal text-sm h-10 "
-                    >
-                      Product details
-                    </th>
+                  {showFilter && (
+                    <div className="absolute top-10 right-0 bg-background border border-stroke_weak rounded-lg shadow-lg w-[150px] z-10">
+                      <div className="p-2 flex flex-col gap-1">
+                        {[
+                          "all",
+                          "pending",
+                          "processing",
+                          "shipped",
+                          "delivered",
+                          "cancelled",
+                        ].map((status) => (
+                          <button
+                            key={status}
+                            onClick={() => {
+                              setSelectedFilter(status);
+                              setShowFilter(false);
+                            }}
+                            className={`text-left px-3 py-2 rounded-md hover:bg-fill ${
+                              selectedFilter === status ? "bg-fill" : ""
+                            }`}
+                          >
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                    <th
-                      scope="col"
-                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                    >
-                      Quantity
-                    </th>
-
-                    <th
-                      scope="col"
-                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                    >
-                      Subtotal
-                    </th>
-
-                    <th
-                      scope="col"
-                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                    >
-                      Date
-                    </th>
-
-                    <th
-                      scope="col"
-                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                    >
-                      Status
-                    </th>
-
-                    <th
-                      scope="col"
-                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                    >
-                      Review
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-stroke_weak">
-                  {loading ? (
-                    <>
-                      {[...Array(5)].map((_, index) => (
-                        <OrderSkeleton key={index} />
-                      ))}
-                    </>
-                  ) : (
-                    filteredOrders?.map((item) => (
-                      <tr
-                        onClick={() => handleRowClick(item?.order.id)}
-                        key={item.order.id}
-                        className=""
-                      >
-                        <td className="p-4">
-                          <div className="flex gap-6 items-start w-[304px]">
-                            {renderProductImages(
-                              item.order.order[0].product.images
-                            )}
-                            <div className="text-text_strong text-sm font-normal text-wrap">
-                              {item.order.order[0].product.name}
+              <div className="w-full">
+                <div className="overflow-x-auto">
+                  <table className="w-full divide-y divide-stroke_weak mt-12 overflow-x-auto">
+                    <thead className="text-start bg-background border-y">
+                      <tr className="">
+                        <th
+                          scope="col"
+                          className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                        >
+                          Product details
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                        >
+                          Quantity
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                        >
+                          Subtotal
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                        >
+                          Date
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                        >
+                          Status
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-[12px] text-start font-normal text-sm h-10"
+                        >
+                          Review
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stroke_weak">
+                      {filteredOrders?.map((item) => (
+                        <tr
+                          onClick={() => handleRowClick(item?.order.id)}
+                          key={item.order.id}
+                          className="hover:bg-fill cursor-pointer"
+                        >
+                          <td className="p-4">
+                            <div className="flex gap-6 items-start w-[304px]">
+                              {renderProductImages(
+                                item.order.order[0].product.images
+                              )}
+                              <div className="text-text_strong text-sm font-normal text-wrap">
+                                {item.order.order[0].product.name}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap">
-                            ${item.order.order[0].amount} x{" "}
-                            {item.order.order[0].quantity} item
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap">
-                            ${item.order.totalAmount}
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap">
-                            {new Date(item.order.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
+                          </td>
+                          <td className="p-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap">
+                              ${item.order.order[0].amount} x{" "}
+                              {item.order.order[0].quantity} item
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap">
+                              ${item.order.totalAmount}
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap">
+                              {new Date(
+                                item.order.createdAt
+                              ).toLocaleDateString("en-US", {
                                 year: "numeric",
                                 month: "short",
                                 day: "numeric",
-                              }
-                            )}
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <div className="text-text_strong text-sm font-normal text-wrap">
-                            <div className="h-6 flex px-2 items-center justify-center rounded-full bg-[#F0F0FF] text-[#1F0EC9] text-sm font-medium gap-1">
-                              <span className="rounded-full w-2 h-2 bg-[#1F0EC9]"></span>
-                              <p>{item.order.status}</p>
+                              })}
                             </div>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap">
-                            NA
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {/* pagination */}
-            {!loading && (
-              <div className="flex flex-wrap items-center justify-between p-4 border-t">
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => {
-                      if (orderData?.page.hasPreviousPage) {
-                        // Handle previous page
-                      }
-                    }}
-                    disabled={!orderData?.page.hasPreviousPage}
-                    className={`text-sm ${
-                      orderData?.page.hasPreviousPage
-                        ? "text-text_strong cursor-pointer"
-                        : "text-text_weak cursor-not-allowed"
-                    }`}
-                  >
-                    Previous
-                  </button>
-
-                  <div className="flex gap-1">
-                    {Array.from(
-                      {
-                        length: Math.ceil(
-                          (orderData?.page.totalCount || 0) /
-                            (orderData?.page.size || 1)
-                        ),
-                      },
-                      (_, i) => i + 1
-                    ).map((num) => (
+                          </td>
+                          <td className="p-4">
+                            <div className="text-text_strong text-sm font-normal text-wrap">
+                              <div
+                                className={`h-6 flex px-2 items-center justify-center rounded-full ${
+                                  getStatusColor(item.order.status).text
+                                } ${
+                                  getStatusColor(item.order.status).bg
+                                } text-sm font-medium gap-1`}
+                              >
+                                <span
+                                  className={`rounded-full w-2 h-2 ${
+                                    getStatusColor(item.order.status).dot
+                                  }`}
+                                ></span>
+                                <p>{item.order.status}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4">
+                            <div className="text-text_strong text-sm font-normal text-nowrap">
+                              NA
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {!loading && (
+                  <div className="flex flex-wrap items-center justify-between p-4 border-t">
+                    <div className="flex items-center gap-4">
                       <button
-                        key={num}
                         onClick={() => {
-                          // Handle page change
+                          if (orderData?.page.hasPreviousPage) {
+                            // Handle previous page
+                          }
                         }}
-                        className={`h-10 w-10 flex items-center rounded-full justify-center ${
-                          orderData?.page.page === num
-                            ? "bg-text_strong text-background"
-                            : "border text-text_strong hover:bg-fill"
+                        disabled={!orderData?.page.hasPreviousPage}
+                        className={`text-sm ${
+                          orderData?.page.hasPreviousPage
+                            ? "text-text_strong cursor-pointer"
+                            : "text-text_weak cursor-not-allowed"
                         }`}
                       >
-                        {num}
+                        Previous
                       </button>
-                    ))}
+
+                      <div className="flex gap-1">
+                        {Array.from(
+                          {
+                            length: Math.ceil(
+                              (orderData?.page.totalCount || 0) /
+                                (orderData?.page.size || 1)
+                            ),
+                          },
+                          (_, i) => i + 1
+                        ).map((num) => (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              // Handle page change
+                            }}
+                            className={`h-10 w-10 flex items-center rounded-full justify-center ${
+                              orderData?.page.page === num
+                                ? "bg-text_strong text-background"
+                                : "border text-text_strong hover:bg-fill"
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          if (orderData?.page.has_next_page) {
+                            // Handle next page
+                          }
+                        }}
+                        disabled={!orderData?.page.has_next_page}
+                        className={`text-sm ${
+                          orderData?.page.has_next_page
+                            ? "text-text_strong cursor-pointer"
+                            : "text-text_weak cursor-not-allowed"
+                        }`}
+                      >
+                        Next
+                      </button>
+                    </div>
+
+                    <p className="font-medium text-[14px] sm:text-base">
+                      Page {orderData?.page.page || 1} of{" "}
+                      {Math.ceil(
+                        (orderData?.page.totalCount || 0) /
+                          (orderData?.page.size || 1)
+                      )}
+                    </p>
                   </div>
-
-                  <button
-                    onClick={() => {
-                      if (orderData?.page.has_next_page) {
-                        // Handle next page
-                      }
-                    }}
-                    disabled={!orderData?.page.has_next_page}
-                    className={`text-sm ${
-                      orderData?.page.has_next_page
-                        ? "text-text_strong cursor-pointer"
-                        : "text-text_weak cursor-not-allowed"
-                    }`}
-                  >
-                    Next
-                  </button>
-                </div>
-
-                <p className="font-medium text-[14px] sm:text-base">
-                  Page {orderData?.page.page || 1} of{" "}
-                  {Math.ceil(
-                    (orderData?.page.totalCount || 0) /
-                      (orderData?.page.size || 1)
-                  )}
-                </p>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-      }
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
