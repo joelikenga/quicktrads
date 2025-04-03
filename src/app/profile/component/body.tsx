@@ -406,12 +406,12 @@ export const Body = () => {
         </div>
         {/* button */}
 
-        <div className="flex gap-2 md:gap-8 justify-start items-center w-full text-base font-medium  mt-2 mb-8">
+        <div className="flex gap-2 md:gap-2 justify-start items-center w-full text-base font-medium  mt-2 mb-8">
           <button className="max-w-[153px] w-full text-background bg-text_strong rounded-full px-6 h-10 flex justify-center items-center">
             Update
           </button>
           <Link
-            href={`/forget_password`}
+            href={`/password`}
             className="max-w-[153px] w-fit text-nowrap px-2 text-text_strong border bg-background rounded-full md:px-6 h-10 flex justify-center items-center"
           >
             Change password
