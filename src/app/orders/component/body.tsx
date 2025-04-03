@@ -231,7 +231,7 @@ export const Body = () => {
       {(filteredOrders === null || filteredOrders === undefined) && (
         <div className="flex flex-col justify-start items-start gap-8 max-w-[800px] w-full">
           {/* no order */}
-          <div className=" w-full flex justify-center items-center mt-12">
+          <div className=" w-full flex justify-center items-center mt-4 md:mt-12">
             <div className="w-full max-w-[400px] flex flex-col gap-8 items-center">
               {ordersIcon()}
 
@@ -250,7 +250,7 @@ export const Body = () => {
       {/* ------ content ------- */}
 
       {(Array.isArray(filteredOrders) && filteredOrders.length > 0) &&
-        <div className="mt-12 w-full">
+        <div className="mt-6 md:mt-12 w-full">
           {/* search and filter */}
           <div className="flex w-full justify-start items-center gap-4">
             <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
@@ -307,7 +307,7 @@ export const Body = () => {
           {/* table */}
           <div className="w-full">
             <div className="overflow-x-auto">
-              <table className="w-full divide-y divide-stroke_weak mt-12 overflow-x-auto">
+              <table className="w-full divide-y divide-stroke_weak mt-4 md:mt-12 overflow-x-auto">
                 <thead className="text-start bg-background border-y">
                   <tr className="">
                     <th
