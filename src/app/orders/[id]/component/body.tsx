@@ -343,7 +343,7 @@ export const Body = () => {
       </div>
 
       {/* content section */}
-      <div className="px-7 flex flex-col gap-12">
+      <div className="px-0 md:px-7 flex flex-col gap-12">
         {loading ? (
           <OrderInfoSkeleton />
         ) : (

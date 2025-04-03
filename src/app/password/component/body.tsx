@@ -21,7 +21,7 @@ export const Body = () => {
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-8 justify-start items-center w-full">
             {/* old */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Old password</p>
+              <p className="text-sm md:text-base">Old password</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -33,7 +33,7 @@ export const Body = () => {
 
             {/* new */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">New password</p>
+              <p className="text-sm md:text-base">New password</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"
@@ -48,7 +48,7 @@ export const Body = () => {
           <div className="flex gap-8 justify-start items-center w-full">
             {/* Phone */}
             <div className="flex flex-col gap-2 w-full max-w-[323px]">
-              <p className="">Confirm password</p>
+              <p className="text-sm md:text-base">Confirm password</p>
               <div className=" w-full">
                 <input
                   className="outline-none border rounded-lg h-10 px-4  w-full"

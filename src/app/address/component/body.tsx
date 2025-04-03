@@ -195,16 +195,16 @@ export const Body = () => {
             </div>
 
             {/* Form buttons */}
-            <div className="flex gap-6 justify-between items-center w-full font-medium text-base mt-2">
+            <div className="flex gap-2 sm:gap-2 justify-between items-center w-full font-medium text-base mt-2">
               <button
                 onClick={handleAddressSubmit}
-                className="w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"
+                className="w-full text-nowrap text-background bg-text_strong rounded-full px-2 md:px-6 h-12 flex justify-center items-center"
               >
                 Add address
               </button>
               <button
                 onClick={() => setAddressModal(false)}
-                className="w-full text-text_strong border bg-background rounded-full px-6 h-12 flex justify-center items-center"
+                className="w-full text-nowrap text-text_strong border bg-background rounded-full px-2 md:px-6 h-12 flex justify-center items-center"
               >
                 Cancel
               </button>
@@ -263,7 +263,7 @@ export const Body = () => {
         </div>
         <button
           onClick={() => setAddressModal(true)}
-          className="w-fit max-w-[323px] text-background bg-text_strong rounded-full text-nowrap px-6 mr-0 md:mr-9 xl:mr-0 h-10 flex justify-center items-center"
+          className="w-fit max-w-[323px] text-background bg-text_strong rounded-full text-nowrap px-6 mr-0 md:mr-9 xl:mr-0 h-10 flex justify-center items-center lg:mr-10"
         >
           Add address
         </button>
