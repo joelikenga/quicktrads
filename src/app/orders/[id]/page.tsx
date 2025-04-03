@@ -6,7 +6,7 @@ const Page = () => {
   return (
     <div className="">
       <Navbar />
-      <div className="px-10 w-full">
+      <div className="px-4 md:px-10 w-full">
         <div className="mx-auto w-full max-w-7xl">
           <Sidenav />
           <Body />

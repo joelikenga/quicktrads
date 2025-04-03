@@ -276,7 +276,7 @@ export const Body = () => {
     : null;
 
   return (
-    <div className="ml-[280px] mt-[150px]">
+    <div className="md:ml-[280px] mt-[150px]">
       {cancelOrder && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
           <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-8 rounded-lg">
