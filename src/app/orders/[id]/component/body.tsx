@@ -168,7 +168,10 @@ const OrderInfoSkeleton = () => (
 );
 
 const OrderItemsSkeleton = () => (
-  <table className="w-full divide-y divide-stroke_weak overflow-x-auto max-w-[651px]">
+  <table
+    className="w-full max-w-full sm:max-w-[651px] overflow-x-auto divide-y divide-stroke_weak
+"
+  >
     <thead className="text-start bg-background border-y">
       <tr>
         {["Product details", "Size", "Quantity", "Price"].map((header) => (
@@ -185,7 +188,7 @@ const OrderItemsSkeleton = () => (
       {[...Array(3)].map((_, i) => (
         <tr key={i} className="border-b">
           <td className="pl-4 py-4">
-            <div className="flex gap-6 items-start w-[360px]">
+            <div className="flex gap-6 items-start w-full sm:w-[360px]">
               <div className="w-[70px] h-[85px] bg-gray-200 rounded"></div>
               <div className="h-4 w-32 bg-gray-200 rounded"></div>
             </div>
@@ -207,7 +210,7 @@ const OrderItemsSkeleton = () => (
 
 const TrackOrdersSkeleton = () => (
   <div className="w-full max-w-[829px] flex flex-col gap-12 py-6 border-t animate-pulse">
-    <div className="w-full grid grid-cols-5 gap-4">
+    <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {[...Array(3)].map((_, i) => (
         <div key={i} className="flex flex-col gap-2">
           <div className="h-4 w-24 bg-gray-200 rounded"></div>
@@ -256,9 +259,8 @@ export const Body = () => {
       if (typeof id === "string") {
         await killOrder(id, reason);
       }
-      successToast("Order cancelled")
-      setCancelOrder(false)
-      
+      successToast("Order cancelled");
+      setCancelOrder(false);
     } catch (err: any) {
       throw err;
     }
@@ -290,22 +292,27 @@ export const Body = () => {
               </p>
 
               {/* reason */}
-                <div className="w-full flex flex-col items-start gap-2">
+              <div className="w-full flex flex-col items-start gap-2">
                 <p>
                   Reason <span>{`(optional)`}</span>
                 </p>
                 <textarea
                   className="border outline-none rounded-lg w-full resize-none h-[88px] px-4 py-2"
                   placeholder="Enter reason for cancellation"
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReason(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setReason(e.target.value)
+                  }
                   value={reason}
                 />
-                </div>
+              </div>
             </div>
 
             {/* buttons */}
             <div className="flex justify-end gap-4">
-              <button onClick={handleCancelOrder}  className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border">
+              <button
+                onClick={handleCancelOrder}
+                className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
+              >
                 <p>Yes, cancel order</p>
               </button>
               <button
@@ -347,7 +354,13 @@ export const Body = () => {
         {loading ? (
           <OrderInfoSkeleton />
         ) : (
-          <div className="grid grid-cols-5 p-6 w-[940px] border rounded-lg mt-8">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 
+p-4 sm:p-5 md:p-6 
+w-full max-w-[940px] 
+border rounded-lg mt-6 sm:mt-8
+"
+          >
             <div className="flex gap-8 items-center col-span-1">
               <i>{orderSmallIcon()}</i>
               <div className="flex-col items-center justify-center">
@@ -431,115 +444,83 @@ export const Body = () => {
           ) : (
             <>
               {tab === "order items" ? (
-                <table className="w-full divide-y divide-stroke_weak overflow-x-auto max-w-[651px]">
-                  <thead className="text-start bg-background border-y">
-                    <tr>
-                      <th className="px-4 py-3 text-start font-normal text-sm h-10">
-                        Product details
-                      </th>
-                      <th className="px-4 py-3 text-start font-normal text-sm h-10">
-                        Size
-                      </th>
-                      <th className="px-4 py-3 text-start font-normal text-sm h-10">
-                        Quantity
-                      </th>
-                      <th className="px-4 py-3 text-start font-normal text-sm h-10">
-                        Price
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-stroke_weak">
-                    {orderData?.order.map((item, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="pl-4 py-4">
-                          <div className="flex gap-6 items-start w-[360px]">
-                            <Image
-                              className="w-[70px] h-[85px] object-cover"
-                              src={
-                                item.product.images[0] || "/heroFallback.jpg"
-                              }
-                              priority
-                              width={69}
-                              height={80}
-                              alt={item.product.name}
-                            />
-                            <div className="text-text_strong text-sm font-normal text-wrap">
-                              {item.product.name}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap w-[120px] capitalize">
-                            {item.product.size}
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap">
-                            {item.currency} {item.amount} x {item.quantity} item
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                            {item.currency} {item.amount * item.quantity}
-                          </div>
-                        </td>
+                <div className="w-full md:w-max overflow-x-auto border-l border-l-stroke_weak border-r sm:border-0 border-r-stroke_weak">
+                  <table className="w-full min-w-[600px] sm:min-w-[700px] md:min-w-[800px] lg:min-w-[900px] xl:min-w-[1000px] divide-y divide-stroke_weak">
+                    <thead className="text-start bg-background border-y">
+                      <tr>
+                        <th className="px-4 py-3 text-start font-normal text-sm h-10">
+                          Product details
+                        </th>
+                        <th className="px-4 py-3 text-start font-normal text-sm h-10">
+                          Size
+                        </th>
+                        <th className="px-4 py-3 text-start font-normal text-sm h-10">
+                          Quantity
+                        </th>
+                        <th className="px-4 py-3 text-start font-normal text-sm h-10">
+                          Price
+                        </th>
                       </tr>
-                    ))}
+                    </thead>
 
-                    {/* Order summary */}
-                    <tr>
-                      <td className="pl-4 py-4"></td>
-                      <td className="px-4 py-4"></td>
-                      <td className="px-4 py-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap">
-                          Delivery fee
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                          {orderData?.currency} {orderData?.shippingFee || 0}
-                        </div>
-                      </td>
-                    </tr>
+                    <tbody className="divide-y divide-stroke_weak">
+                      {orderData?.order.map((item, index) => (
+                        <tr key={index} className="border-b">
+                          <td className="pl-4 py-4 w-full sm:min-w-[240px]">
+                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start w-full">
+                              <Image
+                                className="w-[70px] h-[85px] object-cover shrink-0"
+                                src={
+                                  item.product.images[0] || "/heroFallback.jpg"
+                                }
+                                priority
+                                width={69}
+                                height={80}
+                                alt={item.product.name}
+                              />
+                              <div className="text-text_strong text-sm font-normal break-words">
+                                {item.product.name}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-text_strong capitalize min-w-[80px]">
+                            {item.product.size}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-text_strong min-w-[150px]">
+                            {item.currency} {item.amount} x {item.quantity} item
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-text_strong min-w-[120px]">
+                            {item.currency} {item.amount * item.quantity}
+                          </td>
+                        </tr>
+                      ))}
 
-                    <tr>
-                      <td className="pl-4 py-4"></td>
-                      <td className="px-4 py-4"></td>
-                      <td className="px-4 py-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap">
-                          Subtotal
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                          {orderData?.currency} {orderData?.subTotal || 0}
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr className="border-t">
-                      <td className="pl-4 py-4"></td>
-                      <td className="px-4 py-4"></td>
-                      <td className="px-4 py-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap">
-                          Total
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap w-[120px]">
-                          {orderData?.currency} {orderData?.subTotal || 0}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      {/* Order summary rows — kept clean and responsive */}
+                      {[
+                        ["Delivery fee", orderData?.shippingFee || 0],
+                        ["Subtotal", orderData?.subTotal || 0],
+                        ["Total", orderData?.subTotal || 0],
+                      ].map(([label, value], i) => (
+                        <tr key={label} className={i === 2 ? "border-t" : ""}>
+                          <td className="pl-4 py-4"></td>
+                          <td className="px-4 py-4"></td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-text_strong">
+                            {label}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-text_strong min-w-[120px]">
+                            {orderData?.currency} {value}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <div className="w-full max-w-[829px] flex flex-col gap-12 py-6 border-t">
-                  <div className="w-full grid grid-cols-5">
-                    <div className="col-span-1 flex justify-between gap-2 pr-6 items-start w-fit">
-                      <i>{vanIcon()}</i>
-                      <div className="flex flex-col items-center">
+                  <div className="w-full flex-col gap-5 sm:flex-row sm:gap-0">
+                    <div className="col-span-1 flex flex-col sm:flex-row justify-center sm:justify-between gap-2 pr-6 items-start w-full sm:w-fit">
+                      <i className="w-auto">{vanIcon()}</i>
+                      <div className="flex flex-col w-auto items-center">
                         <p className="text-text_weak text-sm font-normal">
                           Order type
                         </p>
@@ -548,7 +529,7 @@ export const Body = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="col-span-2 flex justify-center gap-2 px-6 items-center border-x-2 w-fit">
+                    <div className="col-span-2 flex justify-center gap-2 sm:px-6 items-center border-x-2 w-fit">
                       <div className="flex flex-col items-center">
                         <p className="text-text_weak text-sm font-normal">
                           contact information
@@ -577,7 +558,7 @@ export const Body = () => {
 
                   {/* tracking view */}
                   <div className="w-full flex justify-start items-center">
-                    <div className="w-fit flex justify-center items-center">
+                    <div className="w-full sm:w-fit flex justify-center items-center">
                       {/* order confirmed */}
                       <div>
                         <div className="flex-flex-col items-center">

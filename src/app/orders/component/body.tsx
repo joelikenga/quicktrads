@@ -271,7 +271,7 @@ export const Body = () => {
       {loading ? (
         <div className="w-full">
           <div className="overflow-x-auto">
-            <table className="w-full divide-y divide-stroke_weak mt-12 overflow-x-auto">
+            <table className="w-full overflow-x-auto divide-y divide-stroke_weak mt-8 sm:mt-10 md:mt-12 lg:mt-16">
               <thead className="text-start bg-background border-y">
                 <tr className="">
                   <th
@@ -312,7 +312,8 @@ export const Body = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stroke_weak">
+              <tbody className="md:divide-y md:divide-stroke_weak
+">
                 {[...Array(5)].map((_, index) => (
                   <OrderSkeleton key={index} />
                 ))}
@@ -393,7 +394,8 @@ export const Body = () => {
 
               <div className="w-full">
                 <div className="overflow-x-auto">
-                  <table className="w-full divide-y divide-stroke_weak mt-12 overflow-x-auto">
+                  <table className="w-full overflow-x-auto divide-y divide-stroke_weak mt-8 sm:mt-10 md:mt-12 lg:mt-16
+">
                     <thead className="text-start bg-background border-y">
                       <tr className="">
                         <th
@@ -434,7 +436,8 @@ export const Body = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-stroke_weak">
+                    <tbody className="md:divide-y md:divide-stroke_weak
+">
                       {filteredOrders?.map((item) => (
                         <tr
                           onClick={() => handleRowClick(item?.order.id)}
