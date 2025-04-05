@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -19,9 +20,13 @@ interface TransformedProduct {
   discountPrice?: number;
   priceDiscount?: number;
   category: string;
+  priceDiscountConvert?: number;
+  priceConverted: number;
 }
 
 export const TwoPiece = () => {
+    const { currency } = useCurrency();
+  
   const Router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [allProducts, setAllProducts] = useState<TransformedProduct[]>([]);
@@ -46,6 +51,8 @@ export const TwoPiece = () => {
           name: product.name,
           discountPrice: product.priceDiscount || null,
           category: product.category,
+          priceDiscountConvert: product.priceDiscountConvert || 0,
+          priceConverted: product.priceConvert || 0,
         }));
 
         setAllProducts(transformedProducts);
@@ -73,9 +80,9 @@ export const TwoPiece = () => {
       <div className="w-full max-w-7xl mx-auto">
         {/* ----- title and view all ----- */}
         <div className="flex justify-between items-center font-normal text-text_strong">
-          <p className={`${lora.className} text-[22px]`}>Tops</p>
+          <p className={`${lora.className} text-[22px]`}>TwoPiece</p>
           <Link
-            href={`/categories`}
+            href={`/products`}
             onClick={() => localStorage.setItem("category", "trending")}
             className={`text-[22px] underline text-base`}
           >
@@ -124,9 +131,17 @@ export const TwoPiece = () => {
                       {item?.name}
                     </p>
                     <div className="flex items-center gap-1 font-semibold">
-                      <p className="text-base">{`$ ${item?.price}`}</p>
-                      {item?.priceDiscount ? (
-                        <del className="text-base text-text_weak">{`$ ${item?.priceDiscount}`}</del>
+                        <p className="text-base">
+                        {currency === "NGN"
+                          ? `₦ ${item?.price}`
+                          : `$ ${item?.priceConverted}`}
+                        </p>
+                        {item?.priceDiscount && item?.priceDiscountConvert ? (
+                        <del className="text-base text-text_weak">
+                        {currency === "NGN"
+                          ? `₦ ${item?.discountPrice}`
+                          : `$ ${item?.priceDiscountConvert}`}
+                      </del>
                       ) : null}
                     </div>
                   </div>

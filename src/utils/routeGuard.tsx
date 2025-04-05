@@ -29,7 +29,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     // if (pathname === "/checkout") {
     //   const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
     //   if (cartItems.length === 0) {
-    //     router.push("/categories"); // Redirect if cart is empty
+    //     router.push("/products"); // Redirect if cart is empty
     //   }
     // }
   }, [pathname, isLoggedIn, role, router]);

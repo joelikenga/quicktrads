@@ -431,7 +431,7 @@ export const Body = () => {
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
                 onClick={() => {
                   setSuccess(false);
-                  window.location.href = "/categories";
+                  window.location.href = "/products";
                 }}
               >
                 <p>Continue shopping</p>

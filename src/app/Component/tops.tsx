@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -19,9 +20,13 @@ interface TransformedProduct {
   discountPrice?: number;
   priceDiscount?: number;
   category: string;
+  priceConverted: number;
+  priceDiscountConvert?: number;
+
 }
 
 export const Tops = () => {
+  const { currency } = useCurrency();
   const Router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [allProducts, setAllProducts] = useState<TransformedProduct[]>([]);
@@ -46,6 +51,9 @@ export const Tops = () => {
           name: product.name,
           discountPrice: product.priceDiscount || null,
           category: product.category,
+          priceConverted: product.priceConvert || 0,
+          priceDiscountConvert: product.priceDiscountConvert || 0,
+
         }));
 
         setAllProducts(transformedProducts);
@@ -75,7 +83,7 @@ export const Tops = () => {
         <div className="flex justify-between items-center font-normal text-text_strong">
           <p className={`${lora.className} text-[22px]`}>Tops</p>
           <Link
-            href={`/categories`}
+            href={`/products`}
             onClick={() => localStorage.setItem("category", "trending")}
             className={`text-[22px] underline text-base`}
           >
@@ -86,7 +94,7 @@ export const Tops = () => {
         {/* ----- item grids ----- */}
         {isLoading ? (
           <div className="flex flex-row gap-6">
-          {[1,2,3].map(( index) => (
+            {[1, 2, 3].map((index) => (
               <div
                 key={index}
                 className="flex flex-col items-center gap-4  w-full max-w-[410px] min-w-[302px] max-h-[487px] h-fit pb-[22px] animate-pulse"
@@ -97,8 +105,8 @@ export const Tops = () => {
                   <div className="h-4 w-1/2 bg-gray-300"></div>
                 </div>
               </div>
-          ))}
-            </div>
+            ))}
+          </div>
         ) : (
           <div className="flex overflow-y-hidde overflow-x-scroll hidden_scroll gap-6  h-fit">
             {/*----- mapped items ----- */}
@@ -124,10 +132,20 @@ export const Tops = () => {
                       {item?.name}
                     </p>
                     <div className="flex items-center gap-1 font-semibold">
-                      <p className="text-base">{`$ ${item?.price}`}</p>
-                      {item?.priceDiscount ? (
-                        <del className="text-base text-text_weak">{`$ ${item?.priceDiscount}`}</del>
+                      <p className="text-base">
+                        {currency === "NGN"
+                          ? `₦ ${item?.price}`
+                          : `$ ${item?.priceConverted}`}
+                      </p>
+                      {item?.priceDiscount && item?.priceDiscountConvert ? (
+                        <del className="text-base text-text_weak">
+                        {currency === "NGN"
+                          ? `₦ ${item?.discountPrice}`
+                          : `$ ${item?.priceDiscountConvert}`}
+                      </del>
                       ) : null}
+
+                      
                     </div>
                   </div>
                 </div>

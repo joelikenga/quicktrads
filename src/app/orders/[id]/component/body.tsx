@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getOrder, killOrder } from "../../../../utils/api/user/product";
 import { useParams } from "next/navigation";
 import { successToast } from "@/utils/toast/toast";
+import { set } from "zod";
 
 interface Product {
   id: string;
@@ -252,12 +253,18 @@ export const Body = () => {
   };
 
   const handleCancelOrder = async () => {
+
+
     try {
+
       if (typeof id === "string") {
-        await killOrder(id, reason);
+        
+        await killOrder(id, !reason ? "No reason provided" : reason);
+        successToast("Order cancelled")
+        setCancelOrder(false)
+        setReason("");
+        window.location.reload();
       }
-      successToast("Order cancelled")
-      setCancelOrder(false)
       
     } catch (err: any) {
       throw err;

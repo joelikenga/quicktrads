@@ -161,7 +161,7 @@ export const Body = () => {
       // Get the raw date value from formData (already in YYYY-MM-DD format from input)
       const dobValue =
         formatDateForDisplay(formData.dob) || JSON.parse(userData)?.dob;
-      console.log(dobValue);
+      // console.log(dobValue);
       const response = await UpdateUserDetails({
         avatar: formData.avatar || JSON.parse(userData)?.avatar,
         fullName: formData.fullName || JSON.parse(userData)?.fullName,
@@ -184,6 +184,7 @@ export const Body = () => {
       throw err;
     }
   }, [formData, userData]);
+  
 
   return (
     <div className=" flex flex-col gap-8 h-[82px] border-b px-4 md:px-0  md:ml-[280px] mt-[150px]">
@@ -407,7 +408,7 @@ export const Body = () => {
         {/* button */}
 
         <div className="flex gap-2 md:gap-2 justify-start items-center w-full text-base font-medium  mt-2 mb-8">
-          <button className="max-w-[153px] w-full text-background bg-text_strong rounded-full px-6 h-10 flex justify-center items-center">
+          <button onClick={updateDetails} className="max-w-[153px] w-full text-background bg-text_strong rounded-full px-6 h-10 flex justify-center items-center">
             Update
           </button>
           <Link

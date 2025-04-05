@@ -404,7 +404,7 @@ export const Body = () => {
                       <p>Checkout now</p>
                     </button>
                   </Link>
-                  <Link className="w-full rounded-full" href={`/categories`}>
+                  <Link className="w-full rounded-full" href={`/products`}>
                     <button
                       type="submit"
                       className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-full border"

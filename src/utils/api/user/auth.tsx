@@ -20,7 +20,6 @@ interface loginData {
 export const userLogin = async (data: loginData) => {
   try {
     const response = await axios$.post("/auth/login", data);
-    console.log('api-console', response);
     return response;
   } catch (error: unknown) {
     throw error;

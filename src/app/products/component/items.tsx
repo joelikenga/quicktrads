@@ -4,7 +4,7 @@
 import { filterIcon } from "@/app/global/svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 // Add your actual API import here
 import {
   getAllProducts,
@@ -12,6 +12,7 @@ import {
   getTrendingProducts,
 } from "../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
+import { useCurrency } from "@/context/CurrencyContext";
 // import { errorToast, successToast } from "../../../utils/toast/toast";
 
 interface Product {
@@ -22,6 +23,8 @@ interface Product {
   category: string;
   subCategory: string;
   images: string[];
+  priceConvert: number;
+  priceDiscountConvert?: number;
 }
 
 interface TransformedProduct {
@@ -32,6 +35,8 @@ interface TransformedProduct {
   discountPrice?: number;
   category: string;
   subCategory: string;
+  priceConvert: number;
+  priceDiscountConvert?: number;
 }
 
 interface ItemsProps {
@@ -45,6 +50,7 @@ interface ItemsProps {
 }
 
 export const Items = ({ onFilterChange, filters }: ItemsProps) => {
+  const { currency } = useCurrency();
   const Router = useRouter();
   const [allProducts, setAllProducts] = useState<TransformedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +70,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
         response = (await getAllProducts()) as any;
       }
 
-      // console.log("response", response);
+      console.log("response", response);
 
       const transformedProducts =
         response?.data?.map(
@@ -76,12 +82,14 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
             discountPrice: product.priceDiscount,
             category: product.category,
             subCategory: product.subCategory,
+            priceConvert: product.priceConvert || 0,
+            priceDiscountConvert: product.priceDiscountConvert || 0,
           })
         ) || [];
 
       setAllProducts(transformedProducts);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       // //errorToat(error);
       setAllProducts([]);
     } finally {
@@ -205,8 +213,8 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-center mt-2">
-      <div className="px-6 lg:px-2 py-8 bg-background relative">
+    <div className="flex flex-col justify-center  w-full">
+      <div className="px-6 lg:px-2 py-8 bg-background relative hidden lg:block">
         <div
           onClick={() => {
             setShowFilter(!showFilter);
@@ -250,10 +258,18 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
                   {item.name}
                 </p>
                 <div className="flex items-center gap-1 font-semibold">
-                  <p className="text-base">{`$ ${item.price}`}</p>
-                  {item.discountPrice ? (
-                    <del className="text-base text-text_weak">{`$ ${item.discountPrice}`}</del>
-                  ) : null}
+                  <p className="text-base">
+                    {currency === "NGN"
+                      ? `₦ ${item?.price}`
+                      : `$ ${item?.priceConvert}`}
+                  </p>
+                  {item?.discountPrice && item?.priceDiscountConvert ? (
+                        <del className="text-base text-text_weak">
+                        {currency === "NGN"
+                          ? `₦ ${item?.discountPrice}`
+                          : `$ ${item?.priceDiscountConvert}`}
+                      </del>
+                      ) : null}
                 </div>
               </div>
             </div>

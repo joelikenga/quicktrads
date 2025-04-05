@@ -50,7 +50,7 @@ export const ExploreMore = () => {
           {content.map((item, index) => {
             return (
               <Link
-                href={"/categories"}
+                href={"/products"}
                 onClick={() =>
                   localStorage.setItem("category", `${item.linkTo}`)
                 }

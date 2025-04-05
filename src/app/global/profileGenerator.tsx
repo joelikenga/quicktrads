@@ -26,7 +26,7 @@ interface ProfileStyle {
 
 interface ProfileElementProps {
   name: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large'| 'larger';
   className?: string;
 }
 
@@ -41,6 +41,10 @@ const sizeMap = {
   },
   large: {
     container: 'w-16 h-16',
+    font: 'text-lg'
+  },
+  larger: {
+    container: 'w-20 h-20',
     font: 'text-lg'
   }
 };
