@@ -303,6 +303,8 @@ export const Body = () => {
             tax: vatRate,
           };
 
+          console.log(response);
+
           const orderResponse = (await createOrder(orderData)) as OrderRes;
           setOrderResponse(orderResponse);
           setSuccess(true);
