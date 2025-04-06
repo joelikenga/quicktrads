@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { arrowleft, info } from "@/app/global/svg";
+ import { arrowleft, info } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";

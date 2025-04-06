@@ -128,7 +128,18 @@ export const getOrder = async (orderId: string) => {
     const response = await axios$.get(`/order/${orderId}`);
     return response;
   } catch (error: unknown) {
-    // console.error("API error:", error);
+    throw error;
+  }
+};
+
+// for cancelling orders
+
+export const killOrder = async (orderId: string, reason: string) => {
+  try {
+    const response = await axios$.patch(`/order/cancel/${orderId}`, { reason});
+    console.log("order response", response);
+    return response;
+  } catch (error: unknown) {
     throw error;
   }
 };

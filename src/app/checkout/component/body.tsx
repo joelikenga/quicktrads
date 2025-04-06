@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import {
@@ -12,7 +10,6 @@ import {
 } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import {
@@ -20,8 +17,14 @@ import {
   deleteShippingAddress,
   shippingAddress,
 } from "../../../utils/api/user/product";
-import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
+import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
+import { 
+  usePathname,
+  //  useRouter 
+  } from "next/navigation";
+import { useCurrency } from "@/context/CurrencyContext";
+import Link from "next/link";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -30,12 +33,12 @@ const lora = Lora({
 
 const FEES = {
   NIGERIA: {
-    DELIVERY: 5000, // ₦5,000
-    VAT_RATE: 0.075, // 7.5%
+    DELIVERY: 5000,
+    VAT_RATE: 0.075,
   },
   USA: {
-    DELIVERY: 100, // $100
-    VAT_RATE: 0.08, // 8%
+    DELIVERY: 100,
+    VAT_RATE: 0.08,
   },
 };
 
@@ -96,42 +99,10 @@ interface OrderRes {
   userId: string;
 }
 
-// Define the Flutterwave types locally based on the module's types
-type FlutterwaveConfig = {
-  public_key: string;
-  tx_ref: string;
-  amount: number;
-  currency?: string;
-  payment_options: string;
-  customer: {
-    email: string;
-    phone_number: string;
-    name: string;
-  };
-  customizations: {
-    title: string;
-    description: string;
-    logo: string;
-  };
-  callback: (response: FlutterwaveResponse) => void;
-  onclose: () => void;
-};
-
-type FlutterwaveResponse = {
-  amount: number;
-  currency?: string;
-  customer: {
-    email: string;
-    phone_number: string;
-    name: string;
-  };
-  tx_ref: string;
-  flw_ref: string;
-  status: string;
-  transaction_id: number;
-};
-
 export const Body = () => {
+  const { currency } = useCurrency();
+  // const router = useRouter();
+  const pathname = usePathname();
   const [addressEdit, setAddressEdit] = useState<boolean>(false);
   const [addressModal, setAddressModal] = useState<boolean>(false);
   const [deleteAddress, setDeleteAddress] = useState<boolean>(false);
@@ -140,7 +111,7 @@ export const Body = () => {
   const [pending, setPending] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
   const [deleteIndex, setDeleteIndex] = useState<number>(0);
-  const { cartItems, clearCart } = useCart(); // Add clearCart to destructuring
+  const { cartItems, clearCart } = useCart();
   const [addressData, setAddressData] = useState<Address>({
     fullName: "",
     email: "",
@@ -163,6 +134,7 @@ export const Body = () => {
     null
   );
   const [orderResponse, setOrderResponse] = useState<OrderRes | null>(null);
+  const [userData, setUserData] = useState<any | null>(null);
 
   const isNigeria = selectedAddress.country?.toLowerCase() === "nigeria";
   const deliveryFee = isNigeria ? FEES.NIGERIA.DELIVERY : FEES.USA.DELIVERY;
@@ -176,19 +148,89 @@ export const Body = () => {
     image: string;
     originalPrice?: number;
     size?: string;
+    priceConvert?: number;
   }
 
   const productTotal = cartItems.reduce(
-    (acc: number, item: CartItem) => acc + item.price * item.quantity,
+    (acc: number, item: CartItem) =>
+      acc +
+      (currency === "NGN" ? item.price : item.priceConvert || 0) *
+        item.quantity,
     0
   );
   const vatAmount = productTotal * vatRate;
-  const subTotal = productTotal + vatAmount; // Includes product total and VAT
+  const subTotal = productTotal + vatAmount;
   const totalQuantity = cartItems.reduce(
     (acc: number, item: CartItem) => acc + item.quantity,
     0
   );
-  const total = subTotal + deliveryFee; // Final total including delivery fee
+  const total = subTotal + deliveryFee;
+
+  const handleFlutterPayment = useFlutterwave({
+    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
+    tx_ref: Date.now().toString(),
+    amount: total,
+    currency: isNigeria ? "NGN" : "USD",
+    payment_options: "card",
+    customer: {
+      email: selectedAddress.email,
+      phone_number: selectedAddress.phoneNumber,
+      name: selectedAddress.fullName,
+    },
+    customizations: {
+      title: "Quicktrads",
+      description: "Quicktrads Purchase",
+      logo: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
+    },
+  });
+
+  const handlePayment = () => {
+    handleFlutterPayment({
+      callback: async (response) => {
+        try {
+          if (response.status === "successful") {
+            const orderData: OrderRequest = {
+              currency:
+                response.currency || (currency === "NGN" ? "NGN" : "USD"),
+              product: cartItems.map(
+                (item: { id: string; quantity: number }) => ({
+                  productId: item.id,
+                  quantity: item.quantity,
+                })
+              ),
+              shippingDetails: {
+                address: selectedAddress.address,
+                country: selectedAddress.country,
+                email: selectedAddress.email,
+                fullName: selectedAddress.fullName,
+                phoneNumber: selectedAddress.phoneNumber,
+                state: selectedAddress.state,
+              },
+              shippingFee: deliveryFee,
+              tax: vatRate,
+            };
+
+            const orderResponse = (await createOrder(orderData)) as OrderRes;
+            setOrderResponse(orderResponse);
+            setSuccess(true);
+            clearCart();
+            closePaymentModal();
+          } else {
+            setFailed(true);
+            setPending(false);
+          }
+        } catch (error) {
+          console.log(error);
+          setFailed(true);
+        } finally {
+          closePaymentModal();
+        }
+      },
+      onClose: () => {
+        console.log("Payment modal closed");
+      },
+    });
+  };
 
   const handleAddress = async () => {
     const data: Address = {
@@ -203,7 +245,6 @@ export const Body = () => {
     try {
       const res = await shippingAddress(data);
       console.warn(res.status);
-      //successToat("Address added");
     } catch (error: unknown) {
       throw error;
     }
@@ -224,7 +265,6 @@ export const Body = () => {
       );
       setShippingData(transformedData);
     } catch (err: unknown) {
-      //errorToat(err);
       console.log(err);
     }
   };
@@ -248,77 +288,6 @@ export const Body = () => {
     setAddressModal(false);
   };
 
-  const config: FlutterwaveConfig = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
-    tx_ref:
-      Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")) + "",
-    amount: total,
-    currency: isNigeria ? "NGN" : "USD",
-    payment_options: "card",
-    customer: {
-      email: selectedAddress.email,
-      phone_number: selectedAddress.phoneNumber,
-      name: selectedAddress.fullName,
-    },
-    customizations: {
-      title: "Quicktrads",
-      description: "Quicktrads Purchase",
-      logo: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
-    },
-    callback: (response: FlutterwaveResponse) => {
-      console.log(response);
-    },
-    onclose: () => {
-      console.log("Payment modal closed");
-    },
-  };
-
-  const fwConfig = {
-    ...config,
-    callback: async (response: FlutterwaveResponse) => {
-      try {
-        if (response.status === "successful") {
-          const orderData: OrderRequest = {
-            currency: response.currency || (isNigeria ? "NGN" : "USD"),
-            product: cartItems.map(
-              (item: { id: string; quantity: number }) => ({
-                productId: item.id,
-                quantity: item.quantity,
-              })
-            ),
-            shippingDetails: {
-              address: selectedAddress.address,
-              country: selectedAddress.country,
-              email: selectedAddress.email,
-              fullName: selectedAddress.fullName,
-              phoneNumber: selectedAddress.phoneNumber,
-              state: selectedAddress.state,
-            },
-            shippingFee: deliveryFee,
-            tax: vatRate,
-          };
-
-          const orderResponse = (await createOrder(orderData)) as OrderRes;
-          setOrderResponse(orderResponse);
-          setSuccess(true);
-          clearCart();
-          closePaymentModal();
-        } else {
-          setFailed(true);
-          setPending(false);
-        }
-      } catch (error) {
-        console.log(error);
-        setFailed(true);
-      } finally {
-        closePaymentModal();
-      }
-    },
-    onClose: () => {
-      console.log("Payment modal closed");
-    },
-  };
-
   const canProceedToReview = () => {
     return Object.values(selectedAddress).every((value) => value !== "");
   };
@@ -326,9 +295,6 @@ export const Body = () => {
   const handleReviewClick = () => {
     if (canProceedToReview()) {
       setReview(true);
-    } else {
-      // Optionally show an error message
-      //errorToat("Please select a shipping address before proceeding");
     }
   };
 
@@ -345,19 +311,18 @@ export const Body = () => {
     try {
       await deleteShippingAddress(index);
       setShippingData((prev) => prev.filter((_, i) => i !== index));
-      //successToat("Address deleted successfully");
       setDeleteAddress(false);
     } catch (error: unknown) {
-      //errorToat(error);
       console.log(error);
     }
   };
 
-  // Rest of your component remains the same...
-  // [Previous JSX code remains unchanged]
+  useEffect(() => {
+    setUserData(localStorage.getItem("user"));
+  });
 
   return (
-    <div className="w-full px-10 mt-[150px]">
+    <div className="w-full px-4 md:px-10 mt-[150px]">
       {/* payment successful */}
       {success && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0">
@@ -418,7 +383,7 @@ export const Body = () => {
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
                 onClick={() => {
                   setSuccess(false);
-                  window.location.href = "/categories";
+                  window.location.href = "/products";
                 }}
               >
                 <p>Continue shopping</p>
@@ -530,7 +495,7 @@ export const Body = () => {
       {/* add address modal */}
       {addressModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-start backdrop-blur px-4 md:px-0 overflow-y-auto">
-          <div className="bg-white max-w-[480px] w-full h-fit p-4 md:p-8 flex flex-col gap-8 rounded-lg  mt-20 mb-6">
+          <div className="bg-white max-w-[480px] w-full h-fit p-4 md:p-8 flex flex-col gap-8 rounded-lg mt-4  md:mt-20 mb-6">
             <div className="w-full flex justify-between items-center">
               <p className="text-text_strong  text-[18px] font-medium">
                 Add address
@@ -544,10 +509,10 @@ export const Body = () => {
             </div>
 
             {/* address modal content */}
-            <div className="w-full flex flex-col gap-4">
+            <div className="w-full flex flex-col gap-2 sm:gap-4">
               {/* fullname */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Full name</p>
+                <p className="sm:text-base text-sm">Full name</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -560,7 +525,7 @@ export const Body = () => {
               </div>
               {/* Email */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Email</p>
+                <p className="sm:text-base text-sm">Email</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -573,7 +538,7 @@ export const Body = () => {
               </div>
               {/* phone */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Phone number</p>
+                <p className="sm:text-base text-sm">Phone number</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -586,7 +551,7 @@ export const Body = () => {
               </div>
               {/* Address */}
               <div className="flex flex-col gap-2 w-full ">
-                <p className="">Address</p>
+                <p className="sm:text-base text-sm">Address</p>
                 <div className="w-full">
                   <input
                     className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -598,10 +563,10 @@ export const Body = () => {
                 </div>
               </div>
 
-              <div className="flex gap-8 justify-start items-center w-full">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-8 justify-start items-center w-full">
                 {/* State */}
-                <div className="flex flex-col gap-2 w-full max-w-[323px] relative">
-                  <p className="">State</p>
+                <div className="flex flex-col gap-2 w-full md:max-w-[323px] relative">
+                  <p className="sm:text-base text-sm">State</p>
                   <div className="w-full">
                     <input
                       className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -614,8 +579,8 @@ export const Body = () => {
                 </div>
 
                 {/* Country */}
-                <div className="flex flex-col gap-2 w-full max-w-[323px] relative">
-                  <p className="">Country</p>
+                <div className="flex flex-col gap-2 w-full md:max-w-[323px] relative">
+                  <p className="sm:text-base text-sm">Country</p>
                   <div className="w-full">
                     <input
                       className="outline-none border rounded-lg h-10 px-4 w-full"
@@ -629,16 +594,16 @@ export const Body = () => {
               </div>
             </div>
             {/* buttons */}
-            <div className="flex gap-6 justify-between items-center w-full font-medium text-base mt-2">
+            <div className="flex gap-2 sm:gap-6 justify-between items-center w-full font-medium text-base mt-2">
               <button
                 onClick={handleAddressSubmit}
-                className="w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"
+                className="w-full text-nowrap sm:text-wrap text-background bg-text_strong rounded-full px-4 sm:px-6 h-12 flex justify-center items-center"
               >
                 Add address
               </button>
               <button
                 onClick={() => setAddressModal(false)}
-                className="w-full text-text_strong border bg-background rounded-full px-6 h-12 flex justify-center items-center"
+                className="w-full text-nowrap sm:text-wrap text-text_strong border bg-background rounded-full px-4 sm:px-6 h-12 flex justify-center items-center"
               >
                 Cancel
               </button>
@@ -692,10 +657,10 @@ export const Body = () => {
       )}
 
       <div className="mx-auto w-full max-w-7xl">
-        <div className=" flex justify-start gap-[108px]">
+        <div className=" flex flex-col md:flex-row justify-start gap-[40px] md:gap-[108px]">
           {/* not logged in */}
-          {false && (
-            <div className="flex flex-col gap-6 text-text_strong w-1/2 font-normal text-sm">
+          {!userData && (
+            <div className="flex flex-col gap-6 text-text_strong font-normal text-sm w-full max-w-[480px]">
               <div className="flex flex-col gap-4">
                 <p className="text-[18px]">Account</p>
                 <p className="">
@@ -706,284 +671,306 @@ export const Body = () => {
               </div>
 
               <div className="flex gap-4 justify-start items-center">
-                <Link href={`/sign_up`}>
-                  <button className="border rounded-full items-center flex h-8 px-6">
-                    Sign up
-                  </button>
+                <Link
+                  href={`/login?from=${pathname}`}
+                  // onClick={() => router.push(`/sign_up?from=${pathname}`)}
+                  className="border rounded-full items-center flex h-8 px-6"
+                >
+                  Sign up
                 </Link>
 
-                <Link href={`/login`}>
-                  <button className="border rounded-full items-center flex h-8 px-6">
-                    Login
-                  </button>
+                <Link
+                  href={`/login?from=${pathname}`}
+                  // onClick={() => router.push(`/login?from=${pathname}`)}
+                  className="border rounded-full items-center flex h-8 px-6"
+                >
+                  Login
                 </Link>
               </div>
             </div>
           )}
 
           {/* ---------- review container---------- */}
-          {review ? (
-            <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
-              {/* contact info */}
-              <div className="flex-col gap-4 flex w-full">
-                <div className="w-full flex justify-between">
-                  <p className="font-normal text-[18px] text-text_strong">
-                    Contact information
-                  </p>
-                  <p
-                    onClick={() => setReview(!review)}
-                    className="font-normal text-sm text-text_weak underline cursor-pointer "
-                  >
-                    {"Change"}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 font-normal">
-                  <p className="text-text_strong text-base ">
-                    {selectedAddress.fullName}
-                  </p>
-                  <div className="flex justify-start items-center text-text_weak text-base gap-4">
-                    <p>{selectedAddress.phoneNumber}</p>
-                    <p>{selectedAddress.email}</p>
+
+          {userData && (
+            <>
+              {review ? (
+                <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
+                  {/* contact info */}
+                  <div className="flex-col gap-4 flex w-full">
+                    <div className="w-full flex justify-between">
+                      <p className="font-normal text-[18px] text-text_strong">
+                        Contact information
+                      </p>
+                      <p
+                        onClick={() => setReview(!review)}
+                        className="font-normal text-sm text-text_weak underline cursor-pointer "
+                      >
+                        {"Change"}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-2 font-normal">
+                      <p className="text-text_strong text-base ">
+                        {selectedAddress.fullName}
+                      </p>
+                      <div className="flex justify-start items-center text-text_weak text-base gap-4">
+                        <p>{selectedAddress.phoneNumber}</p>
+                        <p>{selectedAddress.email}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* shipping */}
-              <div className="flex-col gap-4 flex w-full">
-                <div className="w-full flex justify-between">
-                  <p className="font-normal text-[18px] text-text_strong">
-                    Shipping
-                  </p>
-                  <p
-                    onClick={() => setReview(!review)}
-                    className="font-normal text-sm text-text_weak underline cursor-pointer "
-                  >
-                    {"Change"}
-                  </p>
-                </div>
+                  {/* shipping */}
+                  <div className="flex-col gap-4 flex w-full">
+                    <div className="w-full flex justify-between">
+                      <p className="font-normal text-[18px] text-text_strong">
+                        Shipping
+                      </p>
+                      <p
+                        onClick={() => setReview(!review)}
+                        className="font-normal text-sm text-text_weak underline cursor-pointer "
+                      >
+                        {"Change"}
+                      </p>
+                    </div>
 
-                <div className="inline-flex gap-2 w-full">
-                  <i>{info()}</i>
-                  <p className="text-sm font-normal text-text_weak">
-                    {`International shipping takes up to 20 working days. While 3-4
+                    <div className="inline-flex gap-2 w-full">
+                      <i>{info()}</i>
+                      <p className="text-sm font-normal text-text_weak">
+                        {`International shipping takes up to 20 working days. While 3-4
                   days within Lagos, based on your address for delivery outside
                   Lagos`}
-                  </p>
-                </div>
-                <p className="text-text_strong text-base ml-8">
-                  {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <p className="text-[18px]">Order summary</p>
-                <div className="flex flex-col gap-6">
-                  {/* Product Total */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Products ({totalQuantity.toLocaleString()} items)
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(productTotal)}
+                      </p>
+                    </div>
+                    <p className="text-text_strong text-base ml-8">
+                      {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
                     </p>
                   </div>
 
-                  {/* VAT */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      VAT ({(vatRate * 100).toFixed(1)}%)
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(vatAmount)}
-                    </p>
-                  </div>
-
-                  {/* Delivery Fee */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Estimated delivery & handling
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(deliveryFee)}
-                    </p>
-                  </div>
-
-                  {/* Subtotal */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Subtotal
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(subTotal)}
-                    </p>
-                  </div>
-                  <div className="inline-flex gap-2 w-full">
-                    <i>{info()}</i>
-                    <p className="text-sm font-normal text-text_weak w-full max-w-[343px]">
-                      {`The subtotal reflects the total price of your order, including taxes, before any applicable discounts. It does not include shipping costs.`}
-                    </p>
-                  </div>
-
-                  {/* Total */}
-                  <div className="w-full flex justify-between">
-                    <p className="font-normal text-base text-text_weak">
-                      Total
-                    </p>
-                    <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(total)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* button */}
-              <FlutterWaveButton
-                {...fwConfig}
-                className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6"
-              >
-                Pay Now
-              </FlutterWaveButton>
-            </div>
-          ) : null}
-
-          {/* container 1 */}
-
-          {!review ? (
-            <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
-              {/* shipping */}
-              <div className="flex-col gap-4 flex w-full">
-                <div className="w-full flex justify-between">
-                  <p className="font-normal text-[18px] text-text_strong">
-                    Shipping
-                  </p>
-                  <p
-                    onClick={() => setAddressEdit(!addressEdit)}
-                    className="font-normal text-sm text-text_weak underline cursor-pointer "
-                  >
-                    {addressEdit ? "Close" : "Select address"}
-                  </p>
-                </div>
-
-                <div className="inline-flex gap-2 w-full">
-                  <i>{info()}</i>
-                  <p className="text-sm font-normal text-text_weak">
-                    {`International shipping takes up to 20 working days. While 3-4
-                  days within Lagos, based on your address for delivery outside
-                  Lagos`}
-                  </p>
-                </div>
-                {/* shipping addresses */}
-                {!addressEdit && selectedAddress.address && (
-                  <div className="mt-8 w-full">
-                    <div className="max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2">
-                      <div className="w-full flex justify-between ">
-                        <p className="text-text_strong font-medium text-base">
-                          {selectedAddress.fullName}
+                  <div className="flex flex-col gap-4">
+                    <p className="text-[18px]">Order summary</p>
+                    <div className="flex flex-col gap-6">
+                      {/* Product Total */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Products ({totalQuantity.toLocaleString()} items)
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            productTotal
+                          )}`}
                         </p>
                       </div>
 
-                      <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
-                        <div className="flex gap-4 font-medium text-sm">
-                          <div className="">{selectedAddress.phoneNumber}</div>
-                          <div className="">{selectedAddress.email}</div>
-                        </div>
-                        <p className="font-medium text-sm">
-                          {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
+                      {/* VAT */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          VAT ({(vatRate * 100).toFixed(1)}%)
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            vatAmount
+                          )}`}
+                        </p>
+                      </div>
+
+                      {/* Delivery Fee */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Estimated delivery & handling
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            deliveryFee
+                          )}`}
+                        </p>
+                      </div>
+
+                      {/* Subtotal */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Subtotal
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            subTotal
+                          )}`}
+                        </p>
+                      </div>
+                      <div className="inline-flex gap-2 w-full">
+                        <i>{info()}</i>
+                        <p className="text-sm font-normal text-text_weak w-full max-w-[343px]">
+                          {`The subtotal reflects the total price of your order, including taxes, before any applicable discounts. It does not include shipping costs.`}
+                        </p>
+                      </div>
+
+                      {/* Total */}
+                      <div className="w-full flex justify-between">
+                        <p className="font-normal text-base text-text_weak">
+                          Total
+                        </p>
+                        <p className="font-normal text-base text-text_strong cursor-pointer">
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            total
+                          )}`}
                         </p>
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Show address list only when editing */}
-                {addressEdit && (
-                  <div className="mt-8 w-full flex flex-col gap-2">
-                    {shippingData &&
-                      shippingData.map((data, index) => (
-                        <div
-                          key={index}
-                          className={`max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
-                            selectedAddressId === index
-                              ? "bg-fill overflow-hidden"
-                              : "bg-white"
-                          }`}
-                          onClick={() => handleAddressSelection(data, index)}
-                        >
-                          {selectedAddressId === index && (
-                            <div className="h-12 w-5 bg-black absolute rotate-[45deg] -top-4 -translate-x-[30px]"></div>
-                          )}
+                  {/* button */}
+                  <button
+                    onClick={handlePayment}
+                    className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6"
+                  >
+                    Pay Now
+                  </button>
+                </div>
+              ) : null}
+
+              {/* container 1 */}
+
+              {!review ? (
+                <div className="flex flex-col gap-8 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
+                  {/* shipping */}
+                  <div className="flex-col gap-4 flex w-full">
+                    <div className="w-full flex justify-between">
+                      <p className="font-normal text-[18px] text-text_strong">
+                        Shipping
+                      </p>
+                      <p
+                        onClick={() => setAddressEdit(!addressEdit)}
+                        className="font-normal text-sm text-text_weak underline cursor-pointer "
+                      >
+                        {addressEdit ? "Close" : "Select address"}
+                      </p>
+                    </div>
+
+                    <div className="inline-flex gap-2 w-full">
+                      <i>{info()}</i>
+                      <p className="text-sm font-normal text-text_weak">
+                        {`International shipping takes up to 20 working days. While 3-4
+                  days within Lagos, based on your address for delivery outside
+                  Lagos`}
+                      </p>
+                    </div>
+                    {/* shipping addresses */}
+                    {!addressEdit && selectedAddress.address && (
+                      <div className="mt-8 w-full">
+                        <div className="max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2">
                           <div className="w-full flex justify-between ">
                             <p className="text-text_strong font-medium text-base">
-                              {data.fullName}
+                              {selectedAddress.fullName}
                             </p>
-                            <div className="flex gap-4 font-medium text-sm">
-                              <div className="cursor-pointer">Edit</div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDeleteIndex(index);
-                                  setDeleteAddress(true);
-                                }}
-                                className="cursor-pointer"
-                              >
-                                Delete
-                              </div>
-                            </div>
                           </div>
 
                           <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
                             <div className="flex gap-4 font-medium text-sm">
-                              <div className="">{data.phoneNumber}</div>
-                              <div className="">{data.email}</div>
+                              <div className="">
+                                {selectedAddress.phoneNumber}
+                              </div>
+                              <div className="">{selectedAddress.email}</div>
                             </div>
-                            <p className=" font-medium text-sm">
-                              {`${data.address}, ${data.state},${data.country}`}
+                            <p className="font-medium text-sm">
+                              {`${selectedAddress.address}, ${selectedAddress.state}, ${selectedAddress.country}`}
                             </p>
                           </div>
                         </div>
-                      ))}
-                  </div>
-                )}
-              </div>
+                      </div>
+                    )}
 
-              {addressEdit && (
-                <div className="flex justify-between px-6 gap-6">
+                    {/* Show address list only when editing */}
+                    {addressEdit && (
+                      <div className="mt-8 w-full flex flex-col gap-2">
+                        {shippingData &&
+                          shippingData.map((data, index) => (
+                            <div
+                              key={index}
+                              className={`max-w-[600px] rounded-2xl border border-text_strong p-6 flex flex-col justify-start gap-2 cursor-pointer transition-colors relative ${
+                                selectedAddressId === index
+                                  ? "bg-fill overflow-hidden"
+                                  : "bg-white"
+                              }`}
+                              onClick={() =>
+                                handleAddressSelection(data, index)
+                              }
+                            >
+                              {selectedAddressId === index && (
+                                <div className="h-12 w-5 bg-black absolute rotate-[45deg] -top-4 -translate-x-[30px]"></div>
+                              )}
+                              <div className="w-full flex justify-between ">
+                                <p className="text-text_strong font-medium text-base">
+                                  {data.fullName}
+                                </p>
+                                <div className="flex gap-4 font-medium text-sm">
+                                  <div className="cursor-pointer">Edit</div>
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteIndex(index);
+                                      setDeleteAddress(true);
+                                    }}
+                                    className="cursor-pointer"
+                                  >
+                                    Delete
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="font-normal text-text_weak flex flex-col items-start gap-2 w-full">
+                                <div className="flex gap-4 font-medium text-sm">
+                                  <div className="">{data.phoneNumber}</div>
+                                  <div className="">{data.email}</div>
+                                </div>
+                                <p className=" font-medium text-sm">
+                                  {`${data.address}, ${data.state},${data.country}`}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {addressEdit && (
+                    <div className="flex justify-between px-6 gap-6">
+                      <button
+                        onClick={handleConfirmAddress}
+                        className={`border rounded-full items-center flex h-10 w-full justify-center px-6 ${
+                          selectedAddressId !== null
+                            ? "bg-text_strong text-background border-text_strong"
+                            : "text-gray-400 border-gray-300 cursor-not-allowed"
+                        }`}
+                        disabled={selectedAddressId === null}
+                      >
+                        Confirm address
+                      </button>
+                      <button
+                        onClick={() => setAddressModal(true)}
+                        className="border rounded-full items-center flex h-10 w-full justify-center px-6"
+                      >
+                        Add address
+                      </button>
+                    </div>
+                  )}
+                  {/* button */}
                   <button
-                    onClick={handleConfirmAddress}
-                    className={`border rounded-full items-center flex h-10 w-full justify-center px-6 ${
-                      selectedAddressId !== null
-                        ? "bg-text_strong text-background border-text_strong"
-                        : "text-gray-400 border-gray-300 cursor-not-allowed"
+                    onClick={handleReviewClick}
+                    className={`h-10 rounded-full font-medium text-base flex justify-center items-center w-full px-6 ${
+                      canProceedToReview()
+                        ? "bg-text_strong text-background"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
-                    disabled={selectedAddressId === null}
+                    disabled={!canProceedToReview()}
                   >
-                    Confirm address
-                  </button>
-                  <button
-                    onClick={() => setAddressModal(true)}
-                    className="border rounded-full items-center flex h-10 w-full justify-center px-6"
-                  >
-                    Add address
+                    Review orders
                   </button>
                 </div>
-              )}
-              {/* button */}
-              <button
-                onClick={handleReviewClick}
-                className={`h-10 rounded-full font-medium text-base flex justify-center items-center w-full px-6 ${
-                  canProceedToReview()
-                    ? "bg-text_strong text-background"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-                disabled={!canProceedToReview()}
-              >
-                Review orders
-              </button>
-            </div>
-          ) : null}
-
+              ) : null}
+            </>
+          )}
           {/* container 2 */}
-          <div className="flex flex-col gap-20 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
+          <div className="flex flex-col gap-10 sm:gap-20 text-text_strong w-full max-w-[480px] font-normal text-sm mb-8">
             {!review ? (
               <div className="flex flex-col gap-4">
                 <p className="text-[18px]">Order summary</p>
@@ -994,7 +981,11 @@ export const Body = () => {
                       Products ({totalQuantity.toLocaleString()} items)
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(productTotal)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(productTotal)
+                      }`}
                     </p>
                   </div>
 
@@ -1004,7 +995,11 @@ export const Body = () => {
                       VAT ({(vatRate * 100).toFixed(1)}%)
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(vatAmount)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(vatAmount)
+                      }`}
                     </p>
                   </div>
 
@@ -1014,7 +1009,11 @@ export const Body = () => {
                       Estimated delivery & handling
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(deliveryFee)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(deliveryFee)
+                      }`}
                     </p>
                   </div>
 
@@ -1040,7 +1039,11 @@ export const Body = () => {
                       Total
                     </p>
                     <p className="font-normal text-base text-text_strong cursor-pointer">
-                      ${formatPrice(total)}
+                      {` ${
+                        totalQuantity.toLocaleString() <= 0
+                          ? "No Product"
+                          : "$" + formatPrice(total)
+                      }`}
                     </p>
                   </div>
                 </div>
@@ -1054,7 +1057,7 @@ export const Body = () => {
                 cartItems.map((item: CartItem) => (
                   <div
                     key={item.id}
-                    className="flex justify-start gap-6 w-full mb-6"
+                    className="flex flex-col md:flex-row justify-start gap-6 w-full mb-6"
                   >
                     <Image
                       src={item.image}
@@ -1062,7 +1065,7 @@ export const Body = () => {
                       height={180}
                       priority
                       alt={item.name}
-                      className="w-[154.29px] h-[180px] object-cover"
+                      className="w-full md:w-[154.29px] h-[180px] object-cover"
                     />
 
                     <div className="flex flex-col gap-4">

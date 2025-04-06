@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 "use client";
 
 import {
@@ -572,4 +571,4 @@ export const Body = () => {
   );
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

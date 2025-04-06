@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signup_Step_1, signup_Step_2 } from "@/app/validationSchemas";
 import { useEffect, useState } from "react";
 import { resendOTP, userSignup, verifyOtp } from "../../../utils/api/user/auth";
-// import { set } from "zod";
+// import { useSearchParams } from "next/navigation";
 
 type step_1 = {
   fullName: string;
@@ -47,6 +47,16 @@ const lora = Lora({
 const currentYear = new Date().getFullYear();
 
 export const Body = () => {
+  // const router = useRouter();
+  // const router = useRouter();
+  const [from, setFrom] = useState("/");
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setFrom(searchParams.get("from") || "/");
+  }, []);
+
+
   const [step, setStep] = useState<number>(1);
   const [data, setData] = useState<steps>({
     step1: { fullName: "", email: "", password: "", confirmPassword: "" },
@@ -261,10 +271,11 @@ export const Body = () => {
                   <div className="flex flex-col w-full text-text_strong text-sm font-normal gap-2">
                     <p className="">Full Name</p>
                     <input
-                      className={`${errors.step1?.fullName
+                      className={`${
+                        errors.step1?.fullName
                           ? "border-error_1 shake bg-error_2"
                           : "focus:border-stroke_strong"
-                        } w-full border  outline-none rounded-lg h-10 px-4 `}
+                      } w-full border  outline-none rounded-lg h-10 px-4 `}
                       placeholder="John Doe"
                       type="text"
                       {...register("step1.fullName")}
@@ -277,10 +288,11 @@ export const Body = () => {
 
                     <p className="">Email</p>
                     <input
-                      className={`${errors.step1?.email
+                      className={`${
+                        errors.step1?.email
                           ? "border-error_1 shake bg-error_2"
                           : "focus:border-stroke_strong"
-                        } w-full border  outline-none rounded-lg h-10 px-4 `}
+                      } w-full border  outline-none rounded-lg h-10 px-4 `}
                       placeholder="Sample@gmail.com"
                       type="email"
                       {...register("step1.email")}
@@ -295,10 +307,11 @@ export const Body = () => {
 
                     <div className="relative">
                       <input
-                        className={`${errors.step1?.password
+                        className={`${
+                          errors.step1?.password
                             ? "border-error_1 shake bg-error_2"
                             : "focus:border-stroke_strong"
-                          } w-full border  outline-none rounded-lg h-10 px-4 `}
+                        } w-full border  outline-none rounded-lg h-10 px-4 `}
                         placeholder="••••••••••"
                         type={showPassword ? "text" : "password"}
                         {...register("step1.password")}
@@ -323,10 +336,11 @@ export const Body = () => {
 
                     <div className="relative">
                       <input
-                        className={`${errors.step1?.confirmPassword
+                        className={`${
+                          errors.step1?.confirmPassword
                             ? "border-error_1 shake bg-error_2"
                             : "focus:border-stroke_strong"
-                          } w-full border  outline-none rounded-lg h-10 px-4 `}
+                        } w-full border  outline-none rounded-lg h-10 px-4 `}
                         placeholder="••••••••••"
                         type={showPassword1 ? "text" : "password"}
                         {...register("step1.confirmPassword")}
@@ -387,10 +401,11 @@ export const Body = () => {
                           type="number"
                           maxLength={1}
                           value={otpArray[index]}
-                          className={`border w-[44px] h-[44px] text-black py-5 font-semibold px-4 rounded-lg text-center outline-none ${errors.step2?.OTP
+                          className={`border w-[44px] h-[44px] text-black py-5 font-semibold px-4 rounded-lg text-center outline-none ${
+                            errors.step2?.OTP
                               ? "border-error_1 shake bg-error_2"
                               : "focus:border-stroke_strong"
-                            }`}
+                          }`}
                           onChange={(e) => handleOtpChange(e, index)}
                           onKeyDown={(e) => {
                             if (
@@ -488,7 +503,7 @@ export const Body = () => {
                         }
                       </p>
                     </div>
-                    <Link className="w-full" href={`/login`}>
+                    <Link className="w-full" href={from}>
                       <button
                         type="submit"
                         className=" w-full bg-text_strong text-background h-10 rounded-full flex justify-center items-center text-center text-base font-medium mt-8"

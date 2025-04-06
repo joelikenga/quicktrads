@@ -1,6 +1,7 @@
 "use client";
 import {
   arrowDown,
+  arrowleft,
   // arrowleft,
   cart,
   deliveryIcon,
@@ -24,6 +25,8 @@ import { getProduct } from "../../../../utils/api/user/product";
 import { ProductSkeleton } from "./skeleton";
 // import { useCart } from "../../../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
+import { errorToast, successToast } from "@/utils/toast/toast";
+import { useCurrency } from "@/context/CurrencyContext";
 // import { errorToast, successToast } from "../../../../utils/toast/toast";
 
 const lora = Lora({
@@ -40,8 +43,8 @@ interface ProductDetails {
     subCategory: string;
     price: number;
     priceDiscount: number | null;
-    priceConvert: number;
-    priceDiscountConvert: number | null;
+    priceConvert: number | 0;
+    priceDiscountConvert: number | 0;
     currency: string;
     currencyConvert: string;
     size: string;
@@ -60,6 +63,7 @@ interface ProductDetails {
 }
 
 export const Body = () => {
+  const { currency } = useCurrency();
   const { id } = useParams() as { id: string };
   const [product, setProduct] = useState<ProductDetails | null>(null);
   const [index, setIndex] = useState(0);
@@ -80,9 +84,8 @@ export const Body = () => {
           category: response.data.category as "men" | "women" | "unisex",
           subCategory: response.data.subCategory,
           price: Number(response.data.price),
-          priceDiscount: response.data.priceDiscount
-            ? Number(response.data.priceDiscount)
-            : null,
+          priceDiscount:
+            response.data.priceDiscount && Number(response.data.priceDiscount),
           priceConvert: Number(response.data.priceConvert),
           priceDiscountConvert: response.data.priceDiscountConvert,
           currency: response.data.currency,
@@ -103,7 +106,7 @@ export const Body = () => {
       };
 
       setProduct(transformedData);
-      console.log("Product details:", transformedData);
+      // console.log("Product details:", transformedData);
     } catch (error: unknown) {
       throw error;
     }
@@ -163,7 +166,7 @@ export const Body = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      //errorToat("Please select a size");
+      errorToast("Please select a size");
       return;
     }
 
@@ -171,14 +174,16 @@ export const Body = () => {
       id: product?.data.id || "",
       name: product?.data.name || "",
       price: product?.data.price || 0,
-      currency: product?.data.currency || "",
-      image: product?.data.images[0] || "",
+      priceDiscount: product?.data.priceDiscount || 0,
+      priceConvert: product?.data.priceConvert || 0,
+      priceDiscountConvert: product?.data.priceDiscountConvert || 0,
+      // currency: currency,
+      image: product?.data.images[0] || "/heroFallback.jpg",
       size: selectedSize,
       quantity: 1,
     };
 
     addToCart(cartItem);
-    //successToat("Added to cart");
   };
 
   if (!product) {
@@ -186,21 +191,24 @@ export const Body = () => {
   }
 
   return (
-    <div className="px-4 md:px-10 mt-[150px]">
+    <div className="px-4 md:px-10 mt-[100px] md:mt-[150px]">
       {product && (
         <div className="mx-auto max-w-7xl w-full">
-          {/* <div className="w-full flex justify-start items-center ">
-          <div className="w-fit h-full items-center flex justify-between gap-1 py-4">
-            <i>{arrowleft()}</i>
-            <p className="text-base ">Products</p>
+          <div className="w-full flex justify-start items-center ">
+            <div
+              onClick={() => history.back()}
+              className="w-fit h-full items-center flex justify-between gap-2 pb-4"
+            >
+              <i>{arrowleft()}</i>
+              <p className="text-lg ">Products</p>
+            </div>
           </div>
-        </div> */}
 
           <div className="w-full flex flex-col md:flex-row justify-start gap-8">
             {/* image container */}
             <div className="w-fit h-full flex flex-col-reverse md:flex-row justify-between gap-6">
               {/* 3 images */}
-              <div className="flex flex-col gap-4">
+              <div className="flex md:flex-col gap-4">
                 {product.data.images.map((item) => (
                   <div
                     key={item}
@@ -211,7 +219,7 @@ export const Body = () => {
                       <Image
                         width={100}
                         height={120}
-                        src={item}
+                        src={item || "/heroFallback.jpg"}
                         priority
                         alt=""
                         className={`w-[100px] h-[120px] ${
@@ -232,7 +240,7 @@ export const Body = () => {
                 <Image
                   width={520}
                   height={620}
-                  src={currentImage}
+                  src={currentImage || "/heroFallback.jpg"}
                   priority
                   alt=""
                   className="w-[420px] h-[620px]"
@@ -258,20 +266,32 @@ export const Body = () => {
                 <p
                   className={`${lora.className} text-[22px] font-normal text-text_strong`}
                 >
-                  {product.data.name}
+                  {product?.data?.name}
                 </p>
 
                 <div className="flex justify-start items-center w-full font-medium text-lg gap-2">
                   <p className=" text-text_strong">
-                    {product.data.currency}
-                    {product.data.price}
+                    {currency === "NGN"
+                      ? `₦ ${product?.data?.price}
+            `
+                      : `$ ${product?.data?.priceConvert}`}
                   </p>
-                  {product.data.priceDiscount && (
-                    <p className=" text-text_weak line-through">
-                      {product.data.currency}
-                      {product.data.priceDiscount}
-                    </p>
-                  )}
+
+                  {currency === "USD"
+                    ? product?.data?.priceDiscountConvert && (
+                        <del className="text-base text-text_weak">
+                          ${product?.data?.priceDiscountConvert || 0}
+                        </del>
+                      )
+                    : null}
+
+                  {currency === "NGN"
+                    ? product?.data?.priceDiscount && (
+                        <del className="text-base text-text_weak">
+                          ₦{product?.data?.priceDiscount || 0}
+                        </del>
+                      )
+                    : null}
                 </div>
               </div>
 
@@ -279,11 +299,11 @@ export const Body = () => {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
                   <p className="font-normal text-sm">Select size</p>
-                  <div className="grid grid-cols-5 gap-4 font-medium">
+                  <div className="grid grid-cols-4 md:grid-cols-5 gap-4 font-medium">
                     {product.data.size.split(",").map((size) => (
                       <div
                         key={size}
-                        className={`col-span-1 rounded-lg border flex items-center justify-center flex-col w-[88px] py-2 cursor-pointer ${
+                        className={`col-span-2 md:col-span-1 rounded-lg border flex items-center justify-center flex-col md:w-[88px] py-2 cursor-pointer ${
                           selectedSize === size ? "border-black" : ""
                         }`}
                         onClick={() => setSelectedSize(size)}
@@ -330,7 +350,7 @@ export const Body = () => {
                       handleAddToCart();
                       window.location.href = "/checkout";
                     } else {
-                      // //errorToat("Please select a size");
+                      errorToast("Please select a size");
                     }
                   }}
                   className=" w-full text-background bg-text_strong rounded-full px-6 h-12 flex justify-center items-center"
@@ -526,10 +546,16 @@ export const Body = () => {
                     Share product
                   </p>
                   <div className="flex flex-wrap gap-12 justify-start items-center">
-                    <Link href={``} className="flex gap-2 items-center text-text_strong font-medium text-sm">
+                    <div
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        successToast("Copied to clipboard");
+                      }}
+                      className="flex gap-2 items-center text-text_strong font-medium text-sm cursor-pointer"
+                    >
                       <i>{linkIcon()}</i>
                       <p>Copy link</p>
-                    </Link>
+                    </div>
 
                     {/* <div className="flex gap-2 items-center text-text_strong font-medium text-sm">
                       <i>{whatsapp()}</i>

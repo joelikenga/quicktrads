@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 
 import { eyeClose, eyeOpen, logo, spinner } from "@/app/global/svg";
 import { Lora } from "next/font/google";
@@ -9,30 +8,41 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/app/validationSchemas";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
-import {  userLogin } from "../../../utils/api/user/auth";
+import { userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
+import { errorToast, successToast } from "@/utils/toast/toast";
 import { useRouter } from "next/navigation";
-// import { errorToast, infoToast, successToast } from "../../../utils/toast/toast";
 
 type FormValues = {
   email: string;
   password: string;
 };
 
+interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  country: string;
+  address: string;
+  avatar: string;
+  dob: string;
+  gender: string;
+  role: string;
+  emailVerified: boolean;
+  createdAt: string;
+  lastLoggedInAt: string;
+  lastOrderedAt: string | null;
+}
+
 interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   accessTokenExpiry: string;
   refreshTokenExpiry: string;
-  user: {
-    id: string;
-    fullName: string;
-    role: string;
-  };
+  user: User;
 }
-
-
 
 const lora = Lora({
   variable: "--font-lora",
@@ -43,6 +53,12 @@ const currentYear = new Date().getFullYear();
 
 export const Body = () => {
   const router = useRouter();
+  const [from, setFrom] = useState('/');
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setFrom(searchParams.get('from') || '/');
+  }, []);
 
   const {
     register,
@@ -54,16 +70,16 @@ export const Body = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-    // const [userDetails, setUserDetails] = useState<any | null>(null);
-  
+  // const [userDetails, setUserDetails] = useState<any | null>(null);
+
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const cookies = nookies.get(null);
       if (cookies.accessToken) {
-        // infoToast('You are still logged in');
-        await router.push('/'); // Redirect to homepage if logged in
+        successToast("You are still logged in");
+        await router.replace(from); // Redirect to homepage if logged in
       }
     };
 
@@ -77,39 +93,65 @@ export const Body = () => {
         data
       )) as AxiosResponse<LoginResponse>;
 
-            // const userD = (await loggedInUser()) as any;
-            // setUserDetails(res);
-      const loginData = res.data;
+      // const userD = (await loggedInUser()) as any;
+      // setUserDetails(res);
+      const loginData = res?.data;
       const { accessToken, refreshToken, user } = loginData;
 
-      
-  
       // Check if user is admin
       if (user.role !== "user") {
-        //errorToat("Incorrect details");
+        errorToast("Incorrect details");
       }
-  
+
       // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("user", JSON.stringify(user)); // Store user details
+      localStorage.setItem("user", JSON.stringify(user));
+      // Set expiry time for localStorage and cookies
+      const accessTokenExpiry = 1 * 24 * 60 * 60; // 1 day in seconds
+      const refreshTokenExpiry = 3 * 24 * 60 * 60; // 3 days in seconds
 
       // Save tokens in cookies
       nookies.set(null, "accessToken", accessToken, {
-        maxAge: 1 * 24 * 60 * 60, // 1 day
+        maxAge: accessTokenExpiry,
         path: "/",
       });
-  
+
       nookies.set(null, "refreshToken", refreshToken, {
-        maxAge: 3 * 24 * 60 * 60, // 3 days
+        maxAge: refreshTokenExpiry,
         path: "/",
       });
-  
-      //successToat("Login successful");
+
+      nookies.set(null, "role", JSON.stringify(user?.role.trim()), {
+        maxAge: refreshTokenExpiry,
+        path: "/",
+      });
+      // Set localStorage expiry timestamps
+      const accessTokenExpiryTime =
+        new Date().getTime() + 1 * 24 * 60 * 60 * 1000; // 1 day in milliseconds
+
+      localStorage.setItem("e_x_TK", accessTokenExpiryTime.toString());
+
+      localStorage.setItem("e_x_TK", accessTokenExpiryTime.toString());
+      successToast("Login successful");
       setLoading(false);
-      router.push("/");
+      router.replace(from);
+
+      // Set up expiry check
+      const checkExpiry = () => {
+        const currentTime = new Date().getTime();
+        if (currentTime > parseInt(localStorage.getItem("e_x_TK") || "0")) {
+          localStorage.clear();
+          // router.replace("/login");
+        }
+      };
+
+      // Check expiry every minute
+      const expiryInterval = setInterval(checkExpiry, 60000);
+      // Clear interval when component unmounts
+      return () => clearInterval(expiryInterval);
     } catch (error: any) {
-      console.log(error);
+      errorToast(error);
       setLoading(false);
     }
   };
@@ -247,4 +289,4 @@ export const Body = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

@@ -20,7 +20,6 @@ interface loginData {
 export const userLogin = async (data: loginData) => {
   try {
     const response = await axios$.post("/auth/login", data);
-    console.log('api-console', response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -95,6 +94,15 @@ export const resetPassword = async (
 export const loggedInUser = async () => {    
   try {
     const response = await axios$.get("/auth/user");
+    return response;
+  } catch (error: unknown) {
+    throw error;
+  }
+};
+
+export const UpdateUserDetails = async (data:any) => {    
+  try {
+    const response = await axios$.patch("/auth/user",data);
     return response;
   } catch (error: unknown) {
     throw error;

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 'use client'
 
+import { errorToast,  successToast } from '@/utils/toast/toast';
 import React, { createContext, useContext, useState,  useEffect } from 'react';
 // import { CartContextType, CartItem } from '../types/';
 // import { errorToast } from '../utils/toast/toast';
@@ -37,11 +37,12 @@ export function CartProvider({ children }: { children: any }) {
   // Load cart items from localStorage when the component mounts
   useEffect(() => {
     const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    console.log('savedCart', savedCart)
     if (savedCart) {
       try {
         setCartItems(JSON.parse(savedCart));
       } catch (error) {
-        //errorToat(error)
+        errorToast(error)
         console.log(error)
       }
     }
@@ -64,10 +65,13 @@ export function CartProvider({ children }: { children: any }) {
       }
       return [...prev, item];
     });
+    successToast('Item added')
   };
 
   const removeFromCart = (id: string) => {
     setCartItems(prev => prev.filter(item => item.id !== id));
+    successToast('Item(s) removed')
+
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -87,6 +91,8 @@ export function CartProvider({ children }: { children: any }) {
     setCartItems(cartItems.map(item => 
       item.id === itemId ? { ...item, size: newSize } : item
     ));
+    successToast('Size updated')
+
   };
 
   const getCartCount = () => {
@@ -95,6 +101,7 @@ export function CartProvider({ children }: { children: any }) {
 
   const clearCart = () => {
     setCartItems([]);
+    successToast('Cart cleared')
   };
 
   return (
@@ -119,4 +126,4 @@ export function useCart() {
   }
   return context;
 }
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
