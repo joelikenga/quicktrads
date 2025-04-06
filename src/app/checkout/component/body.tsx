@@ -21,6 +21,7 @@ import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
 import { usePathname, useRouter } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
+import Link from "next/link";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -667,19 +668,21 @@ export const Body = () => {
               </div>
 
               <div className="flex gap-4 justify-start items-center">
-                <button
-                  onClick={() => router.push(`/sign_up?from=${pathname}`)}
+                <Link
+                  href={`/login?from=${pathname}`}
+                  // onClick={() => router.push(`/sign_up?from=${pathname}`)}
                   className="border rounded-full items-center flex h-8 px-6"
                 >
                   Sign up
-                </button>
+                </Link>
 
-                <button
-                  onClick={() => router.push(`/login?from=${pathname}`)}
+                <Link
+                  href={`/login?from=${pathname}`}
+                  // onClick={() => router.push(`/login?from=${pathname}`)}
                   className="border rounded-full items-center flex h-8 px-6"
                 >
                   Login
-                </button>
+                </Link>
               </div>
             </div>
           )}
