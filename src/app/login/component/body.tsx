@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 
 import { eyeClose, eyeOpen, logo, spinner } from "@/app/global/svg";
 import { Lora } from "next/font/google";
@@ -13,7 +12,7 @@ import { userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
 import { errorToast, successToast } from "@/utils/toast/toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type FormValues = {
   email: string;
@@ -54,8 +53,12 @@ const currentYear = new Date().getFullYear();
 
 export const Body = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const from = searchParams.get("from") || "/";
+  const [from, setFrom] = useState('/');
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setFrom(searchParams.get('from') || '/');
+  }, []);
 
   const {
     register,
@@ -286,4 +289,4 @@ export const Body = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

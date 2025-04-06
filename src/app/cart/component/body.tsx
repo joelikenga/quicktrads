@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 "use client";
 
 import { add, info, redCart, remove, trash } from "@/app/global/svg";
@@ -8,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -15,6 +15,7 @@ const lora = Lora({
 });
 
 export const Body = () => {
+  const { currency } = useCurrency();
   const { cartItems, removeFromCart, updateQuantity, updateSize } = useCart();
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [mobileCheckout, setMobileCheckout] = useState<boolean>(false);
@@ -101,8 +102,8 @@ export const Body = () => {
 
       {/* ----- mobile checkout ----- */}
       {mobileCheckout && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center backdrop-blur px-4 md:px-0 md:hidden">
-          <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-4 rounded-lg ">
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex flex-col justify-start items-center backdrop-blur px-4 md:px-0 md:hidden">
+          <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-4 rounded-lg mt-12">
             <div
               className={`${lora.className}  text-text_strong font-normal text-[22px] w-full flex justify-normal items-start`}
             >
@@ -116,9 +117,7 @@ export const Body = () => {
                   <p className="text-text_weak  text-base">
                     Delivery & handing
                   </p>
-                  <p className="text-text_strong  text-base">
-                    Calculated at checkout
-                  </p>
+                  <p className="text-text_strong  text-base">______</p>
                 </div>
                 {/* ------subtotal------ */}
                 <div className="w-full flex justify-between items-start gap-4 font-medium">
@@ -145,7 +144,7 @@ export const Body = () => {
               {/*----- checkout button -----*/}
 
               <div className="flex flex-col gap-6">
-                <Link className="w-full rounded-full" href={``}>
+                <Link className="w-full rounded-full" href={`/checkout`}>
                   <button
                     type="submit"
                     className="bg-text_strong text-background h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-full"
@@ -163,6 +162,16 @@ export const Body = () => {
                 </Link>
               </div>
             </div>
+          </div>
+
+          {/* close button */}
+          <div className="absolute bottom-8  w-full flex justify-center items-center">
+            <button
+              onClick={() => setMobileCheckout(false)}
+              className="bg-white rounded-full py-2 px-4 shadow-md text-base font-medium text-text_strong hover:bg-gray-100 transition duration-300"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -271,8 +280,26 @@ export const Body = () => {
                           {item.name}
                         </p>
                         <div className="text-lg truncate flex gap-2 font-medium">
-                          <p>{`$ ${item.price}`}</p>
-                          <del className="text-text_weak">{`$ ${item.price}`}</del>
+                          {currency === "NGN" ? (
+                            <p>{` ₦ ${item.price}`}</p>
+                          ) : (
+                            <p>{`$ ${item.priceConvert}`}</p>
+                          )}
+                          {currency === "NGN"
+                            ? item?.discountPrice && (
+                                <p className="text-text_weak line-through">
+                                  ₦ {item.discountPrice | 0}`
+                                </p>
+                              )
+                            : null}
+
+                          {currency === "USD"
+                            ? item?.priceDiscountConvert && (
+                                <p className="text-text_weak line-through">
+                                  $ {item.priceDiscountConvert | 0}
+                                </p>
+                              )
+                            : null}
                         </div>
                       </div>
                       <div className="w-full flex flex-col items-start gap-2">
@@ -421,4 +448,4 @@ export const Body = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

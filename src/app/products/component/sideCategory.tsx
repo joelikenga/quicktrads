@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 "use client";
 
 import { arrowDown, check } from "@/app/global/svg";
@@ -994,7 +993,7 @@ export const SideCategory = ({
             </div>
           </div>
           {/* close button */}
-          <div className="absolute bottom-8 right-4 w-full flex justify-center items-center">
+          <div className="absolute bottom-8  w-full flex justify-center items-center">
             <button
               onClick={() => setShowFilter(false)}
               className="bg-white rounded-full py-2 px-4 shadow-md text-base font-medium text-text_strong hover:bg-gray-100 transition duration-300"
@@ -1008,4 +1007,4 @@ export const SideCategory = ({
   );
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

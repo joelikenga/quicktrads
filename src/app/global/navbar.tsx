@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 import Link from "next/link";
 import {
   arrowDown,
@@ -81,9 +80,8 @@ export const Navbar = () => {
         return;
       }
 
-      const filtered = response.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchValue.toLowerCase()) 
+      const filtered = response.filter((product) =>
+        product.name.toLowerCase().includes(searchValue.toLowerCase())
       );
 
       setFilteredProducts(filtered);
@@ -91,6 +89,7 @@ export const Navbar = () => {
     } catch (err) {
       setError("Failed to fetch products");
       setFilteredProducts([]);
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -209,8 +208,7 @@ export const Navbar = () => {
                 Are you sure you want to logout your account?
               </p>
               <p className="text-text_strong text-sm md:text-base font-normal">
-                This action will logout your account. If you're not to logout,
-                you can cancel to continue shopping
+                {`This action will logout your account. If you're not to logout, you can cancel to continue shopping`}
               </p>
             </div>
             <div className="flex justify-end gap-4">

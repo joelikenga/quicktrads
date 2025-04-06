@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 import { useEffect, useState } from "react";
 import { loggedInUser } from "../api/user/auth";
 // import { errorToast } from "../toast/toast";
@@ -63,4 +62,4 @@ export const useLogin_2 = () => {
 
   return { isLoggedIn, hasAvatar, hasRole, userDetails, role };
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

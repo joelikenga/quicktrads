@@ -119,7 +119,7 @@ export const TwoPiece = () => {
                   <div className="w-full h-[400px] border flex items-center">
                     <Image
                       className="h-[400px] w-full object-cover bg-center"
-                      src={item?.images}
+                      src={item?.images ||"/heroFallback.jpg"}
                       priority
                       width={302}
                       height={400}

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 "use client";
 import { useCallback, useState } from "react";
 import { Items } from "./component/items";
@@ -51,7 +50,7 @@ const Products = () => {
 
       <button
         onClick={() => setShowFilter(true)}
-        className="bg-white rounded-full py-2 z-40 px-4 shadow-md text-base font-medium text-text_strong hover:bg-gray-100 transition duration-300 fixed bottom-4 right-4 lg:hidden"
+        className=" border bg-white rounded-full py-2 z-40 px-4 shadow-md text-base font-medium text-text_strong hover:bg-gray-100 transition duration-300 fixed bottom-4 right-4 lg:hidden"
       >
         <i className="">{filterIcon()}</i>
       </button>
@@ -61,4 +60,4 @@ const Products = () => {
 
 export default Products;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

@@ -6,8 +6,8 @@ import { UpdateUserDetails } from "@/utils/api/user/auth";
 import { errorToast, successToast } from "@/utils/toast/toast";
 import { useEffect, useState } from "react";
 import { eyeClose, eyeOpen } from "@/app/global/svg";
-import { useRouter } from "next/navigation";
-import nookies from "nookies";
+// import { useRouter } from "next/navigation";
+// import nookies from "nookies";
 
 export const Body = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -16,7 +16,7 @@ export const Body = () => {
     new: false,
     confirm: false,
   });
-  const router = useRouter();
+  // const router = useRouter();
 
   const {
     register,
@@ -82,17 +82,17 @@ export const Body = () => {
   };
 
   return (
-    <div className="flex flex-col gap-8 h-[82px] border-b px-4 md:px-0 md:ml-[280px] mt-[150px]">
+    <div className="flex flex-col gap-8 h-[82px] md:border-b px-4 md:px-0 md:ml-[280px] mt-[150px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
         <p className="text-text_strong text-[22px]">Profile</p>
-        <p className="text-text_weak text-base">Update your password</p>
+        <p className="text-text_weak text-base hidden md:block">Update your password</p>
       </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col justify-start items-start gap-8 max-w-[800px] w-full"
       >
-        <div className="flex flex-col items-start gap-4 w-full">
+        <div className="flex flex-col items-center md:items-start gap-4 w-full">
           {/* Current Password */}
           <div className="flex flex-col gap-2 w-full max-w-[323px]">
             <p className="text-sm md:text-base">Current password</p>

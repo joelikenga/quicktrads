@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
@@ -51,4 +50,4 @@ export default function RootLayout({
     </html>
   );
 }
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

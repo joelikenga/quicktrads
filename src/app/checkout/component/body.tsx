@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import {
@@ -12,7 +10,6 @@ import {
 } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import {
@@ -20,9 +17,10 @@ import {
   deleteShippingAddress,
   shippingAddress,
 } from "../../../utils/api/user/product";
-import { FlutterWaveButton, closePaymentModal } from "flutterwave-react-v3";
+import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
 import { usePathname, useRouter } from "next/navigation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -31,12 +29,12 @@ const lora = Lora({
 
 const FEES = {
   NIGERIA: {
-    DELIVERY: 5000, // ₦5,000
-    VAT_RATE: 0.075, // 7.5%
+    DELIVERY: 5000,
+    VAT_RATE: 0.075,
   },
   USA: {
-    DELIVERY: 100, // $100
-    VAT_RATE: 0.08, // 8%
+    DELIVERY: 100,
+    VAT_RATE: 0.08,
   },
 };
 
@@ -97,42 +95,8 @@ interface OrderRes {
   userId: string;
 }
 
-// Define the Flutterwave types locally based on the module's types
-type FlutterwaveConfig = {
-  public_key: any;
-  tx_ref: string;
-  amount: number;
-  currency?: string;
-  payment_options: string;
-  customer: {
-    email: string;
-    phone_number: string;
-    name: string;
-  };
-  customizations: {
-    title: string;
-    description: string;
-    logo: string;
-  };
-  callback: (response: FlutterwaveResponse) => void;
-  onclose: () => void;
-};
-
-type FlutterwaveResponse = {
-  amount: number;
-  currency?: string;
-  customer: {
-    email: string;
-    phone_number: string;
-    name: string;
-  };
-  tx_ref: string;
-  flw_ref: string;
-  status: string;
-  transaction_id: number;
-};
-
 export const Body = () => {
+  const { currency } = useCurrency();
   const router = useRouter();
   const pathname = usePathname();
   const [addressEdit, setAddressEdit] = useState<boolean>(false);
@@ -143,7 +107,7 @@ export const Body = () => {
   const [pending, setPending] = useState<boolean>(false);
   const [failed, setFailed] = useState<boolean>(false);
   const [deleteIndex, setDeleteIndex] = useState<number>(0);
-  const { cartItems, clearCart } = useCart(); // Add clearCart to destructuring
+  const { cartItems, clearCart } = useCart();
   const [addressData, setAddressData] = useState<Address>({
     fullName: "",
     email: "",
@@ -166,7 +130,6 @@ export const Body = () => {
     null
   );
   const [orderResponse, setOrderResponse] = useState<OrderRes | null>(null);
-
   const [userData, setUserData] = useState<any | null>(null);
 
   const isNigeria = selectedAddress.country?.toLowerCase() === "nigeria";
@@ -181,19 +144,89 @@ export const Body = () => {
     image: string;
     originalPrice?: number;
     size?: string;
+    priceConvert?: number;
   }
 
   const productTotal = cartItems.reduce(
-    (acc: number, item: CartItem) => acc + item.price * item.quantity,
+    (acc: number, item: CartItem) =>
+      acc +
+      (currency === "NGN" ? item.price : item.priceConvert || 0) *
+        item.quantity,
     0
   );
   const vatAmount = productTotal * vatRate;
-  const subTotal = productTotal + vatAmount; // Includes product total and VAT
+  const subTotal = productTotal + vatAmount;
   const totalQuantity = cartItems.reduce(
     (acc: number, item: CartItem) => acc + item.quantity,
     0
   );
-  const total = subTotal + deliveryFee; // Final total including delivery fee
+  const total = subTotal + deliveryFee;
+
+  const handleFlutterPayment = useFlutterwave({
+    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY || "",
+    tx_ref: Date.now().toString(),
+    amount: total,
+    currency: isNigeria ? "NGN" : "USD",
+    payment_options: "card",
+    customer: {
+      email: selectedAddress.email,
+      phone_number: selectedAddress.phoneNumber,
+      name: selectedAddress.fullName,
+    },
+    customizations: {
+      title: "Quicktrads",
+      description: "Quicktrads Purchase",
+      logo: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
+    },
+  });
+
+  const handlePayment = () => {
+    handleFlutterPayment({
+      callback: async (response) => {
+        try {
+          if (response.status === "successful") {
+            const orderData: OrderRequest = {
+              currency:
+                response.currency || (currency === "NGN" ? "NGN" : "USD"),
+              product: cartItems.map(
+                (item: { id: string; quantity: number }) => ({
+                  productId: item.id,
+                  quantity: item.quantity,
+                })
+              ),
+              shippingDetails: {
+                address: selectedAddress.address,
+                country: selectedAddress.country,
+                email: selectedAddress.email,
+                fullName: selectedAddress.fullName,
+                phoneNumber: selectedAddress.phoneNumber,
+                state: selectedAddress.state,
+              },
+              shippingFee: deliveryFee,
+              tax: vatRate,
+            };
+
+            const orderResponse = (await createOrder(orderData)) as OrderRes;
+            setOrderResponse(orderResponse);
+            setSuccess(true);
+            clearCart();
+            closePaymentModal();
+          } else {
+            setFailed(true);
+            setPending(false);
+          }
+        } catch (error) {
+          console.log(error);
+          setFailed(true);
+        } finally {
+          closePaymentModal();
+        }
+      },
+      onClose: () => {
+        console.log("Payment modal closed");
+      },
+    });
+  };
 
   const handleAddress = async () => {
     const data: Address = {
@@ -208,7 +241,6 @@ export const Body = () => {
     try {
       const res = await shippingAddress(data);
       console.warn(res.status);
-      //successToat("Address added");
     } catch (error: unknown) {
       throw error;
     }
@@ -229,7 +261,6 @@ export const Body = () => {
       );
       setShippingData(transformedData);
     } catch (err: unknown) {
-      //errorToat(err);
       console.log(err);
     }
   };
@@ -253,79 +284,6 @@ export const Body = () => {
     setAddressModal(false);
   };
 
-  const config: FlutterwaveConfig = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
-    tx_ref:
-      Number(new Date().toLocaleDateString("en-GB").replace(/\//g, "")) + "",
-    amount: total,
-    currency: isNigeria ? "NGN" : "USD",
-    payment_options: "card",
-    customer: {
-      email: selectedAddress.email,
-      phone_number: selectedAddress.phoneNumber,
-      name: selectedAddress.fullName,
-    },
-    customizations: {
-      title: "Quicktrads",
-      description: "Quicktrads Purchase",
-      logo: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
-    },
-    callback: (response: FlutterwaveResponse) => {
-      console.log(response);
-    },
-    onclose: () => {
-      console.log("Payment modal closed");
-    },
-  };
-
-  const fwConfig = {
-    ...config,
-    callback: async (response: FlutterwaveResponse) => {
-      try {
-        if (response.status === "successful") {
-          const orderData: OrderRequest = {
-            currency: response.currency || (isNigeria ? "NGN" : "USD"),
-            product: cartItems.map(
-              (item: { id: string; quantity: number }) => ({
-                productId: item.id,
-                quantity: item.quantity,
-              })
-            ),
-            shippingDetails: {
-              address: selectedAddress.address,
-              country: selectedAddress.country,
-              email: selectedAddress.email,
-              fullName: selectedAddress.fullName,
-              phoneNumber: selectedAddress.phoneNumber,
-              state: selectedAddress.state,
-            },
-            shippingFee: deliveryFee,
-            tax: vatRate,
-          };
-
-          console.log(response);
-
-          const orderResponse = (await createOrder(orderData)) as OrderRes;
-          setOrderResponse(orderResponse);
-          setSuccess(true);
-          clearCart();
-          closePaymentModal();
-        } else {
-          setFailed(true);
-          setPending(false);
-        }
-      } catch (error) {
-        console.log(error);
-        setFailed(true);
-      } finally {
-        closePaymentModal();
-      }
-    },
-    onClose: () => {
-      console.log("Payment modal closed");
-    },
-  };
-
   const canProceedToReview = () => {
     return Object.values(selectedAddress).every((value) => value !== "");
   };
@@ -333,9 +291,6 @@ export const Body = () => {
   const handleReviewClick = () => {
     if (canProceedToReview()) {
       setReview(true);
-    } else {
-      // Optionally show an error message
-      //errorToat("Please select a shipping address before proceeding");
     }
   };
 
@@ -352,22 +307,15 @@ export const Body = () => {
     try {
       await deleteShippingAddress(index);
       setShippingData((prev) => prev.filter((_, i) => i !== index));
-      //successToat("Address deleted successfully");
       setDeleteAddress(false);
     } catch (error: unknown) {
-      //errorToat(error);
       console.log(error);
     }
   };
 
   useEffect(() => {
-    // const { isLoggedIn, hasAvatar } = useLogin("user");
     setUserData(localStorage.getItem("user"));
-    // console.log(JSON.parse(userData)?.fullName);
   });
-
-  // Rest of your component remains the same...
-  // [Previous JSX code remains unchanged]
 
   return (
     <div className="w-full px-4 md:px-10 mt-[150px]">
@@ -802,7 +750,9 @@ export const Body = () => {
                           Products ({totalQuantity.toLocaleString()} items)
                         </p>
                         <p className="font-normal text-base text-text_strong cursor-pointer">
-                          ${formatPrice(productTotal)}
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            productTotal
+                          )}`}
                         </p>
                       </div>
 
@@ -812,7 +762,9 @@ export const Body = () => {
                           VAT ({(vatRate * 100).toFixed(1)}%)
                         </p>
                         <p className="font-normal text-base text-text_strong cursor-pointer">
-                          ${formatPrice(vatAmount)}
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            vatAmount
+                          )}`}
                         </p>
                       </div>
 
@@ -822,7 +774,9 @@ export const Body = () => {
                           Estimated delivery & handling
                         </p>
                         <p className="font-normal text-base text-text_strong cursor-pointer">
-                          ${formatPrice(deliveryFee)}
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            deliveryFee
+                          )}`}
                         </p>
                       </div>
 
@@ -832,7 +786,9 @@ export const Body = () => {
                           Subtotal
                         </p>
                         <p className="font-normal text-base text-text_strong cursor-pointer">
-                          ${formatPrice(subTotal)}
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            subTotal
+                          )}`}
                         </p>
                       </div>
                       <div className="inline-flex gap-2 w-full">
@@ -848,19 +804,21 @@ export const Body = () => {
                           Total
                         </p>
                         <p className="font-normal text-base text-text_strong cursor-pointer">
-                          ${formatPrice(total)}
+                          {`${currency == "NGN" ? "₦" : "$"} ${formatPrice(
+                            total
+                          )}`}
                         </p>
                       </div>
                     </div>
                   </div>
 
                   {/* button */}
-                  <FlutterWaveButton
-                    {...fwConfig}
+                  <button
+                    onClick={handlePayment}
                     className="h-10 rounded-full bg-text_strong text-background font-medium text-base flex justify-center items-center w-full px-6"
                   >
                     Pay Now
-                  </FlutterWaveButton>
+                  </button>
                 </div>
               ) : null}
 

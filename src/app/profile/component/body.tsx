@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export const Body = () => {
-  const [isUploading, setIsUploading] = useState(false);
+  // const [isUploading, setIsUploading] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   // const [imageError, setImageError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any | null>(null);
@@ -115,7 +115,7 @@ export const Body = () => {
 
   const handleImageUpload = async (file: File) => {
     try {
-      setIsUploading(true);
+      // setIsUploading(true);
       const base64 = await convertFileToBase64(file);
       const cloudinaryUrl = await uploadImageToCloudinary(base64);
       setImgLink(cloudinaryUrl);
@@ -128,7 +128,7 @@ export const Body = () => {
       console.error("Failed to upload hero image:", error);
       // setImageError("Failed to upload image");
     } finally {
-      setIsUploading(false);
+      // setIsUploading(false);
     }
   };
 
@@ -413,7 +413,7 @@ export const Body = () => {
           </button>
           <Link
             href={`/password`}
-            className="max-w-[153px] w-fit text-nowrap px-2 text-text_strong border bg-background rounded-full md:px-6 h-10 flex justify-center items-center"
+            className="w-full md:w-fit text-nowrap px-2 text-text_strong border bg-background rounded-full md:px-6 h-10 flex justify-center items-center"
           >
             Change password
           </Link>
