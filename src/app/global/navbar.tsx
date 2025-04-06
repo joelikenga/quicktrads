@@ -195,7 +195,7 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="w-full left-0 top-0 fixed z-50">
+    <div className="w-screen left-0 top-0 fixed z-50">
       {/* Logout Modal */}
       {logoutModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[60] flex justify-start flex-col pt-[120px] md:pt-0 md:justify-center items-center backdrop-blur px-4 md:px-0">
