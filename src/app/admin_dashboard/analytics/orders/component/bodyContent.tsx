@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 
 import { dates, arrowDown, add, invoiceIcn } from "@/app/global/svg";
 import { getOrderAnalytics } from "@/utils/api/admin/products";
@@ -393,4 +392,4 @@ export const BodyContent = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

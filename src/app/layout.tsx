@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
-// import { Toaster } from "react-hot-toast";
-// import RouteGuard from "@/utils/routeGuard";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import InternetConnection from "@/components/InternetConnection";
 import { Toaster } from "react-hot-toast";
 
@@ -41,13 +39,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning data-qb-installed className={`${openSans.className}  antialiased`}>
-              <InternetConnection />
+        <InternetConnection />
+        <CurrencyProvider>
           <CartProvider>
-              {children}
+            {children}
             <Toaster position="bottom-center" />
           </CartProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );
 }
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

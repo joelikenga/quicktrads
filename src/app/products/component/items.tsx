@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 "use client";
 import { filterIcon } from "@/app/global/svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 // Add your actual API import here
 import {
   getAllProducts,
@@ -12,6 +11,7 @@ import {
   getTrendingProducts,
 } from "../../../utils/api/user/product";
 import { ItemsSkeleton } from "./items-skeleton";
+import { useCurrency } from "@/context/CurrencyContext";
 // import { errorToast, successToast } from "../../../utils/toast/toast";
 
 interface Product {
@@ -22,6 +22,8 @@ interface Product {
   category: string;
   subCategory: string;
   images: string[];
+  priceConvert: number;
+  priceDiscountConvert?: number;
 }
 
 interface TransformedProduct {
@@ -32,6 +34,8 @@ interface TransformedProduct {
   discountPrice?: number;
   category: string;
   subCategory: string;
+  priceConvert: number;
+  priceDiscountConvert?: number;
 }
 
 interface ItemsProps {
@@ -45,6 +49,7 @@ interface ItemsProps {
 }
 
 export const Items = ({ onFilterChange, filters }: ItemsProps) => {
+  const { currency } = useCurrency();
   const Router = useRouter();
   const [allProducts, setAllProducts] = useState<TransformedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,12 +81,14 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
             discountPrice: product.priceDiscount,
             category: product.category,
             subCategory: product.subCategory,
+            priceConvert: product.priceConvert,
+            priceDiscountConvert: product.priceDiscountConvert,
           })
         ) || [];
 
       setAllProducts(transformedProducts);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       // //errorToat(error);
       setAllProducts([]);
     } finally {
@@ -205,8 +212,8 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-center mt-2">
-      <div className="px-6 lg:px-2 py-8 bg-background relative">
+    <div className="flex flex-col justify-center  w-full">
+      <div className="px-6 lg:px-2 py-8 bg-background relative hidden lg:block">
         <div
           onClick={() => {
             setShowFilter(!showFilter);
@@ -226,8 +233,8 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
       ) : (
         <div
           className={`grid grid-cols-1 ${
-            showFilter ? "md:grid-cols-3" : "md:grid-cols-4"
-          } flex-row flex-wrap gap-6 w-full justify-between overflow-y-auto px-6 lg:px-2`}
+            showFilter ? "md:grid-cols-3  grid-col-3" : "md:grid-cols-4  grid-col-3"
+          } flex-row flex-wrap gap-6 w-full justify-center justify-items-center  overflow-y-auto px-6 lg:px-2`}
         >
           {filteredProducts.map((item: TransformedProduct) => (
             <div
@@ -236,25 +243,41 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
               className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col items-center gap-4 w-full max-w-[390px] h-fit pb-[22px] cursor-pointer"
             >
               <div className="w-full h-[400px] border flex items-center">
-                <Image
-                  className="h-[400px] w-full object-center bg-center"
-                  src={item.images} // Now directly using the image URL
-                  priority
-                  width={410}
-                  height={400}
-                  alt={item.name}
-                />
+          <Image
+            className="h-[400px] w-full object-center bg-center"
+            src={item.images ||"/heroFallback.jpg"}
+            priority
+            width={410}
+            height={400}
+            alt={item.name}
+          />
               </div>
               <div className="flex flex-col text-start w-full items-start gap-2 text-text_strong text-base">
-                <p className="text-text_strong text-base font-medium">
-                  {item.name}
-                </p>
-                <div className="flex items-center gap-1 font-semibold">
-                  <p className="text-base">{`$ ${item.price}`}</p>
-                  {item.discountPrice ? (
-                    <del className="text-base text-text_weak">{`$ ${item.discountPrice}`}</del>
-                  ) : null}
-                </div>
+          <p className="text-text_strong text-base font-medium">
+            {item.name}
+          </p>
+          <div className="flex items-center gap-1 font-semibold">
+            <p className="text-base">
+              {currency === "NGN"
+                ? `₦ ${item?.price}`
+                : `$ ${item?.priceConvert}`}
+            </p>
+            {currency === "NGN"
+              ? item.discountPrice && (
+            <del className="text-base text-text_weak">
+              ₦{item?.discountPrice}
+            </del>
+                )
+              : null}
+
+            {currency === "USD"
+              ? item.priceDiscountConvert && (
+            <del className="text-base text-text_weak">
+              ${item?.priceDiscountConvert || 0}
+            </del>
+                )
+              : null}
+          </div>
               </div>
             </div>
           ))}
@@ -264,4 +287,4 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   );
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

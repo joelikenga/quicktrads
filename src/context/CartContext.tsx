@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 'use client'
 
-import { errorToast, infoToast, successToast } from '@/utils/toast/toast';
+import { errorToast,  successToast } from '@/utils/toast/toast';
 import React, { createContext, useContext, useState,  useEffect } from 'react';
 // import { CartContextType, CartItem } from '../types/';
 // import { errorToast } from '../utils/toast/toast';
@@ -38,6 +37,7 @@ export function CartProvider({ children }: { children: any }) {
   // Load cart items from localStorage when the component mounts
   useEffect(() => {
     const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    console.log('savedCart', savedCart)
     if (savedCart) {
       try {
         setCartItems(JSON.parse(savedCart));
@@ -126,4 +126,4 @@ export function useCart() {
   }
   return context;
 }
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

@@ -58,7 +58,7 @@ export const Hero1 = () => {
             </div>
             <Link
               onClick={() => localStorage.setItem("category", "trending")}
-              href={`/categories`}
+              href={`/products`}
             >
               <button className=" bg-text_strong rounded-full h-10 px-6 text-background text-base font-medium">
                 {data?.heroBtnText}

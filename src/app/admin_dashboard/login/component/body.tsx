@@ -14,7 +14,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { AxiosResponse } from "axios";
 import nookies from "nookies";
 // import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter,  } from "next/navigation";
 import { adminLogin } from "../../../../utils/api/admin/auth";
 // import { cookies } from 'next/headers';
 const lora = Lora({

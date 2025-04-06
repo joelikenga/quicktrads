@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+ 'use client'
 import { arrowleft, info } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
@@ -491,4 +490,4 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
 };
 
 export default PromoteContent;
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

@@ -53,18 +53,18 @@ export const Body = () => {
       const res = await shippingAddress(data);
       await getShippindData();
       // Clear the form
-      if (res){
-      setAddressData({
-        fullName: "",
-        email: "",
-        phoneNumber: "",
-        address: "",
-        state: "",
-        country: "",
-      });
-        successToast('Address added');
+      if (res) {
+        setAddressData({
+          fullName: "",
+          email: "",
+          phoneNumber: "",
+          address: "",
+          state: "",
+          country: "",
+        });
+        successToast("Address added");
       }
-      window.location.reload()
+      window.location.reload();
     } catch (error: unknown) {
       console.error(error);
     }
@@ -96,9 +96,8 @@ export const Body = () => {
       await deleteShippingAddress(index);
       setShippingData((prev) => prev.filter((_, i) => i !== index));
       setDeleteAddress(false);
-      successToast('Address deleted');
-      window.location.reload()
-
+      successToast("Address deleted");
+      window.location.reload();
     } catch (error: unknown) {
       throw error;
     }
@@ -139,18 +138,18 @@ export const Body = () => {
     </div>
   );
 
-  const EmptyStateSkeleton = () => (
-    <div className="w-full flex justify-center items-center mt-12 animate-pulse">
-      <div className="w-full max-w-[400px] flex flex-col gap-8 items-center">
-        <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
-        <div className="flex flex-col gap-4 text-center">
-          <div className="h-6 w-48 bg-gray-200 rounded"></div>
-          <div className="h-4 w-64 bg-gray-200 rounded"></div>
-        </div>
-        <div className="h-12 w-full bg-gray-200 rounded-full"></div>
-      </div>
-    </div>
-  );
+  // const EmptyStateSkeleton = () => (
+  //   <div className="w-full flex justify-center items-center mt-12 animate-pulse">
+  //     <div className="w-full max-w-[400px] flex flex-col gap-8 items-center">
+  //       <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
+  //       <div className="flex flex-col gap-4 text-center">
+  //         <div className="h-6 w-48 bg-gray-200 rounded"></div>
+  //         <div className="h-4 w-64 bg-gray-200 rounded"></div>
+  //       </div>
+  //       <div className="h-12 w-full bg-gray-200 rounded-full"></div>
+  //     </div>
+  //   </div>
+  // );
 
   return (
     <div className="px-4 md:px-0 flex flex-col gap-8 md:ml-[280px] mt-[150px]">
@@ -230,8 +229,7 @@ export const Body = () => {
                 Are you sure you want to delete address?
               </p>
               <p className="text-text_weak text-sm md:text-base font-normal">
-                This action will delete address. If you're not ready to make
-                changes, you can save them for later instead
+                {`This action will delete address. If you're not ready to make changes, you can save them for later instead`}
               </p>
             </div>
 
@@ -257,7 +255,7 @@ export const Body = () => {
       <div className="flex justify-between w-full max-w-7xl items-start">
         <div className="flex flex-col gap-2 w-fit font-normal">
           <p className="text-text_strong text-[22px]">Address</p>
-          <p className="text-text_weak sm:text-base text-[12px] sm:w-full">
+          <p className="text-text_weak sm:text-base text-sm sm:w-full hidden md:block">
             Add, update and select your address information
           </p>
         </div>

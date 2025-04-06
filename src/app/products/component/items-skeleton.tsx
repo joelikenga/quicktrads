@@ -1,8 +1,8 @@
 export const ItemsSkeleton = () => {
   return (
-    <div className="flex flex-col justify-center mt-2">
-      <div className="px-6 lg:px-2 py-8 bg-background relative">
-        <div className="flex gap-2 items-center cursor-pointer justify-end">
+    <div className="flex flex-col justify-center ">
+      <div className="px-6 lg:px-2 md:pb-8 bg-background relative">
+        <div className=" gap-2 items-center cursor-pointer justify-end hidden lg:flex">
           <div className="h-5 w-20 bg-gray-200 rounded animate-pulse" />
         </div>
       </div>

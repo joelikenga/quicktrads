@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
+import { useLogout } from "./logout";
 
 // import { ReactNode } from "react";
 
@@ -12,6 +13,7 @@ import { usePathname } from "next/navigation";
 
 export const Sidenav = () => {
   const pathname = usePathname();
+  const handleLogout = useLogout();
 
   return (
     <>
@@ -22,7 +24,7 @@ export const Sidenav = () => {
             <Link
               href={`/profile`}
               className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-                pathname === "/profile" ? "bg-stroke_weak" : ""
+                pathname.includes("/profile")   ? "bg-stroke_weak" : ""
               } w-full`}
             >
               Profile
@@ -31,7 +33,7 @@ export const Sidenav = () => {
             <Link
               href={`/orders`}
               className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-                pathname === "/orders" ? "bg-stroke_weak" : ""
+                pathname.includes("/orders")  ? "bg-stroke_weak" : ""
               } w-full`}
             >
               Orders
@@ -40,7 +42,7 @@ export const Sidenav = () => {
             <Link
               href={`/address`}
               className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-                pathname === "/address" ? "bg-stroke_weak" : ""
+                pathname.includes( "/address") ? "bg-stroke_weak" : ""
               } w-full`}
             >
               Address
@@ -49,14 +51,13 @@ export const Sidenav = () => {
             <Link
               href={`/password`}
               className={`rounded-full h-[38px] text-start px-6 flex items-center text-base font-medium ${
-                pathname === "/password" ? "bg-stroke_weak" : ""
+                pathname.includes("/password")  ? "bg-stroke_weak" : ""
               } w-full`}
             >
               Password
             </Link>
           </div>
-          {/* logout */}
-          <div className="h-[38px] text-start px-6 flex items-center text-base font-medium mb-4">
+          <div onClick={handleLogout} className="h-[38px] text-start px-6 flex items-center text-base font-medium mb-4">
             Logout
           </div>
         </div>
@@ -67,7 +68,7 @@ export const Sidenav = () => {
           <Link
             href={`/profile`}
             className={`rounded-full h-[38px] text-start px-6 flex justify-center items-center text-base font-medium ${
-              pathname === "/profile" ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
+              pathname.includes("/profile") ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
             } w-full`}
           >
             Profile
@@ -76,7 +77,7 @@ export const Sidenav = () => {
           <Link
             href={`/orders`}
             className={`rounded-full h-[38px] text-start px-6 flex justify-center items-center text-base font-medium ${
-              pathname === "/orders" ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
+              pathname.includes("/orders") ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
             } w-full`}
           >
             Orders
@@ -85,7 +86,7 @@ export const Sidenav = () => {
           <Link
             href={`/address`}
             className={`rounded-full h-[38px] text-start px-6 flex justify-center items-center text-base font-medium ${
-              pathname === "/address" ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
+              pathname.includes( "/address")  ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
             } w-full`}
           >
             Address
@@ -94,7 +95,7 @@ export const Sidenav = () => {
           <Link
             href={`/password`}
             className={`rounded-full h-[38px] text-start px-6 flex justify-center items-center text-base font-medium ${
-              pathname === "/password" ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
+              pathname.includes("/password") ? " relative text-center before:absolute before:w-full before:h-[2px] before:bg-error_1 before:left-0 before:bottom-[-8px]" : "text-stroke_strong"
             } w-full`}
           >
             Password

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 import React, { useState, useEffect } from "react";
 import { dates, arrowDown, usersIcon } from "@/app/global/svg";
 import { Line } from "react-chartjs-2";
@@ -297,4 +296,4 @@ export const BodyContent = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 import {
   arrowleft,
   // ordersIcon,
@@ -576,4 +575,4 @@ export const BodyContent = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

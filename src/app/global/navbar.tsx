@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 import Link from "next/link";
 import {
   arrowDown,
@@ -21,112 +20,146 @@ import {
   whatsapp,
 } from "./svg";
 import { Lora } from "next/font/google";
-import {  useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-// import { useLogin } from "../../utils/hooks/useLogin";
 import { ProfileAvatar } from "./profileGenerator";
 import { useLogout } from "./logout";
 import { useRouter } from "next/navigation";
-// import { useCart } from "../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
-// import { loggedInUser } from "../../utils/api/user/auth";
-// import { errorToast } from "../../utils/toast/toast";
+import { useCurrency } from "@/context/CurrencyContext";
+import { getAllProducts } from "@/utils/api/user/product";
 
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
 });
 
-// interface UserResponse {
-//   data: {
-//     avatar: string;
-//     country: string;
-//     createdAt: string; // ISO Date string
-//     dob: string; // ISO Date string
-//     email: string;
-//     emailVerified: boolean;
-//     fullName: string;
-//     gender: string;
-//     id: string; // UUID
-//     lastLoggedInAt: string; // ISO Date string
-//     lastOrderedAt: string | null; // ISO Date string or null
-//     password: string;
-//     phoneNumber: string;
-//     role: string; // Add other roles if needed
-//     shippingDetails: string | null;
-//     state: string;
-//     status: string; // Add other statuses if needed
-//     totalOrders: number | null;
-//     updatedAt: string; // ISO Date string
-//   };
-// }
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  priceConvert?: number;
+}
 
 export const Navbar = () => {
   const [searchOptions, setSearchOptions] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [currencyOptions, setCurrencyOptions] = useState<boolean>(false);
   const [categoryOptions, setCategoryOptions] = useState<boolean>(false);
   const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const [profileOption, setProfileOption] = useState<boolean>(false);
   const [logoutModal, setLogoutModal] = useState<boolean>(false);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // ----- for mobile -----
-  const [collectionDropdown, setCollectionDropdown] = useState<boolean>(false);
-  const [menDropdown, setMenDropdown] = useState<boolean>(false);
-  const [womenDropdown, setWomenDropdown] = useState<boolean>(false);
+  // Mobile dropdown states
+  const [mobileDropdownStates, setDropdownStates] = useState({
+    category: true,
+    collection: false,
+    men: false,
+    women: false,
+    unisex: false,
+  });
 
   const logout = useLogout();
-
   const router = useRouter();
-  const handleNavigation = (item: string, event: React.MouseEvent) => {
-    event.stopPropagation();
+  const { getCartCount } = useCart();
+  const { currency, toggleCurrency } = useCurrency();
+  const [userData, setUserData] = useState<any | null>(null);
 
-    localStorage.setItem("category", item); // Save item to localStorage
+  const itemSearch = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = (await getAllProducts()).data as Product[];
 
-    if (window.location.pathname === "/categories") {
-      // If already on the /categories page, just set the localStorage
-      window.location.reload();
-    } else {
-      // Navigate to the /categories page
-      router.replace("/categories");
+      if (searchValue.trim() === "") {
+        setFilteredProducts([]);
+        setSearchOptions(false);
+        return;
+      }
+
+      const filtered = response.filter((product) =>
+        product.name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+
+      setFilteredProducts(filtered);
+      setSearchOptions(true);
+    } catch (err) {
+      setError("Failed to fetch products");
+      setFilteredProducts([]);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchValue) {
+        itemSearch();
+      } else {
+        setFilteredProducts([]);
+        setSearchOptions(false);
+      }
+    }, 300); // Debounce search for better performance
 
-  const handleCollectionDropdown = () => {
-    setCollectionDropdown(!collectionDropdown);
-    setMenDropdown(false);
-    setWomenDropdown(false);
+    return () => clearTimeout(debounceTimer);
+  }, [searchValue]);
+
+  const handleProductClick = (productId: string) => {
+    router.push(`/products/${productId}`);
+    setSearchOptions(false);
+    setSearchValue("");
   };
 
-  const handleMenDropdown = () => {
-    setCollectionDropdown(false);
-    setMenDropdown(!menDropdown);
-    setWomenDropdown(false);
+  // Handle category navigation
+  const handleCategoryNavigation = (item: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    localStorage.setItem("category", item);
+
+    if (window.location.pathname === "/products") {
+      window.location.reload();
+    } else {
+      router.replace("/products");
+    }
+
+    // Close mobile menu if open
+    setMobileDropdown(false);
   };
 
-  const handleWomenDropdown = () => {
-    setCollectionDropdown(false);
-    setMenDropdown(false);
-    setWomenDropdown(!womenDropdown);
+  // Unified dropdown handler
+  const handleDropdown = (
+    mobileDropdownName: keyof typeof mobileDropdownStates,
+    event: React.MouseEvent
+  ) => {
+    event.stopPropagation();
+    setDropdownStates((prev) => ({
+      ...prev,
+      [mobileDropdownName]: !prev[mobileDropdownName],
+    }));
   };
 
+  // Search handler
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchValue(value);
 
     if (value.length > 0) {
       setSearchOptions(true);
-      setCurrencyOptions(false);
     } else {
       setSearchOptions(false);
     }
   };
 
+  // Refs for click outside handling
   const profileWrapperRef = useRef<HTMLDivElement>(null);
-  const currencyWrapperRef = useRef<HTMLDivElement>(null);
   const categoryWrapperRef = useRef<HTMLDivElement>(null);
-  const [userData, setUserData]=useState<any|null>(null);
+
+  useEffect(() => {
+    setUserData(localStorage.getItem("user"));
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -135,12 +168,6 @@ export const Navbar = () => {
         !profileWrapperRef.current.contains(event.target as Node)
       ) {
         setProfileOption(false);
-      }
-      if (
-        currencyWrapperRef.current &&
-        !currencyWrapperRef.current.contains(event.target as Node)
-      ) {
-        setCurrencyOptions(false);
       }
       if (
         categoryWrapperRef.current &&
@@ -156,11 +183,7 @@ export const Navbar = () => {
     };
   }, []);
 
-  const handleCurrencyOptions = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCurrencyOptions(!currencyOptions);
-  };
-
+  // Desktop handlers
   const handleProfileOption = (event: React.MouseEvent) => {
     event.stopPropagation();
     setProfileOption(!profileOption);
@@ -171,63 +194,23 @@ export const Navbar = () => {
     setCategoryOptions(!categoryOptions);
   };
 
-  const handleMobileCategoryOptions = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCategoryOptions(!categoryOptions);
-    if (currencyOptions) setCurrencyOptions(false);
-    if (profileOption) setProfileOption(false);
-  };
-
-  const handleMobileCurrencyOptions = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setCurrencyOptions(!currencyOptions);
-    if (categoryOptions) setCategoryOptions(false);
-    if (profileOption) setProfileOption(false);
-  };
-
-  // const handleMobileProfileOption = (event: React.MouseEvent) => {
-  //   event.stopPropagation();
-  //   setProfileOption(!profileOption);
-  //   if (categoryOptions) setCategoryOptions(false);
-  //   if (currencyOptions) setCurrencyOptions(false);
-  // };
-
-  useEffect(() => {
-    // const { isLoggedIn, hasAvatar } = useLogin("user");
-    setUserData(localStorage.getItem('user'));
-    // console.log(JSON.parse(userData)?.fullName);
-  });
-
-  // console.log("isLogged", isLoggedIn);
-  // console.log("hasAvatar", hasAvatar);
-  const { getCartCount } = useCart();
-
   return (
-    <div className="w-full left-0 top-0 fixed z-50  ">
-      {/* ----- logout modal ----- */}
+    <div className="w-full left-0 top-0 fixed z-50">
+      {/* Logout Modal */}
       {logoutModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-[60] flex justify-start flex-col pt-[120px] md:pt-0 md:justify-center items-center backdrop-blur px-4 md:px-0">
-          <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-8 rounded-lg ">
-            <div className="w-full flex flex-col justify-center items-center gap-4  text-center">
-              <div
-                className="cursor-pointer"
-                // onClick={() => setDeleteItem(false)}
-              >
-                {redInfo()}
-              </div>
-
+          <div className="bg-white max-w-[480px] w-full h-fit p-6 md:p-12 flex flex-col gap-8 rounded-lg">
+            <div className="w-full flex flex-col justify-center items-center gap-4 text-center">
+              <div className="cursor-pointer">{redInfo()}</div>
               <p
                 className={`${lora.className} text-text_strong text-lg md:text-[22px] font-normal`}
               >
-                {`Are you sure you want to logout your account?`}
+                Are you sure you want to logout your account?
               </p>
-
               <p className="text-text_strong text-sm md:text-base font-normal">
                 {`This action will logout your account. If you're not to logout, you can cancel to continue shopping`}
               </p>
             </div>
-
-            {/* ----- button ----- */}
             <div className="flex justify-end gap-4">
               <button
                 className="bg-background text-text_strong h-12 rounded-full flex justify-center items-center text-center text-base font-medium w-1/2 border"
@@ -246,38 +229,33 @@ export const Navbar = () => {
         </div>
       )}
 
-      {/* ----- Quick contact ----- */}
-      <div className="hidden lg:flex w-full px-10  items-center bg-fill h-12">
+      {/* Quick Contact - Desktop */}
+      <div className="hidden lg:flex w-full px-10 items-center bg-fill h-12">
         <div className="w-full max-w-7xl mx-auto flex justify-start items-center gap-6">
-          {/* ----- map ----- */}
           <div className="flex justify-center items-center gap-1 font-medium">
             {map()}
             <p className="text-sm text-text_strong">
               27 fola osibo, Lagos, Nigeria
             </p>
           </div>
-
-          {/* ----- whatsapp ----- */}
           <div className="flex justify-center items-center gap-1 font-medium">
             {whatsapp()}
             <p className="text-sm text-text_strong">+234 704 451 4049</p>
           </div>
-
-          {/* ----- instagram ----- */}
           <div className="flex justify-center items-center gap-1 font-medium">
             {instagram()}
             <p className="text-sm text-text_strong">Quicktrads</p>
           </div>
         </div>
       </div>
-      {/* ----- Navbar Desktop----- */}
+
+      {/* Navbar Desktop */}
       <nav className="hidden lg:flex w-full px-10 bg-background h-[72px] items-center border-b border">
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center">
-          {/* ----- search and currency ----- */}
+          {/* Search and Currency */}
           <div className="flex gap-6 items-center">
-            {/* ----- search ----- */}
             <div className="relative">
-              <div className="flex items-center gap-2 font-medium text-sm border-stroke_strong px-4 rounded-full border max-w-[220px] w-full  text-text_strong">
+              <div className="flex items-center gap-2 font-medium text-sm border-stroke_strong px-4 rounded-full border w-[260px]  text-text_strong">
                 {search()}
                 <input
                   type="text"
@@ -287,72 +265,65 @@ export const Navbar = () => {
                   onChange={handleSearchChange}
                 />
               </div>
-              {/* ----- search dropdown ----- */}
               {searchOptions && (
-                <div className="flex flex-col gap-1 py-2 absolute top-10 left-0 bg-background w-full h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm">
-                  <p className="h-10 w-full px-6 hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer">
-                    Adire royal
-                  </p>
-                  <p className="h-10 w-full px-6 hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer">
-                    Adire royal golden
-                  </p>
-                  <p className="h-10 w-full px-6 hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer">
-                    Adire royal purple
-                  </p>
+                <div className="flex flex-col gap-1 py-2 absolute top-10 left-0 bg-background w-full h-fit max-h-[300px] overflow-y-auto z-10 rounded-lg shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm">
+                  {isLoading ? (
+                    <div className="flex flex-col gap-2 p-6">
+                      <div className="flex justify-between items-center gap-4">
+                        <div className="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+
+                        <div className="h-4 w-6 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                    </div>
+                  ) : error ? (
+                    <div className="flex flex-col gap-2 p-6">
+                      <div className="flex justify-between items-center gap-4">
+                        <div className="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+
+                        <div className="h-4 w-6 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                    </div>
+                  ) : filteredProducts.length === 0 ? (
+                    <p className="h-10 w-full px-6 flex items-center justify-center">
+                      No products found
+                    </p>
+                  ) : (
+                    filteredProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={() => handleProductClick(product.id)}
+                        className="h-10 w-full px-6 hover:bg-[#f5f5f5] items-center flex justify-between gap-4 cursor-pointer"
+                      >
+                        <span className="max-w-[80%] overflow-hidden text-nowrap capitalize">
+                          {product.name}
+                        </span>
+                        <span className="text-text_weak max-w-fit overflow-hidden ">
+                          {currency === "NGN"
+                            ? `₦${product.price}`
+                            : `$${product.priceConvert}`}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
 
-            {/* ----- currency ----- */}
             <div
-              ref={currencyWrapperRef}
-              className="relative flex justify-center"
+              className="flex items-center gap-2 font-medium text-sm w-20  cursor-pointer"
+              onClick={toggleCurrency}
             >
-              <div
-                onClick={handleCurrencyOptions}
-                className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer ${
-                  currencyOptions && "border-b-2"
-                } border-text_strong py-1`}
-              >
-                {nigeriaIcon()}
-                <p className="">NGN ₦</p>
-                <i
-                  className={`${currencyOptions && "rotate-180"} duration-300`}
-                >
-                  {arrowDown()}
-                </i>
-              </div>
-              {/* ----- currency dropdown ----- */}
-              {currencyOptions && (
-                <div
-                  // onMouseLeave={handleCurrencyOptions}
-                  className="flex flex-col gap-2 sm:gap-4 p-4 absolute top-10 left-0 bg-background w-[240px] h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm"
-                >
-                  <div className="rounded-lg h-10 w-full px-[.4] sm:px-1 md:px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
-                    <div className="gap-1 items-center flex">
-                      {nigeriaIcon()}
-                      <p className="">NGN ₦</p>
-                    </div>
-                    {checked()}
-                  </div>
-                  <div className="rounded-lg h-10 w-full px-[.4] sm:px-1 md:px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
-                    <div className="gap-1 flex">
-                      {USAIcon()}
-                      <p className="">USA $</p>
-                    </div>
-                    {unChecked()}
-                  </div>
-                </div>
-              )}
+              {currency === "NGN" ? nigeriaIcon() : USAIcon()}
+              <p className="">{currency === "NGN" ? "NGN ₦" : "USD $"}</p>
             </div>
           </div>
 
-          {/* ----- logo ----- */}
+          {/* Logo */}
           <Link href={`/`}>{logo()}</Link>
 
-          {/*----- category cart login and signup ----- */}
+          {/* Category, Cart, Login/Signup */}
           <div className="flex gap-6 items-center">
-            {/* ----- category ----- */}
+            {/* Category */}
             <div ref={categoryWrapperRef}>
               <div
                 onClick={handleCategoryOptions}
@@ -364,42 +335,35 @@ export const Navbar = () => {
                 <p className="">Category</p>
               </div>
 
-              {/* ----- category drop down ----- */}
+              {/* Category Dropdown */}
               {categoryOptions && (
-                <div
-                  // onMouseLeave={handleMouseLeaveCategory}
-                  className="bg-text_strong bg-opacity-80 h-full w-full fixed left-0 top-[120px]  hidden lg:flex z-50"
-                >
-                  {/* ----- category content ----- */}
-                  <div className="bg-background  w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
-                    {/* ----- card section ----- */}
-
+                <div className="bg-text_strong bg-opacity-80 h-full w-full fixed left-0 top-[120px] hidden lg:flex z-50">
+                  <div className="bg-background w-full max-h-[294px] h-full flex items-start justify-between py-8 px-[120px]">
                     <div className="w-1/2 flex items-center">
-                      {/* ----- card ----- */}
                       <div className="flex flex-col gap-4 items-start bg-fill rounded-lg text-text_strong max-h-[204px] h-full max-w-[416px] w-full p-6">
                         {redCategoryicon()}
                         <div className="gap-2 flex flex-col items-start">
                           <p
                             className={`${lora.variable} font-medium text-[22px]`}
-                          >{`Shop quick with quicktads category`}</p>
-                          <p
-                            className={`font-normal text-base`}
-                          >{`Discover the latest trends and start building your dream wardrobe today!`}</p>
+                          >
+                            Shop quick with quicktads category
+                          </p>
+                          <p className="font-normal text-base">
+                            Discover the latest trends and start building your
+                            dream wardrobe today!
+                          </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* ----- category lists ----- */}
-
                     <div className="w-1/2 items-start flex justify-between gap-8">
-                      {/* ----- Featured ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
                         <p className="text-base font-semibold cursor-pointer">
                           Featured
                         </p>
                         <div
                           onClick={(event) =>
-                            handleNavigation("trending", event)
+                            handleCategoryNavigation("trending", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -407,7 +371,7 @@ export const Navbar = () => {
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("latestWear", event)
+                            handleCategoryNavigation("latestWear", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -415,20 +379,21 @@ export const Navbar = () => {
                         </div>
                       </div>
 
-                      {/* ----- Unisex ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
                         <p className="text-base font-semibold cursor-pointer">
                           Unisex
                         </p>
                         <div
-                          onClick={(event) => handleNavigation("u-Tops", event)}
+                          onClick={(event) =>
+                            handleCategoryNavigation("u-Tops", event)
+                          }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
                           Tops
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("u-Trousers", event)
+                            handleCategoryNavigation("u-Trousers", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -436,7 +401,7 @@ export const Navbar = () => {
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("u-TwoPiece", event)
+                            handleCategoryNavigation("u-TwoPiece", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -444,20 +409,21 @@ export const Navbar = () => {
                         </div>
                       </div>
 
-                      {/* ----- men ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
                         <p className="text-base font-semibold cursor-pointer">
                           Men
                         </p>
                         <div
-                          onClick={(event) => handleNavigation("m-Tops", event)}
+                          onClick={(event) =>
+                            handleCategoryNavigation("m-Tops", event)
+                          }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
                           Tops
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("m-Trousers", event)
+                            handleCategoryNavigation("m-Trousers", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -465,7 +431,7 @@ export const Navbar = () => {
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("m-TwoPiece", event)
+                            handleCategoryNavigation("m-TwoPiece", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -473,26 +439,29 @@ export const Navbar = () => {
                         </div>
                       </div>
 
-                      {/* ----- Women ----- */}
                       <div className="text-text_strong flex flex-col gap-6 max-w-[160px]">
                         <p className="text-base font-semibold cursor-pointer">
                           Women
                         </p>
                         <div
-                          onClick={(event) => handleNavigation("w-Bubu", event)}
+                          onClick={(event) =>
+                            handleCategoryNavigation("w-Bubu", event)
+                          }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
                           Bubu
                         </div>
                         <div
-                          onClick={(event) => handleNavigation("w-Tops", event)}
+                          onClick={(event) =>
+                            handleCategoryNavigation("w-Tops", event)
+                          }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
                           Tops
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("w-Trouser", event)
+                            handleCategoryNavigation("w-Trouser", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -500,7 +469,7 @@ export const Navbar = () => {
                         </div>
                         <div
                           onClick={(event) =>
-                            handleNavigation("w-TwoPiece", event)
+                            handleCategoryNavigation("w-TwoPiece", event)
                           }
                           className="text-lg font-normal text-text_weak cursor-pointer"
                         >
@@ -513,7 +482,7 @@ export const Navbar = () => {
               )}
             </div>
 
-            {/* ----- cart ----- */}
+            {/* Cart */}
             <Link
               href={`/cart`}
               className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1 relative"
@@ -527,11 +496,11 @@ export const Navbar = () => {
               )}
             </Link>
 
-            {/* ----- profile----- */}
+            {/* Profile */}
             {userData ? (
               <div
                 ref={profileWrapperRef}
-                className="border-l pl-6 relative flex justify-center  py-1"
+                className="border-l pl-6 relative flex justify-center py-1"
               >
                 <div
                   onClick={handleProfileOption}
@@ -546,7 +515,7 @@ export const Navbar = () => {
                     />
                   ) : (
                     <Image
-                      className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px]  rounded-full"
+                      className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
                       src={JSON.parse(userData)?.avatar || ""}
                       priority
                       width={25}
@@ -561,9 +530,8 @@ export const Navbar = () => {
                     {arrowDown()}
                   </i>
                 </div>
-                {/* ----- profile dropdown ----- */}
                 {profileOption && (
-                  <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background  h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
+                  <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
                     <Link
                       href={`/profile`}
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
@@ -593,22 +561,18 @@ export const Navbar = () => {
                       className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
                     >
                       Logout
-                    </div>{" "}
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              // login and signup
               <div className="border-l pl-6 flex gap-6 items-center">
-                {/* ----- Login ----- */}
                 <Link
                   href={`/login`}
                   className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b- border-text_strong py-1"
                 >
                   <p className="">Login</p>
                 </Link>
-
-                {/* ----- Signup ----- */}
                 <Link
                   href={`/sign_up`}
                   className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
@@ -621,29 +585,27 @@ export const Navbar = () => {
         </div>
       </nav>
 
-      {/* ----- Navbar Mobile----- */}
-      <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4  bg-background h-[72px] relative">
-        <Link href={`/cart`}>
+      {/* Navbar Mobile */}
+      <nav className="flex justify-between items-center lg:hidden w-full px-10 py-4 bg-background h-[72px] relative">
+        <Link className="relative" href={`/cart`}>
           {cart()}
           {getCartCount() > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+            <span className="absolute -top-4 -right-3 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
               {getCartCount()}
             </span>
           )}
         </Link>
         <Link href={`/`}>{logo()}</Link>
-        <div onClick={() => setMobileDropdown(!mobileDropdown)} className="">
+        <div onClick={() => setMobileDropdown(!mobileDropdown)}>
           {humbuger()}
         </div>
 
-        {/* ----- mobile dropdown ----- */}
+        {/* Mobile Dropdown */}
         {mobileDropdown && (
           <div className="flex flex-col justify-between items-start z-50">
             <div className="bg-background w-full h-full fixed top-0 left-0 px-6 pt-4 overflow-y-auto">
-              {/* ----- search and close btn ----- */}
-              <div className="flex justify-between items-center mb-12 ">
-                {/* ----- search ----- */}
-                <div className="flex items-center gap-2 font-medium text-sm  bg-fill border-stroke_strong px-4 rounded-full border w-[260px w-full   text-text_strong">
+              <div className="flex justify-between items-center mb-12">
+                <div className="flex items-center gap-2 font-medium text-sm bg-fill border-stroke_strong px-4 rounded-full border w-[260px] text-text_strong relative">
                   {search()}
                   <input
                     type="text"
@@ -652,322 +614,422 @@ export const Navbar = () => {
                     value={searchValue}
                     onChange={handleSearchChange}
                   />
+                  {searchOptions && searchValue && (
+                    <div className="flex flex-col gap-1 py-2 absolute top-10 left-0 bg-background w-full h-fit max-h-[300px] overflow-y-auto z-10 rounded-lg shadow-[0px_8px_24px_0px_#14141414] text-text_strong font-medium text-sm">
+                      {isLoading ? (
+                        <div className="flex flex-col gap-2 p-6">
+                          <div className="flex justify-between items-center gap-4">
+                            <div className="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+
+                            <div className="h-4 w-6 bg-gray-200 animate-pulse rounded"></div>
+                          </div>
+                        </div>
+                      ) : error ? (
+                        <div className="flex flex-col gap-2 p-6">
+                          <div className="flex justify-between items-center gap-4">
+                            <div className="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
+
+                            <div className="h-4 w-6 bg-gray-200 animate-pulse rounded"></div>
+                          </div>
+                        </div>
+                      ) : filteredProducts.length === 0 ? (
+                        <p className="h-10 w-full px-6 flex items-center justify-center">
+                          No item found
+                        </p>
+                      ) : (
+                        filteredProducts.map((product) => (
+                          <div
+                            key={product.id}
+                            onClick={() => handleProductClick(product?.id)}
+                            className="h-10 w-full px-6 hover:bg-[#f5f5f5] items-center flex justify-between cursor-pointer "
+                          >
+                            <span className="max-w-[80%] overflow-hidden text-nowrap capitalize">
+                              {product.name}
+                            </span>
+                            <span className="text-text_weak">
+                              {currency === "NGN"
+                                ? `₦${product?.price}`
+                                : `$${product?.priceConvert}`}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
-                {/* ----- colse btn -----  */}
                 <i
                   className="p-3"
-                  onClick={() => setMobileDropdown(!mobileDropdown)}
+                  onClick={() => {
+                    setMobileDropdown(!mobileDropdown);
+                    setSearchValue("");
+                  }}
                 >
                   {closeBtn()}
                 </i>
               </div>
 
-              {/* ----- currency znd category ------ */}
-              <div ref={currencyWrapperRef} className="gap-6 flex flex-col ">
-                {/* ----- currency ----- */}
-                <div className="w-full gap-6 flex flex-col  border-b pb-6">
-                  <div className=" h-[46px flex justify-between items-start  ">
-                    <div
-                      onClick={handleMobileCurrencyOptions}
-                      className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer  border-text_strong py-1`}
-                    >
-                      {nigeriaIcon()}
-                      <p className="selection:bg-none">NGN ₦</p>
-                    </div>
-                    {/*  */}
-                    <i
-                      className={`${
-                        currencyOptions && "rotate-180"
-                      } duration-300`}
-                    >
-                      {arrowDown()}
-                    </i>
-                  </div>
-                  {/* ----- currency dropdown ----- */}
-
-                  {currencyOptions && (
-                    <div className="flex flex-row gap-4 ">
-                      <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_strong">
-                        <div className="gap-2 flex">
-                          {nigeriaIcon()}
-                          <p className="selection:bg-none">NGN ₦</p>
-                        </div>
-                        {checked()}
-                      </div>
-                      <div className="rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border border-stroke_weak">
-                        <div className="gap-2 flex">
-                          {USAIcon()}
-                          <p className="selection:bg-none">USA $</p>
-                        </div>
-                        {unChecked()}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* ------------- category -------- */}
+              {/* Profile */}
+              {userData ? (
                 <div
-                  ref={categoryWrapperRef}
-                  className="w-full gap-6 flex flex-col  border-b pb-6"
+                  ref={profileWrapperRef}
+                  className="relative flex justify-center py-1 mb-2"
                 >
-                  <div className=" h-[46px flex justify-between items-start  ">
-                    <div
-                      onClick={handleMobileCategoryOptions}
-                      className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                    >
-                      {category()}
-                      <p className="selection:bg-none">Category</p>
-                    </div>
-                    {/*  */}
-                    <i
-                      className={`${
-                        categoryOptions && "rotate-180"
-                      } duration-300`}
-                    >
-                      {arrowDown()}
-                    </i>
-                  </div>
-
-                  {/* ----- dropdown  ----- */}
-
-                  {categoryOptions && (
-                    <>
-                      {
-                        // collections dropdown
-                        <div className="">
-                          {/* ----- Collections ----- */}
-                          <div
-                            onClick={handleCollectionDropdown}
-                            className=" h-[46px flex justify-between items-start  "
-                          >
-                            <div
-                              className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                            >
-                              <p className="selection:bg-none">Collections</p>
-                            </div>
-                            {/*  */}
-                            <i
-                              className={`${
-                                collectionDropdown && "rotate-180"
-                              } duration-300`}
-                            >
-                              {arrowDown()}
-                            </i>
-                          </div>
-                          {/* ----- collections dropdown ----- */}
-                          {collectionDropdown && (
-                            <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="selection:bg-none">
-                                Features
-                              </Link>
-                              <Link href={``} className="selection:bg-none">
-                                Trending
-                              </Link>
-                              <Link href={``} className="selection:bg-none">
-                                Latest wear
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      }
-
-                      {
-                        // Men dropdown
-                        <div className="">
-                          {/* ----- Men ----- */}
-                          <div
-                            onClick={handleMenDropdown}
-                            className=" h-[46px flex justify-between items-start  "
-                          >
-                            <div
-                              className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                            >
-                              <p className="selection:bg-none">Men</p>
-                            </div>
-                            {/*  */}
-                            <i
-                              className={`${
-                                menDropdown && "rotate-180"
-                              } duration-300`}
-                            >
-                              {arrowDown()}
-                            </i>
-                          </div>
-                          {/* ----- Men dropdown ----- */}
-                          {menDropdown && (
-                            <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="selection:bg-none">
-                                Features
-                              </Link>
-                              <Link href={``} className="selection:bg-none">
-                                Trending
-                              </Link>
-                              <Link href={``} className="selection:bg-none">
-                                Latest wear
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      }
-
-                      {
-                        // Women dropdown
-                        <div className="">
-                          {/* ----- Women ----- */}
-                          <div
-                            onClick={handleWomenDropdown}
-                            className=" h-[46px flex justify-between items-start  "
-                          >
-                            <div
-                              className={`flex items-center gap-2 font-medium text-base w-full cursor-pointer  border-text_strong py-1`}
-                            >
-                              <p className="">Women</p>
-                            </div>
-                            {/*  */}
-                            <i
-                              className={`${
-                                womenDropdown && "rotate-180"
-                              } duration-300`}
-                            >
-                              {arrowDown()}
-                            </i>
-                          </div>
-                          {/* ----- Women dropdown ----- */}
-                          {womenDropdown && (
-                            <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
-                              <Link href={``} className="selection:bg-none">
-                                Features
-                              </Link>
-                              <Link href={``} className="selection:bg-none">
-                                Trending
-                              </Link>
-                              <Link href={``} className="selection:bg-none">
-                                Latest wear
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      }
-                    </>
-                  )}
-                </div>
-                {/* -----profile----- */}
-                {userData ? (
                   <div
-                    ref={profileWrapperRef}
-                    className="border-l pl-6 relative flex justify-center py-1"
+                    onClick={handleProfileOption}
+                    className={`flex items-center gap-2 justify-between font-medium text-sm w-full cursor-pointer border-b-2 py-1 text-nowrap ${
+                      profileOption
+                        ? "border-transparent"
+                        : "border-transparent"
+                    }`}
                   >
-                    <div
-                      onClick={handleProfileOption}
-                      className={`flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b-2 py-1 text-nowrap ${
-                        profileOption
-                          ? "border-text_strong"
-                          : "border-transparent"
-                      }`}
-                    >
-                      {!userData?.avatar ? (
+                    <div className="flex items-center gap-2">
+                      {!JSON.parse(userData)?.avatar ? (
+                        <ProfileAvatar
+                          name={JSON.parse(userData)?.fullName || ""}
+                          size="large"
+                        />
+                      ) : (
                         <Image
-                          className="min-w-[30px] max-w-[30px] min-h-[30px] max-h-[30px] rounded-full"
-                          src={userData.avatar || ""}
+                          className="min-w-12 max-w-12 min-h-12 max-h-12 rounded-full"
+                          src={JSON.parse(userData)?.avatar || ""}
                           priority
                           width={25}
                           height={25}
                           alt=""
                         />
-                      ) : (
-                        <ProfileAvatar
-                          name={JSON.parse(userData)?.fullName || ""}
-                          size="small"
-                        />
                       )}
-                      <p className="">{JSON.parse(userData)?.fullName}</p>
-                      <i
-                        className={`${
-                          profileOption && "rotate-180"
-                        } duration-300`}
-                      >
-                        {arrowDown()}
-                      </i>
+                      <p className="text-base capitalize ">
+                        {JSON.parse(userData)?.fullName}
+                      </p>
                     </div>
-                    {/* ----- profile dropdown ----- */}
-                    {profileOption && (
-                      <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
-                        <Link
-                          href={`/profile`}
-                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                        >
-                          Profile
-                        </Link>
-                        <Link
-                          href={`/orders`}
-                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                        >
-                          Orders
-                        </Link>
-                        <Link
-                          href={`/address`}
-                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                        >
-                          Address
-                        </Link>
-                        <Link
-                          href={`/password`}
-                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                        >
-                          Password
-                        </Link>
-                        <div
-                          onClick={() => setLogoutModal(true)}
-                          className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                        >
-                          Logout
-                        </div>
+                    <i
+                      className={`${
+                        profileOption && "rotate-180"
+                      } duration-300`}
+                    >
+                      {arrowDown()}
+                    </i>
+                  </div>
+                  {profileOption && (
+                    <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-14 right-0 bg-background h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
+                      <Link
+                        href={`/profile`}
+                        className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        href={`/orders`}
+                        className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                      >
+                        Orders
+                      </Link>
+                      <Link
+                        href={`/address`}
+                        className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                      >
+                        Address
+                      </Link>
+                      <Link
+                        href={`/password`}
+                        className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                      >
+                        Password
+                      </Link>
+                      <div
+                        onClick={() => setLogoutModal(true)}
+                        className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                      >
+                        Logout
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  // login and signup
-                  <div className="border-l pl-6 flex gap-6 items-center">
-                    {/* ----- Login ----- */}
-                    <Link
-                      href={`/login`}
-                      className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b border-text_strong py-1"
-                    >
-                      <p className="">Login</p>
-                    </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex gap-6 items-center">
+                  <Link
+                    href={`/login`}
+                    className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b border-text_strong py-1"
+                  >
+                    <p className="">Login</p>
+                  </Link>
+                  <Link
+                    href={`/sign_up`}
+                    className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
+                  >
+                    <p className="">Signup</p>
+                  </Link>
+                </div>
+              )}
 
-                    {/* ----- Signup ----- */}
-                    <Link
-                      href={`/sign_up`}
-                      className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
+              <div className="gap-6 flex flex-col">
+                {/* Currency */}
+                <div className="w-full gap-6 flex flex-col  pb-6">
+                  <div className="flex flex-row gap-4">
+                    <div
+                      className={`rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border ${
+                        currency === "NGN"
+                          ? "border-stroke_strong"
+                          : "border-stroke_weak"
+                      }`}
+                      onClick={toggleCurrency}
                     >
-                      <p className="">Signup</p>
-                    </Link>
+                      <div className="gap-2 flex">
+                        {nigeriaIcon()}
+                        <p className="selection:bg-none">NGN ₦</p>
+                      </div>
+                      {currency === "NGN" ? checked() : unChecked()}
+                    </div>
+                    <div
+                      className={`rounded-lg h-10 w-full px-4 items-center flex justify-between cursor-pointer border ${
+                        currency === "USD"
+                          ? "border-stroke_strong"
+                          : "border-stroke_weak"
+                      }`}
+                      onClick={toggleCurrency}
+                    >
+                      <div className="gap-2 flex">
+                        {USAIcon()}
+                        <p className="selection:bg-none">USD $</p>
+                      </div>
+                      {currency === "USD" ? checked() : unChecked()}
+                    </div>
                   </div>
-                )}
+                </div>
+
+                {/* Category */}
+                <div className="w-full gap-6 flex flex-col border-b pb-6">
+                  <div className="h-[46px] flex justify-between items-start">
+                    <div className="flex items-center gap-2 font-medium text-base w-full cursor-pointer py-1">
+                      {category()}
+                      <p className="selection:bg-none">Category</p>
+                    </div>
+                    {/* <i
+                      className={`${
+                        categoryOptions && "rotate-180"
+                      } duration-300`}
+                    >
+                      {arrowDown()}
+                    </i> */}
+                  </div>
+
+                  {
+                    <>
+                      {/* Collections */}
+                      <div>
+                        <div
+                          onClick={(e) => handleDropdown("collection", e)}
+                          className="h-[46px] flex justify-between items-start dropdown-header"
+                        >
+                          <div className="flex items-center gap-2 font-medium text-base w-full cursor-pointer py-1">
+                            <p className="selection:bg-none">Collections</p>
+                          </div>
+                          <i
+                            className={`${
+                              mobileDropdownStates.collection && "rotate-180"
+                            } duration-300`}
+                          >
+                            {arrowDown()}
+                          </i>
+                        </div>
+                        {mobileDropdownStates.collection && (
+                          <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("trending", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Trending
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("latestWear", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Latest wear
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Unisex */}
+                      <div>
+                        <div
+                          onClick={(e) => handleDropdown("unisex", e)}
+                          className="h-[46px] flex justify-between items-start dropdown-header"
+                        >
+                          <div className="flex items-center gap-2 font-medium text-base w-full cursor-pointer py-1">
+                            <p className="">Unisex</p>
+                          </div>
+                          <i
+                            className={`${
+                              mobileDropdownStates.unisex && "rotate-180"
+                            } duration-300`}
+                          >
+                            {arrowDown()}
+                          </i>
+                        </div>
+                        {mobileDropdownStates.unisex && (
+                          <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("u-Bubu", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Bubu
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("u-Tops", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Tops
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("u-Trouser", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Trousers
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("u-TwoPiece", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Two-piece
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Men */}
+                      <div>
+                        <div
+                          onClick={(e) => handleDropdown("men", e)}
+                          className="h-[46px] flex justify-between items-start dropdown-header"
+                        >
+                          <div className="flex items-center gap-2 font-medium text-base w-full cursor-pointer py-1">
+                            <p className="selection:bg-none">Men</p>
+                          </div>
+                          <i
+                            className={`${
+                              mobileDropdownStates.men && "rotate-180"
+                            } duration-300`}
+                          >
+                            {arrowDown()}
+                          </i>
+                        </div>
+                        {mobileDropdownStates.men && (
+                          <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("m-Tops", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Tops
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("m-Trousers", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Trousers
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("m-TwoPiece", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Two-piece
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Women */}
+                      <div>
+                        <div
+                          onClick={(e) => handleDropdown("women", e)}
+                          className="h-[46px] flex justify-between items-start dropdown-header"
+                        >
+                          <div className="flex items-center gap-2 font-medium text-base w-full cursor-pointer py-1">
+                            <p className="">Women</p>
+                          </div>
+                          <i
+                            className={`${
+                              mobileDropdownStates.women && "rotate-180"
+                            } duration-300`}
+                          >
+                            {arrowDown()}
+                          </i>
+                        </div>
+                        {mobileDropdownStates.women && (
+                          <div className="mt-6 flex flex-col gap-6 font-normal text-base text-text_weak pl-2">
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("w-Bubu", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Bubu
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("w-Tops", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Tops
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("w-Trouser", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Trousers
+                            </div>
+                            <div
+                              onClick={(e) =>
+                                handleCategoryNavigation("w-TwoPiece", e)
+                              }
+                              className="selection:bg-none cursor-pointer"
+                            >
+                              Two-piece
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  }
+                </div>
               </div>
-
-              {/* ----- quick contact ----- */}
             </div>
 
-            {/*------------ socials ----------*/}
-            <div className="w-full bg-[red] selection:bg-none flex justify-center lg:justify-start flex-wrap lg:text-nowrap  items-center gap-2 md:gap-6">
-              {/* ----- map ----- */}
+            {/* Socials */}
+            <div className="w-full flex justify-center lg:justify-start flex-wrap lg:text-nowrap items-center gap-2 md:gap-6">
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{map()}</i>
                 <p className="text-sm text-text_strong">
                   27 fola osibo, Lagos, Nigeria
                 </p>
               </div>
-
-              {/* ----- whatsapp ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{whatsapp()}</i>
                 <p className="text-sm selection:bg-none text-text_strong">
                   +234 704 451 4049
                 </p>
               </div>
-
-              {/* ----- instagram ----- */}
               <div className="flex justify-center items-center gap-1 font-medium">
                 <i>{instagram()}</i>
                 <p className="text-sm selection:bg-none text-text_strong">
@@ -981,4 +1043,3 @@ export const Navbar = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */

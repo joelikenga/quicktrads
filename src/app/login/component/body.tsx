@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+ "use client";
 
 import { eyeClose, eyeOpen, logo, spinner } from "@/app/global/svg";
 import { Lora } from "next/font/google";
@@ -12,25 +11,37 @@ import { AxiosResponse } from "axios";
 import { userLogin } from "../../../utils/api/user/auth";
 import nookies from "nookies";
 import { useEffect, useState } from "react";
-import { errorToast,  successToast } from "@/utils/toast/toast";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { errorToast, successToast } from "@/utils/toast/toast";
+import { useRouter } from "next/navigation";
 
 type FormValues = {
   email: string;
   password: string;
 };
 
+interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  country: string;
+  address: string;
+  avatar: string;
+  dob: string;
+  gender: string;
+  role: string;
+  emailVerified: boolean;
+  createdAt: string;
+  lastLoggedInAt: string;
+  lastOrderedAt: string | null;
+}
+
 interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   accessTokenExpiry: string;
   refreshTokenExpiry: string;
-  user: {
-    id: string;
-    fullName: string;
-    role: string;
-    avatar: string;
-  };
+  user: User;
 }
 
 const lora = Lora({
@@ -42,8 +53,12 @@ const currentYear = new Date().getFullYear();
 
 export const Body = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const from = searchParams.get('from') || '/';
+  const [from, setFrom] = useState('/');
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setFrom(searchParams.get('from') || '/');
+  }, []);
 
   const {
     register,
@@ -80,7 +95,7 @@ export const Body = () => {
 
       // const userD = (await loggedInUser()) as any;
       // setUserDetails(res);
-      const loginData = res.data;
+      const loginData = res?.data;
       const { accessToken, refreshToken, user } = loginData;
 
       // Check if user is admin
@@ -91,27 +106,50 @@ export const Body = () => {
       // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("user", JSON.stringify(user)); // Store user details
+      localStorage.setItem("user", JSON.stringify(user));
+      // Set expiry time for localStorage and cookies
+      const accessTokenExpiry = 1 * 24 * 60 * 60; // 1 day in seconds
+      const refreshTokenExpiry = 3 * 24 * 60 * 60; // 3 days in seconds
 
       // Save tokens in cookies
       nookies.set(null, "accessToken", accessToken, {
-        maxAge: 1 * 24 * 60 * 60, // 1 day
+        maxAge: accessTokenExpiry,
         path: "/",
       });
 
       nookies.set(null, "refreshToken", refreshToken, {
-        maxAge: 3 * 24 * 60 * 60, // 3 days
+        maxAge: refreshTokenExpiry,
         path: "/",
       });
 
       nookies.set(null, "role", JSON.stringify(user?.role.trim()), {
-        maxAge: 3 * 24 * 60 * 60,
+        maxAge: refreshTokenExpiry,
         path: "/",
       });
+      // Set localStorage expiry timestamps
+      const accessTokenExpiryTime =
+        new Date().getTime() + 1 * 24 * 60 * 60 * 1000; // 1 day in milliseconds
 
+      localStorage.setItem("e_x_TK", accessTokenExpiryTime.toString());
+
+      localStorage.setItem("e_x_TK", accessTokenExpiryTime.toString());
       successToast("Login successful");
       setLoading(false);
       router.replace(from);
+
+      // Set up expiry check
+      const checkExpiry = () => {
+        const currentTime = new Date().getTime();
+        if (currentTime > parseInt(localStorage.getItem("e_x_TK") || "0")) {
+          localStorage.clear();
+          // router.replace("/login");
+        }
+      };
+
+      // Check expiry every minute
+      const expiryInterval = setInterval(checkExpiry, 60000);
+      // Clear interval when component unmounts
+      return () => clearInterval(expiryInterval);
     } catch (error: any) {
       errorToast(error);
       setLoading(false);
@@ -251,4 +289,4 @@ export const Body = () => {
     </div>
   );
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 

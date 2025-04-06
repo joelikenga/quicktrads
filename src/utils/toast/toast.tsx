@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import toast from 'react-hot-toast';
 
@@ -49,4 +48,3 @@ export const infoToast = (message: any) => showInfoToast(message);
 
 
 
-/* eslint-disable @typescript-eslint/no-explicit-any */

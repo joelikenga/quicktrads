@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+ 
 "use client";
 
 import { filterIcon, ordersIcon, searchIcon } from "@/app/global/svg";
@@ -210,7 +209,7 @@ export const Body = () => {
             }}
           >
             <Image
-              src={image}
+              src={image ||"/heroFallback.jpg"}
               className="w-full h-full object-cover"
               width={68.57}
               height={80}
@@ -263,9 +262,9 @@ export const Body = () => {
 
   return (
     <div className="flex flex-col px-4 md:px-0 gap-8 md:ml-[280px] mt-[150px]">
-      <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
+      <div className="flex flex-col gap-2.5 w-fit font-normal text-nowrap">
         <p className="text-text_strong text-[22px]">Orders</p>
-        <p className="text-text_weak sm:text-base text-[12px]">{`Add, update and select your address information`}</p>
+        <p className="text-text_weak sm:text-base text-sm">{`Add, update and select your address information`}</p>
       </div>
 
       {loading ? (
@@ -338,7 +337,7 @@ export const Body = () => {
               </div>
             </div>
           ) : (
-            <div className="mt-12 w-full">
+            <div className="mt-10 w-full">
               <div className="flex w-full justify-start items-center gap-4">
                 <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
                   {searchIcon()}
