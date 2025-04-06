@@ -19,7 +19,10 @@ import {
 } from "../../../utils/api/user/product";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { loggedInUser } from "../../../utils/api/user/auth";
-import { usePathname, useRouter } from "next/navigation";
+import { 
+  usePathname,
+  //  useRouter 
+  } from "next/navigation";
 import { useCurrency } from "@/context/CurrencyContext";
 import Link from "next/link";
 
