@@ -98,7 +98,7 @@ interface OrderRes {
 
 export const Body = () => {
   const { currency } = useCurrency();
-  const router = useRouter();
+  // const router = useRouter();
   const pathname = usePathname();
   const [addressEdit, setAddressEdit] = useState<boolean>(false);
   const [addressModal, setAddressModal] = useState<boolean>(false);
