@@ -1,6 +1,6 @@
 "use client";
 
-import {  useLogoutAdmin } from "@/app/global/logout";
+import { useLogoutAdmin } from "@/app/global/logout";
 import { ProfileAvatar } from "@/app/global/profileGenerator";
 import {
   analysis,
@@ -8,6 +8,7 @@ import {
   dashborad,
   logo,
   management,
+  notification,
   // notification,
 } from "@/app/global/svg";
 import Link from "next/link";
@@ -21,7 +22,7 @@ export const Navbar = () => {
   const [profileOption, setProfileOption] = useState<boolean>(false);
 
   return (
-    <nav className="w-full px-10 fixed top-0 z-50 bg-white border-b border-b-stroke_weak">
+    <nav className="w-full px-4 fixed top-0 z-50 bg-white border-b border-b-stroke_weak">
       <div className="mx-auto w-full max-w-7xl h-20 flex justify-between items-center">
         <i>{logo()}</i>
 
@@ -64,8 +65,8 @@ export const Navbar = () => {
             <p className={`text-text_strong font-medium`}>Analytics</p>
           </div>
 
-          {/* <div
-            onClick={() => router.push("/admin_dashboard/settings/notification")}
+          <div
+            // onClick={() => router.push("/admin_dashboard/settings/notification")}
             className={` ${
               pathname.includes("admin_dashboard/settings/notification")
                 ? " border-b-2  border-text_strong text-text_weak"
@@ -74,10 +75,13 @@ export const Navbar = () => {
           >
             <i>{notification()}</i>
             <p className={`text-text_strong font-medium`}>Notification</p>
-          </div> */}
+          </div>
 
           <div className="flex items-center relative">
-            <div className="flex items-center justify-center gap-2 cursor-pointer" onClick={() => setProfileOption(!profileOption)}>
+            <div
+              className="flex items-center justify-center gap-2 cursor-pointer"
+              onClick={() => setProfileOption(!profileOption)}
+            >
               <ProfileAvatar size="small" name={`Frank Emeka`} />
               <p className="text-text_strong font-medium">Frank Emeka</p>
               <i>{arrowDown()}</i>
@@ -108,7 +112,6 @@ export const Navbar = () => {
                 >
                   Content
                 </Link>
-
                 <div
                   onClick={handleLogout} // Use the stored function
                   className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"

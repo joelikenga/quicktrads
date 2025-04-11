@@ -9,7 +9,7 @@ const CustomerDetail = () => {
     <div>
       <Navbar />
 
-      <div className="px-10 w-full">
+      <div className="px-4 w-full">
         <div className="mx-auto w-full max-w-7xl">
           <SideNav />
           <Body />

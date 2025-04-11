@@ -41,7 +41,7 @@ export const SideNav = () => {
       </Link>
     </div>
 
-    <div className="overflow-y-scroll bg-white z-10 w-full md:hidden left-0 fixed top-[80px] h-[44px]  border-b border-b-stroke_weak text-base font-medium flex gap-2">
+    <div className="overflow-y-scroll bg-white z-10 w-full md:hidden left-0 fixed top-[80px] h-[44px]  border-b border-b-stroke_weak text-base font-medium flex gap-2 ">
       <Link
         href={`/admin_dashboard/management/products`}
         className={`w-full h-[38px] rounded-full items-center flex justify-center ${

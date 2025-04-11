@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { dates, arrowDown, add, invoiceIcn } from "@/app/global/svg";
 import { getOrderAnalytics } from "@/utils/api/admin/products";
@@ -79,7 +79,9 @@ const options = {
       callbacks: {
         title: () => "", // Remove the top title completely
         label: function (tooltipItem: any) {
-          const amount = tooltipItem.raw ? `$${formatNum(tooltipItem.raw, 2)}` : '$0';
+          const amount = tooltipItem.raw
+            ? `$${formatNum(tooltipItem.raw, 2)}`
+            : "$0";
           return `${amount}  |  ${tooltipItem.label}`;
         },
       },
@@ -103,27 +105,40 @@ const options = {
 };
 
 const formatDurationText = (days: number) => {
-  if (days === 365) return '1 year';
-  if (days === 30) return '1 month';
-  if (days === 14) return '2 weeks';
+  if (days === 365) return "1 year";
+  if (days === 30) return "1 month";
+  if (days === 14) return "2 weeks";
   return `${days} days`;
 };
 
 const generateDateLabels = (duration: number) => {
   const labels = [];
   // const today = new Date();
-  
+
   if (duration === 365) {
     // For yearly view, show all months
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     return months;
   }
-  
+
   // For other durations, show daily labels
   for (let i = duration - 1; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
-    const month = date.toLocaleString('default', { month: 'short' });
+    const month = date.toLocaleString("default", { month: "short" });
     const day = date.getDate();
     labels.push(`${month} ${day}`);
   }
@@ -138,7 +153,7 @@ const aggregateDataByPeriod = (data: any[], duration: number) => {
   if (duration === 365) {
     // For yearly view, aggregate by months
     const monthlyData = new Array(12).fill(0);
-    data.forEach(item => {
+    data.forEach((item) => {
       const monthIndex = item.month - 1; // Convert 1-based month to 0-based index
       monthlyData[monthIndex] = (monthlyData[monthIndex] || 0) + item.amount;
     });
@@ -152,18 +167,18 @@ const aggregateDataByPeriod = (data: any[], duration: number) => {
   startDate.setHours(0, 0, 0, 0);
 
   const dateMap = new Map();
-  data.forEach(item => {
+  data.forEach((item) => {
     const date = new Date(item.year, item.month - 1, item.day);
-    dateMap.set(date.toISOString().split('T')[0], item.amount);
+    dateMap.set(date.toISOString().split("T")[0], item.amount);
   });
 
   for (let i = 0; i < duration; i++) {
     const date = new Date(startDate);
     date.setDate(date.getDate() + i);
-    const dateKey = date.toISOString().split('T')[0];
+    const dateKey = date.toISOString().split("T")[0];
     result[i] = dateMap.get(dateKey) || 0;
   }
-  
+
   return result;
 };
 
@@ -209,25 +224,37 @@ export const BodyContent = () => {
       },
       {
         label: "Processing",
-        data: aggregateDataByPeriod(analyticsData?.processingOrderGraph, duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.processingOrderGraph,
+          duration
+        ),
         borderColor: "#1F0EC9",
         backgroundColor: "rgba(31, 14, 201, 0.2)",
       },
       {
         label: "Delivered",
-        data: aggregateDataByPeriod(analyticsData?.deliveredOrderGraph, duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.deliveredOrderGraph,
+          duration
+        ),
         borderColor: "#22C26E",
         backgroundColor: "rgba(34, 194, 110, 0.2)",
       },
       {
         label: "Refunded",
-        data: aggregateDataByPeriod(analyticsData?.refundedOrderGraph, duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.refundedOrderGraph,
+          duration
+        ),
         borderColor: "#727D79",
         backgroundColor: "rgba(114, 125, 121, 0.2)",
       },
       {
         label: "Cancelled",
-        data: aggregateDataByPeriod(analyticsData?.cancelledOrderGraph, duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.cancelledOrderGraph,
+          duration
+        ),
         borderColor: "#CC2125",
         backgroundColor: "rgba(204, 33, 37, 0.2)",
       },
@@ -235,7 +262,7 @@ export const BodyContent = () => {
   };
 
   return (
-    <div className="mt-[120px] ml-[240px] h-full max-w-[1080px] w-full pr-10">
+    <div className="mt-[150px] md:mt-[120px] md:ml-[240px] h-full max-w-[1080px] w-full px-4 md:pr-10">
       <div className="flex justify-between items-cener pb-[24px]">
         <p>Orders</p>
 
@@ -254,7 +281,7 @@ export const BodyContent = () => {
             } bg-white rounded-[12px] shadow-md`}
           >
             {[7, 14, 30, 365].map((d) => (
-              <p 
+              <p
                 key={d}
                 onClick={() => handleDurationSelect(d)}
                 className={`py-[10px] px-[24px] text-text_weak cursor-pointer hover:bg-fill ${
@@ -269,74 +296,108 @@ export const BodyContent = () => {
       </div>
 
       {/* amounts */}
-      <div className="flex border border-stroke_weak py-[16px] px-[48px] w-fit rounded-lg  gap-4">
-        <div className="pt-2">{invoiceIcn()}</div>
+      <div className="overflow-x-auto py-4">
+        <div className="flex border border-stroke_weak py-[16px] px-[48px] w-fit rounded-lg  gap-4">
+          <div className="pt-2">{invoiceIcn()}</div>
 
-        <section className="flex items-center gap-4">
-          <div className="w-[134px] h-[85px] text-center">
-            <p className="text-[14px] leading-[22px] text-text_weak">
-              Delivered
-            </p>
-            <p className={`${lora.className}text-[22px] leading-[28px] font-[400] py-2`}>
-              ${formatNum(analyticsData?.totalDeliveredOrders?.total_order_amount)}
-            </p>
-            <p className="text-[14px] leading-[22px] text-text_weak">
-              {analyticsData?.totalDeliveredOrders?.percentage_change}%
-            </p>
-          </div>
+          <section className="flex items-center gap-4">
+            <div className="w-[134px] h-[85px] text-center">
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                Delivered
+              </p>
+              <p
+                className={`${lora.className}text-[22px] leading-[28px] font-[400] py-2`}
+              >
+                $
+                {formatNum(
+                  analyticsData?.totalDeliveredOrders?.total_order_amount
+                )}
+              </p>
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                {analyticsData?.totalDeliveredOrders?.percentage_change}%
+              </p>
+            </div>
 
-          <div className="w-[134px] h-[85px] text-center border-x">
-            <p className="text-[14px] leading-[22px] text-text_weak">Pending</p>
-            <p className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}>
-              ${formatNum(analyticsData?.totalpendingOrders?.total_order_amount)}
-            </p>
-            <p className="text-[14px] leading-[22px] text-text_weak">
-              {analyticsData?.totalpendingOrders?.percentage_change}%
-            </p>
-          </div>
+            <div className="w-[134px] h-[85px] text-center border-x">
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                Pending
+              </p>
+              <p
+                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+              >
+                $
+                {formatNum(
+                  analyticsData?.totalpendingOrders?.total_order_amount
+                )}
+              </p>
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                {analyticsData?.totalpendingOrders?.percentage_change}%
+              </p>
+            </div>
 
-          <div className="w-[134px] h-[85px] text-center">
-            <p className="text-[14px] leading-[22px] text-text_weak">Processing</p>
-            <p className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}>
-              ${formatNum(analyticsData?.totalProcessingOrders?.total_order_amount)}
-            </p>
-            <p className="text-[14px] leading-[22px] text-text_weak">
-              {analyticsData?.totalProcessingOrders?.percentage_change}%
-            </p>
-          </div>
+            <div className="w-[134px] h-[85px] text-center">
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                Processing
+              </p>
+              <p
+                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+              >
+                $
+                {formatNum(
+                  analyticsData?.totalProcessingOrders?.total_order_amount
+                )}
+              </p>
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                {analyticsData?.totalProcessingOrders?.percentage_change}%
+              </p>
+            </div>
 
-          <div className="w-[134px] h-[85px] text-center border-x">
-            <p className="text-[14px] leading-[22px] text-text_weak">Refunded</p>
-            <p className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}>
-              ${formatNum(analyticsData?.totalRefundedOrders?.total_order_amount)}
-            </p>
-            <p className="text-[14px] leading-[22px] text-text_weak">
-              {analyticsData?.totalRefundedOrders?.percentage_change}%
-            </p>
-          </div>
+            <div className="w-[134px] h-[85px] text-center border-x">
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                Refunded
+              </p>
+              <p
+                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+              >
+                $
+                {formatNum(
+                  analyticsData?.totalRefundedOrders?.total_order_amount
+                )}
+              </p>
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                {analyticsData?.totalRefundedOrders?.percentage_change}%
+              </p>
+            </div>
 
-          <div className="w-[134px] h-[85px] text-center">
-            <p className="text-[14px] leading-[22px] text-text_weak">Cancelled</p>
-            <p className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}>
-              ${formatNum(analyticsData?.totalCalcelledOrders?.total_order_amount)}
-            </p>
-            <p className="text-[14px] leading-[22px] text-text_weak">
-              {analyticsData?.totalCalcelledOrders?.percentage_change}%
-            </p>
-          </div>
-        </section>
+            <div className="w-[134px] h-[85px] text-center">
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                Cancelled
+              </p>
+              <p
+                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+              >
+                $
+                {formatNum(
+                  analyticsData?.totalCalcelledOrders?.total_order_amount
+                )}
+              </p>
+              <p className="text-[14px] leading-[22px] text-text_weak">
+                {analyticsData?.totalCalcelledOrders?.percentage_change}%
+              </p>
+            </div>
+          </section>
+        </div>
       </div>
 
       {/* sales panel */}
-      {!analyticsData || (
-        !analyticsData.pendingOrderGraph &&
+      {!analyticsData ||
+      (!analyticsData.pendingOrderGraph &&
         !analyticsData.processingOrderGraph &&
         !analyticsData.deliveredOrderGraph &&
         !analyticsData.refundedOrderGraph &&
-        !analyticsData.cancelledOrderGraph
-      ) ? (
+        !analyticsData.cancelledOrderGraph) ? (
         <div className="flex justify-center h-[455px] items-center">
-          <div className=" flex flex-col w-[400px] h-[80px]">
+          <div className=" flex flex-col w-full md:w-[400px] md:h-[80px]">
             <span className="w-[40px] mx-auto">{invoiceIcn()}</span>
             <h3 className="pb-4 py-[16px] text-[18px] leading-[28px] text-center font-[500]">
               There are currently no products
@@ -359,7 +420,7 @@ export const BodyContent = () => {
       )}
 
       {/* indicators */}
-      <div className="w-full my-2 h-9 flex justify-center items-end gap-3">
+      <div className="w-full my-2 h-9 flex justify-center flex-wrap items-end gap-3">
         {/* ---Bridgecard--- */}
         <div className="inline-flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-warning_1"></span>
@@ -392,4 +453,3 @@ export const BodyContent = () => {
     </div>
   );
 };
- 

@@ -211,11 +211,11 @@ export const CustomerModal = () => {
 
   if (loading) {
     return (
-      <main className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
+      <main className="mt-[150px] md:mt-[120px] md:ml-[240px] h-full max-w-[1040px] w-full">
         <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
           <p className="text-text_strong text-[22px]">Customers</p>
         </div>
-        <div className="mt-12">
+        <div className="mt-10 overflow-x-auto">
           <TableSkeleton />
         </div>
       </main>
@@ -224,7 +224,7 @@ export const CustomerModal = () => {
 
   if (!allUsers.length) {
     return (
-      <main className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
+      <main className="mt-[150px] md:mt-[120px] md:ml-[240px] h-full max-w-[1040px] w-full">
         <p className="text-[18px] font-[400] text-text_strong pb-6">
           Customers
         </p>
@@ -246,11 +246,11 @@ export const CustomerModal = () => {
   }
 
   return (
-    <main className="mt-[120px] ml-[240px] h-full max-w-[1040px] w-full">
+    <main className="mt-[150px] md:mt-[120px] md:ml-[240px] h-full max-w-[1040px] w-full">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
-        <p className="text-text_strong text-[22px]">Customers</p>
+        <p className="text-text_strong text-base md:text-[22px]">Customers</p>
       </div>
-      <div className="mt-12">
+      <div className="mt-10">
         <div className="flex w-full justify-start items-center gap-4 pb-12">
           <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
             {searchIcon()}

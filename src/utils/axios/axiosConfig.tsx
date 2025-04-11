@@ -40,7 +40,7 @@ axiosInstance.interceptors.response.use(
     return response.data;
   },
   (error) => {
-    if (!error.response) {
+    if (!error?.response) {
       // Network error (no response)
       if (error.code === "ECONNABORTED") {
         // //errorToat("Network timeout. Please check your internet connection.");
@@ -56,14 +56,14 @@ axiosInstance.interceptors.response.use(
       // errorToast("Invalid login details");
     }
 
-    if (error.response.status === 413) {
+    if (error?.response?.status === 413) {
       // toast.error(
       //   "Payload too large."
       // );
     }
 
     // Server down or 5xx errors
-    if (error.response.status >= 500) {
+    if (error?.response?.status >= 500) {
       // //errorToat("Server down. Please try again later.");
     }
 

@@ -1,4 +1,3 @@
- 
 "use client";
 
 import {
@@ -40,12 +39,6 @@ interface Product {
   createdAt: string;
   updatedAt: string;
 }
-// interface Product {
-//   product: Record<string, any>; // Adjust this based on actual product structure
-//   quantity: number;
-//   currency: string;
-//   amount: number;
-// }
 
 interface ShippingDetails {
   address: string;
@@ -106,6 +99,54 @@ interface APIResponse {
     totalCount: number;
   };
 }
+
+// Helper function for status colors
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "pending":
+      return {
+        bg: "bg-warning_1 bg-opacity-10",
+        text: "text-warning_1",
+        dot: "bg-warning_1",
+      };
+    case "processing":
+      return {
+        bg: "bg-[#1F0EC9] bg-opacity-10",
+        text: "text-[#1F0EC9]",
+        dot: "bg-[#1F0EC9]",
+      };
+    case "delivered":
+      return {
+        bg: "bg-success_1 bg-opacity-10",
+        text: "text-success_1",
+        dot: "bg-success_1",
+      };
+    case "refunded":
+      return {
+        bg: "bg-black bg-opacity-10",
+        text: "text-black",
+        dot: "bg-black",
+      };
+    case "cancelled":
+      return {
+        bg: "bg-error_1 bg-opacity-10",
+        text: "text-error_1",
+        dot: "bg-error_1",
+      };
+    case "shipped":
+      return {
+        bg: "bg-[#1F0EC9] bg-opacity-10",
+        text: "text-[#1F0EC9]",
+        dot: "bg-[#1F0EC9]",
+      };
+    default:
+      return {
+        bg: "bg-[#1F0EC9] bg-opacity-10",
+        text: "text-[#1F0EC9]",
+        dot: "bg-[#1F0EC9]",
+      };
+  }
+};
 
 export const Body = () => {
   const router = useRouter(); // Add this at the top with other imports
@@ -193,29 +234,36 @@ export const Body = () => {
   };
 
   const OrderSkeleton = () => (
-    <tr>
+    <tr className="animate-pulse">
       <td className="p-4">
         <div className="flex gap-6 items-start w-[304px]">
           <div className="flex">
-            <div className="w-[68.57px] h-[80px] bg-text_weaker animate-pulse rounded-lg" />
+            {/* Multiple image placeholders to match the overlapping layout */}
+            <div className="w-[68.57px] h-[80px] bg-text_weaker rounded-lg" />
+            <div className="w-[68.57px] h-[80px] bg-text_weaker rounded-lg -ml-5" />
+            <div className="w-[68.57px] h-[80px] bg-text_weaker rounded-lg -ml-5" />
           </div>
-          <div className="h-4 w-32 bg-text_weaker animate-pulse rounded-full" />
+          <div className="flex-1">
+            <div className="h-4 w-32 bg-text_weaker rounded-full" />
+          </div>
         </div>
       </td>
       <td className="p-4">
-        <div className="h-4 w-24 bg-text_weaker animate-pulse rounded-full" />
+        <div className="flex flex-col gap-1">
+          <div className="h-4 w-24 bg-text_weaker rounded-full" />
+        </div>
       </td>
       <td className="p-4">
-        <div className="h-4 w-16 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-20 bg-text_weaker rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-4 w-28 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-28 bg-text_weaker rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-6 w-24 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-6 w-24 bg-text_weaker rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-4 w-8 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-8 bg-text_weaker rounded-full" />
       </td>
     </tr>
   );
@@ -225,9 +273,9 @@ export const Body = () => {
   };
 
   return (
-    <div className=" flex flex-col gap-8 h-[82px] px-4 md:px-0 md:ml-[280px] mt-[120px]">
+    <div className=" flex flex-col gap-8 h-[82px] px-4 md:px-0 md:ml-[280px] mt-[150px] md:mt-[120px]">
       <div className="flex flex-col gap-2 w-fit font-normal text-nowrap">
-        <p className="text-text_strong hidden md:block text-[22px]">Orders</p>
+        <p className="text-text_strong block text-sm md:text-[22px]">Orders</p>
       </div>
 
       {(filteredOrders === null || filteredOrders === undefined) && (
@@ -252,7 +300,7 @@ export const Body = () => {
       {/* ------ content ------- */}
 
       {filteredOrders && filteredOrders !== null && (
-        <div className="mt-12 w-full">
+        <div className="mt-10 w-full">
           {/* search and filter */}
           <div className="flex w-full justify-start items-center gap-4">
             <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
@@ -405,8 +453,12 @@ export const Body = () => {
                           </td>
                           <td className="p-4">
                             <div className="text-text_strong text-sm font-normal text-wrap">
-                              <div className="h-6 flex px-2 items-center justify-center rounded-full bg-[#F0F0FF] text-[#1F0EC9] text-sm font-medium gap-1">
-                                <span className="rounded-full w-2 h-2 bg-[#1F0EC9]"></span>
+                              <div
+                                className={`h-6 flex px-2 items-center justify-center rounded-full ${getStatusColor(item.order.status).bg} ${getStatusColor(item.order.status).text} text-sm font-medium gap-1`}
+                              >
+                                <span
+                                  className={`rounded-full w-2 h-2 ${getStatusColor(item.order.status).dot}`}
+                                ></span>
                                 <p>{item.order.status}</p>
                               </div>
                             </div>
@@ -526,4 +578,3 @@ export const Body = () => {
   );
 };
 
- 
