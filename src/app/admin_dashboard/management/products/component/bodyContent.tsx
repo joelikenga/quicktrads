@@ -203,7 +203,12 @@ export const BodyContent = () => {
     try {
       setIsUploading(true);
 
-      if (!productName || !price || images.length === 0 || !selectedSubCategory) {
+      if (
+        !productName ||
+        !price ||
+        images.length === 0 ||
+        !selectedSubCategory
+      ) {
         return;
       }
 
@@ -261,7 +266,12 @@ export const BodyContent = () => {
     try {
       setIsSaving(true);
 
-      if (!productName || !price || images.length === 0 || !selectedSubCategory) {
+      if (
+        !productName ||
+        !price ||
+        images.length === 0 ||
+        !selectedSubCategory
+      ) {
         return;
       }
 
@@ -337,7 +347,8 @@ export const BodyContent = () => {
       setAllProducts(transformedProducts);
       setPaginationData({
         hasPreviousPage: page > 1,
-        has_next_page: page < Math.ceil(transformedProducts.length / ITEMS_PER_PAGE),
+        has_next_page:
+          page < Math.ceil(transformedProducts.length / ITEMS_PER_PAGE),
         page: page,
         size: ITEMS_PER_PAGE,
         totalCount: transformedProducts.length,
@@ -393,10 +404,10 @@ export const BodyContent = () => {
 
   useEffect(() => {
     getAllproducts();
-    const interval = setInterval(() => {
-      getAllproducts();
-    }, 5000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(() => {
+    //   getAllproducts();
+    // }, 5000);
+    // return () => clearInterval(interval);
   }, [getAllproducts]);
 
   const handlePageChange = useCallback(
@@ -459,7 +470,9 @@ export const BodyContent = () => {
   const handleEditClick = useCallback(
     (e: React.MouseEvent, productId: string) => {
       e.stopPropagation();
-      router.push(`/admin_dashboard/management/products/${productId}?edit=true`);
+      router.push(
+        `/admin_dashboard/management/products/${productId}?edit=true`
+      );
     },
     [router]
   );
@@ -471,405 +484,407 @@ export const BodyContent = () => {
         await deleteProduct(productId);
         getAllproducts();
       } catch (error) {
-        console.error("Error deleting product:", error);
+        throw error;
       }
     },
     [getAllproducts]
   );
 
-  return (
-    <div className="mt-[120px] px-4 ml-0 md:px-0 md:ml-[240px] h-full max-w-[1040px] w-full">
-      {allProducts.length === 0 ? (
-        addProduct ? (
-          <div className="h-full">
-            {/* Add product form content */}
-            <div
-              onClick={() => setAddProduct(false)}
-              className="flex text-lg items-center pb-6 gap-1 cursor-pointer"
-            >
-              {arrowleft()}Add product
+  const AddProduct = () => {
+    return (
+      <div className="h-full">
+        {/* Add product form content */}
+        <div
+          onClick={() => setAddProduct(false)}
+          className="flex text-lg items-center pb-6 gap-1 cursor-pointer"
+        >
+          {arrowleft()}Add product
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-[73px]">
+          {/* the card sections where the images will be previewed and uploaded */}
+          <div>
+            <p>Image</p>
+            <div className="flex items-center text-sm gap-2 text-text_weak mt-2">
+              <i>{info()}</i>
+              <p className="">
+                {`The first image will be your cover image (Note: you can move or drag image)`}
+              </p>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-[73px]">
-              {/* the card sections where the images will be previewed and uploaded */}
-              <div>
-                <p>Image</p>
-                <div className="flex items-center text-sm gap-2 text-text_weak mt-2">
-                  <i>{info()}</i>
-                  <p className="">
-                    {`The first image will be your cover image (Note: you can move or drag image)`}
-                  </p>
-                </div>
-
-                <div className="pt-2">
-                  {/* the images panel */}
-                  <div className="flex flex-col-reverse md:flex-row gap-6 pt-2">
-                    {/* side images */}
-                    <div className="flex flex-col gap-4">
-                      {images.map((img, index) => (
+            <div className="pt-2">
+              {/* the images panel */}
+              <div className="flex flex-col-reverse md:flex-row gap-6 pt-2">
+                {/* side images */}
+                <div className="flex flex-row justify-between md:flex-col gap-4">
+                  {images.map((img, index) => (
+                    <div
+                      key={index}
+                      className="w-[100px] h-[120px] relative"
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                    >
+                      <Image
+                        src={img.preview}
+                        alt={`Product ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                      {hoveredIndex === index && (
                         <div
-                          key={index}
-                          className="w-[100px] h-[120px] relative"
-                          onMouseEnter={() => setHoveredIndex(index)}
-                          onMouseLeave={() => setHoveredIndex(null)}
+                          className="absolute top-2 right-2 cursor-pointer bg-black rounded-full p-2"
+                          onClick={() => handleDeleteImage(index)}
                         >
-                          <Image
-                            src={img.preview}
-                            alt={`Product ${index + 1}`}
-                            fill
-                            className="object-cover"
-                          />
-                          {hoveredIndex === index && (
-                            <div
-                              className="absolute top-2 right-2 cursor-pointer bg-black rounded-full p-2"
-                              onClick={() => handleDeleteImage(index)}
-                            >
-                              {trash()}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                      {images.length < 3 && (
-                        <div
-                          className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak hover:border-error_1 border-dashed cursor-pointer"
-                          onClick={() => fileInputRef.current?.click()}
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={handleDrop}
-                        >
-                          {imageadd()}
-                          <input
-                            type="file"
-                            hidden
-                            ref={fileInputRef}
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                          />
+                          {trash()}
                         </div>
                       )}
                     </div>
-
-                    {/* the main image */}
-                    <div>
-                      <div
-                        className="w-full md:w-[492px] h-[420px] md:h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={handleDrop}
-                        onClick={() =>
-                          images.length === 0 && fileInputRef.current?.click()
-                        }
-                      >
-                        {images.length > 0 ? (
-                          <Image
-                            src={images[0].preview}
-                            alt="Main product"
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <>
-                            <span>{imageadd()}</span>
-                            <p className="w-[240px] leading-[24px] text-text_weak text-sm">
-                              <span className="underline font-[400] text-text_strong">
-                                Click to upload
-                              </span>
-                              or drag and drop image here
-                            </p>
-                            <p className="text-xs text-text_weak mt-2">
-                              PNG or JPG(max. 500x600px)
-                            </p>
-                          </>
-                        )}
-                        <input
-                          type="file"
-                          hidden
-                          ref={fileInputRef}
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                        />
-                      </div>
+                  ))}
+                  {images.length < 3 && (
+                    <div
+                      className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak hover:border-error_1 border-dashed cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleDrop}
+                    >
+                      {imageadd()}
+                      <input
+                        type="file"
+                        hidden
+                        ref={fileInputRef}
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                      />
                     </div>
+                  )}
+                </div>
+
+                {/* the main image */}
+                <div>
+                  <div
+                    className="w-full md:w-[492px] h-[420px] md:h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={handleDrop}
+                    onClick={() =>
+                      images.length === 0 && fileInputRef.current?.click()
+                    }
+                  >
+                    {images.length > 0 ? (
+                      <Image
+                        src={images[0].preview}
+                        alt="Main product"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <>
+                        <span>{imageadd()}</span>
+                        <p className="w-[240px] leading-[24px] text-text_weak text-sm">
+                          <span className="underline font-[400] text-text_strong">
+                            Click to upload
+                          </span>
+                          or drag and drop image here
+                        </p>
+                        <p className="text-xs text-text_weak mt-2">
+                          PNG or JPG(max. 500x600px)
+                        </p>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      hidden
+                      ref={fileInputRef}
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* product options */}
+          <section className=" w-full md:w-[323px] h-[972px]">
+            {/* name */}
+            <div className="pb-4 w-full">
+              <label htmlFor="name">
+                <p className="pb-2 text-sm">Name</p>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  autoComplete="on"
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4"
+                />
+              </label>
+            </div>
+
+            {/* regular price */}
+            <div className="pb-4 w-full relative">
+              <label htmlFor="price">
+                <p className="pb-2 text-sm">Regular price</p>
+                <input
+                  type="number"
+                  name="price"
+                  id="price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="border  w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
+                />
+                {/* price list */}
+                <div className="absolute top-[38px] left-4">
+                  <p className="flex items-center text-sm text-text_weak gap-1">
+                    NGN ₦
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {/* discount price */}
+            <div className="pb-4 w-full relative">
+              <label htmlFor="discount-price">
+                <p className="pb-2 text-sm">
+                  Discount price{" "}
+                  <span className="text-sm  text-text_weak">(Optional)</span>
+                </p>
+                <input
+                  type="text"
+                  name="discount-price"
+                  id="discount-price"
+                  value={discountPrice}
+                  onChange={(e) => setDiscountPrice(e.target.value)}
+                  className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
+                />
+                {/* price list */}
+                <div className="absolute top-[38px] left-4">
+                  <p className="flex items-center text-sm text-text_weak gap-1">
+                    NGN ₦
+                  </p>
+                </div>
+
+                {/* discount display */}
+                {calculateDiscount() && (
+                  <div className="absolute top-[38px] right-4">
+                    <p className="flex items-center text-sm text-error_1">
+                      {calculateDiscount()}
+                    </p>
+                  </div>
+                )}
+              </label>
+            </div>
+
+            {/* size filter options */}
+            <div className="pt-4">
+              <p className="pb-2 text-sm">Size</p>
+
+              <p className="text-[12px] 2xl:text-sm text-text_weak relative flex gap-1  items-center">
+                <span>{info()}</span>Select all product available size below
+              </p>
+
+              {/* size option filter itself */}
+              <div className="flex gap-4 pt-4 flex-col">
+                <div className="flex gap-3">
+                  {/*  */}
+                  <div
+                    onClick={() => handleSizeToggle("XS")}
+                    className={`w-full border text-center rounded-lg ${
+                      selectedSizes.includes("XS")
+                        ? "border-text_strong bg-stroke_weak"
+                        : "border-stroke_strong"
+                    } py-2 px-6`}
+                  >
+                    <h3 className="text-sm">XS</h3>
+                    <p className="text-sm text-text_weak">Extra Small</p>
+                  </div>
+                  {/*  */}
+                  <div
+                    onClick={() => handleSizeToggle("S")}
+                    className={`w-full border text-center rounded-lg ${
+                      selectedSizes.includes("S")
+                        ? "border-text_strong bg-stroke_weak"
+                        : "border-stroke_strong"
+                    } py-2 px-6`}
+                  >
+                    <h3 className="text-sm">S</h3>
+                    <p className="text-sm text-text_weak">Small</p>
+                  </div>
+                </div>
+
+                {/*  */}
+                <div className="flex gap-3">
+                  {/*  */}
+                  <div
+                    onClick={() => handleSizeToggle("M")}
+                    className={`w-full border text-center rounded-lg ${
+                      selectedSizes.includes("M")
+                        ? "border-text_strong bg-stroke_weak"
+                        : "border-stroke_strong"
+                    } py-2 px-4 2xl:px-6`}
+                  >
+                    <h3 className="text-sm">M</h3>
+                    <p className="text-sm text-text_weak">Medium</p>
+                  </div>
+                  {/*  */}
+                  <div
+                    onClick={() => handleSizeToggle("L")}
+                    className={`w-full border text-center rounded-lg ${
+                      selectedSizes.includes("L")
+                        ? "border-text_strong bg-stroke_weak"
+                        : "border-stroke_strong"
+                    } py-2 px-4 2xl:px-6`}
+                  >
+                    <h3 className="text-sm">L</h3>
+                    <p className="text-sm text-text_weak">Large</p>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => handleSizeToggle("XL")}
+                  className={`w-full border text-center rounded-lg ${
+                    selectedSizes.includes("XL")
+                      ? "border-text_strong bg-stroke_weak"
+                      : "border-stroke_strong"
+                  } py-2 px-4 2xl:px-6`}
+                >
+                  <h3 className="text-sm">XL</h3>
+                  <p className="text-sm text-text_weak">Extra Large</p>
+                </div>
+              </div>
+
+              {/* category */}
+              <div className="pt-3">
+                <p className="text-sm pb-2">category</p>
+
+                <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
+                  {info()}Select a product category below
+                </p>
+
+                {/* category filter options */}
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <div
+                      onClick={() => handleCategoryChange("men")}
+                      className={`border rounded-lg text-center text-sm w-full ${
+                        selectedCategory === "men"
+                          ? "border-text_strong bg-stroke_weak"
+                          : "border-stroke_strong"
+                      } py-2 px-6`}
+                    >
+                      Men
+                    </div>
+                    <div
+                      onClick={() => handleCategoryChange("women")}
+                      className={`border rounded-lg text-center text-sm w-full ${
+                        selectedCategory === "women"
+                          ? "border-text_strong bg-stroke_weak"
+                          : "border-stroke_strong"
+                      } py-2 px-6`}
+                    >
+                      Women
+                    </div>
+                  </div>
+                  <div
+                    onClick={() => handleCategoryChange("unisex")}
+                    className={`border rounded-lg text-center text-sm w-full ${
+                      selectedCategory === "unisex"
+                        ? "border-text_strong bg-stroke_weak"
+                        : "border-stroke_strong"
+                    } py-2 px-6`}
+                  >
+                    Unisex
                   </div>
                 </div>
               </div>
 
-              {/* product options */}
-              <section className=" w-full md:w-[323px] h-[972px]">
-                {/* name */}
-                <div className="pb-4 w-full">
-                  <label htmlFor="name">
-                    <p className="pb-2 text-sm">Name</p>
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      autoComplete="on"
-                      value={productName}
-                      onChange={(e) => setProductName(e.target.value)}
-                      className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4"
-                    />
-                  </label>
-                </div>
+              {/* sub-category */}
+              <div className="pt-3">
+                <p className="text-sm pb-2">{selectedCategory} sub-category</p>
 
-                {/* regular price */}
-                <div className="pb-4 w-full relative">
-                  <label htmlFor="price">
-                    <p className="pb-2 text-sm">Regular price</p>
-                    <input
-                      type="number"
-                      name="price"
-                      id="price"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="border  w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
-                    />
-                    {/* price list */}
-                    <div className="absolute top-[38px] left-4">
-                      <p className="flex items-center text-sm text-text_weak gap-1">
-                        NGN ₦
-                      </p>
-                    </div>
-                  </label>
-                </div>
+                <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
+                  {info()}Select a sub category below
+                </p>
 
-                {/* discount price */}
-                <div className="pb-4 w-full relative">
-                  <label htmlFor="discount-price">
-                    <p className="pb-2 text-sm">
-                      Discount price{" "}
-                      <span className="text-sm  text-text_weak">
-                        (Optional)
-                      </span>
-                    </p>
-                    <input
-                      type="text"
-                      name="discount-price"
-                      id="discount-price"
-                      value={discountPrice}
-                      onChange={(e) => setDiscountPrice(e.target.value)}
-                      className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
-                    />
-                    {/* price list */}
-                    <div className="absolute top-[38px] left-4">
-                      <p className="flex items-center text-sm text-text_weak gap-1">
-                        NGN ₦
-                      </p>
-                    </div>
-
-                    {/* discount display */}
-                    {calculateDiscount() && (
-                      <div className="absolute top-[38px] right-4">
-                        <p className="flex items-center text-sm text-error_1">
-                          {calculateDiscount()}
-                        </p>
-                      </div>
-                    )}
-                  </label>
-                </div>
-
-                {/* size filter options */}
-                <div className="pt-4">
-                  <p className="pb-2 text-sm">Size</p>
-
-                  <p className="text-[12px] 2xl:text-sm text-text_weak relative flex gap-1  items-center">
-                    <span>{info()}</span>Select all product available size below
-                  </p>
-
-                  {/* size option filter itself */}
-                  <div className="flex gap-4 pt-4 flex-col">
-                    <div className="flex gap-3">
-                      {/*  */}
-                      <div
-                        onClick={() => handleSizeToggle("XS")}
-                        className={`w-full border text-center rounded-lg ${
-                          selectedSizes.includes("XS")
-                            ? "border-text_strong bg-stroke_weak"
-                            : "border-stroke_strong"
-                        } py-2 px-6`}
-                      >
-                        <h3 className="text-sm">XS</h3>
-                        <p className="text-sm text-text_weak">Extra Small</p>
-                      </div>
-                      {/*  */}
-                      <div
-                        onClick={() => handleSizeToggle("S")}
-                        className={`w-full border text-center rounded-lg ${
-                          selectedSizes.includes("S")
-                            ? "border-text_strong bg-stroke_weak"
-                            : "border-stroke_strong"
-                        } py-2 px-6`}
-                      >
-                        <h3 className="text-sm">S</h3>
-                        <p className="text-sm text-text_weak">Small</p>
-                      </div>
-                    </div>
-
-                    {/*  */}
-                    <div className="flex gap-3">
-                      {/*  */}
-                      <div
-                        onClick={() => handleSizeToggle("M")}
-                        className={`w-full border text-center rounded-lg ${
-                          selectedSizes.includes("M")
-                            ? "border-text_strong bg-stroke_weak"
-                            : "border-stroke_strong"
-                        } py-2 px-4 2xl:px-6`}
-                      >
-                        <h3 className="text-sm">M</h3>
-                        <p className="text-sm text-text_weak">Medium</p>
-                      </div>
-                      {/*  */}
-                      <div
-                        onClick={() => handleSizeToggle("L")}
-                        className={`w-full border text-center rounded-lg ${
-                          selectedSizes.includes("L")
-                            ? "border-text_strong bg-stroke_weak"
-                            : "border-stroke_strong"
-                        } py-2 px-4 2xl:px-6`}
-                      >
-                        <h3 className="text-sm">L</h3>
-                        <p className="text-sm text-text_weak">Large</p>
-                      </div>
-                    </div>
-
+                <div className="grid grid-cols-2 flex-wrap gap-3 w-full">
+                  {subCategories[selectedCategory].map((subCat) => (
                     <div
-                      onClick={() => handleSizeToggle("XL")}
-                      className={`w-full border text-center rounded-lg ${
-                        selectedSizes.includes("XL")
+                      key={subCat}
+                      onClick={() => setSelectedSubCategory(subCat)}
+                      className={`border rounded-lg text-center text-sm col-span-1 ${
+                        selectedSubCategory === subCat
                           ? "border-text_strong bg-stroke_weak"
                           : "border-stroke_strong"
-                      } py-2 px-4 2xl:px-6`}
+                      } py-2 px-6 cursor-pointer`}
                     >
-                      <h3 className="text-sm">XL</h3>
-                      <p className="text-sm text-text_weak">Extra Large</p>
+                      {subCat}
                     </div>
-                  </div>
-
-                  {/* category */}
-                  <div className="pt-3">
-                    <p className="text-sm pb-2">category</p>
-
-                    <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
-                      {info()}Select a product category below
-                    </p>
-
-                    {/* category filter options */}
-                    <div className="flex flex-col gap-3">
-                      <div className="flex gap-2">
-                        <div
-                          onClick={() => handleCategoryChange("men")}
-                          className={`border rounded-lg text-center text-sm w-full ${
-                            selectedCategory === "men"
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-6`}
-                        >
-                          Men
-                        </div>
-                        <div
-                          onClick={() => handleCategoryChange("women")}
-                          className={`border rounded-lg text-center text-sm w-full ${
-                            selectedCategory === "women"
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-6`}
-                        >
-                          Women
-                        </div>
-                      </div>
-                      <div
-                        onClick={() => handleCategoryChange("unisex")}
-                        className={`border rounded-lg text-center text-sm w-full ${
-                          selectedCategory === "unisex"
-                            ? "border-text_strong bg-stroke_weak"
-                            : "border-stroke_strong"
-                        } py-2 px-6`}
-                      >
-                        Unisex
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* sub-category */}
-                  <div className="pt-3">
-                    <p className="text-sm pb-2">
-                      {selectedCategory} sub-category
-                    </p>
-
-                    <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
-                      {info()}Select a sub category below
-                    </p>
-
-                    <div className="grid grid-cols-2 flex-wrap gap-3 w-full">
-                      {subCategories[selectedCategory].map((subCat) => (
-                        <div
-                          key={subCat}
-                          onClick={() => setSelectedSubCategory(subCat)}
-                          className={`border rounded-lg text-center text-sm col-span-1 ${
-                            selectedSubCategory === subCat
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-6 cursor-pointer`}
-                        >
-                          {subCat}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* about product */}
-                  <div className="pt-3">
-                    <p className="pb-2">About product</p>
-
-                    <textarea
-                      name=""
-                      className="w-full h-[88px] border rounded-lg text-sm  resize-none border-stroke_strong outline-none focus:border-stroke_strong placeholder-text-text_weak p-2"
-                      id=""
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    ></textarea>
-                  </div>
+                  ))}
                 </div>
+              </div>
 
-                <div className="flex flex-col lg:gap-2 2xl:gap-6 pt-4 pb-2">
-                  <button
-                    onClick={handleProductUpload}
-                    disabled={isUploading || isSaving || images.length === 0}
-                    className={`rounded-full py-[10px] px-18 border border-text_strong text-center text-sm 
-            ${
-              isUploading || isSaving
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-text_strong hover:bg-text_strong/90"
-            } 
-            text-white flex items-center justify-center`}
-                  >
-                    {isUploading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                        Uploading...
-                      </>
-                    ) : (
-                      "Upload product"
-                    )}
-                  </button>
+              {/* about product */}
+              <div className="pt-3">
+                <p className="pb-2">About product</p>
 
-                  <button
-                    onClick={handleSaveToDraft}
-                    disabled={isUploading || isSaving || images.length === 0}
-                    className="rounded-full py-[10px] px-18 border border-stroke_strong text-center text-sm text-text_strong flex justify-center items-center "
-                  >
-                    {isSaving ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save to draft"
-                    )}
-                  </button>
-                </div>
-              </section>
+                <textarea
+                  name=""
+                  className="w-full h-[88px] border rounded-lg text-sm  resize-none border-stroke_strong outline-none focus:border-stroke_strong placeholder-text-text_weak p-2"
+                  id=""
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                ></textarea>
+              </div>
             </div>
-          </div>
+
+            <div className="flex flex-col lg:gap-2 2xl:gap-6 pt-4 pb-2 gap-4">
+              <button
+                onClick={handleProductUpload}
+                disabled={isUploading || isSaving || images.length === 0}
+                className={`rounded-full py-[10px] px-18 border border-text_strong text-center text-sm 
+      ${
+        isUploading || isSaving
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-text_strong hover:bg-text_strong/90"
+      } 
+      text-white flex items-center justify-center`}
+              >
+                {isUploading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                    Uploading...
+                  </>
+                ) : (
+                  "Upload product"
+                )}
+              </button>
+
+              <button
+                onClick={handleSaveToDraft}
+                disabled={isUploading || isSaving || images.length === 0}
+                className="rounded-full py-[10px] px-18 border border-stroke_strong text-center text-sm text-text_strong flex justify-center items-center "
+              >
+                {isSaving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save to draft"
+                )}
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="mt-[150px] md:mt-[120px] px-4 ml-0 md:px-0 md:ml-[240px] h-full max-w-[1040px] w-full">
+      {allProducts.length === 0 ? (
+        addProduct ? (
+          <AddProduct />
         ) : (
           <div className="w-full flex flex-col">
             <div className="w-full flex items-center justify-start">
@@ -904,395 +919,7 @@ export const BodyContent = () => {
       ) : (
         <>
           {addProduct ? (
-            <div className="h-full">
-              {/* Add product form content */}
-              <div
-                onClick={() => setAddProduct(false)}
-                className="flex text-lg items-center pb-6 gap-1 cursor-pointer"
-              >
-                {arrowleft()}Add product
-              </div>
-              <div className="flex gap-[73px]">
-                {/* the card sections where the images will be previewed and uploaded */}
-                <div>
-                  <p>Image</p>
-                  <div className="flex items-center text-sm gap-2 text-text_weak mt-2">
-                    <i>{info()}</i>
-                    <p className="">
-                      {`The first image will be your cover image (Note: you can move or drag image)`}
-                    </p>
-                  </div>
-
-                  <div className="pt-2">
-                    {/* the images panel */}
-                    <div className="flex gap-6 pt-2">
-                      {/* side images */}
-                      <div className="flex flex-col gap-4">
-                        {images.map((img, index) => (
-                          <div
-                            key={index}
-                            className="w-[100px] h-[120px] relative"
-                            onMouseEnter={() => setHoveredIndex(index)}
-                            onMouseLeave={() => setHoveredIndex(null)}
-                          >
-                            <Image
-                              src={img.preview}
-                              alt={`Product ${index + 1}`}
-                              fill
-                              className="object-cover"
-                            />
-                            {hoveredIndex === index && (
-                              <div
-                                className="absolute top-2 right-2 cursor-pointer bg-black rounded-full p-2"
-                                onClick={() => handleDeleteImage(index)}
-                              >
-                                {trash()}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                        {images.length < 3 && (
-                          <div
-                            className="w-[100px] flex justify-center items-center h-[120px] border border-text_weak hover:border-error_1 border-dashed cursor-pointer"
-                            onClick={() => fileInputRef.current?.click()}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={handleDrop}
-                          >
-                            {imageadd()}
-                            <input
-                              type="file"
-                              hidden
-                              ref={fileInputRef}
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                            />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* the main image */}
-                      <div>
-                        <div
-                          className="w-[492px] h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={handleDrop}
-                          onClick={() =>
-                            images.length === 0 && fileInputRef.current?.click()
-                          }
-                        >
-                          {images.length > 0 ? (
-                            <Image
-                              src={images[0].preview}
-                              alt="Main product"
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <>
-                              <span>{imageadd()}</span>
-                              <p className="w-[240px] leading-[24px] text-text_weak text-sm">
-                                <span className="underline font-[400] text-text_strong">
-                                  Click to upload
-                                </span>
-                                or drag and drop image here
-                              </p>
-                              <p className="text-xs text-text_weak mt-2">
-                                PNG or JPG(max. 500x600px)
-                              </p>
-                            </>
-                          )}
-                          <input
-                            type="file"
-                            hidden
-                            ref={fileInputRef}
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* product options */}
-                <section className="w-[323px] h-[972px]">
-                  {/* name */}
-                  <div className="pb-4 w-full">
-                    <label htmlFor="name">
-                      <p className="pb-2 text-sm">Name</p>
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        autoComplete="on"
-                        value={productName}
-                        onChange={(e) => setProductName(e.target.value)}
-                        className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-4"
-                      />
-                    </label>
-                  </div>
-
-                  {/* regular price */}
-                  <div className="pb-4 w-full relative">
-                    <label htmlFor="price">
-                      <p className="pb-2 text-sm">Regular price</p>
-                      <input
-                        type="number"
-                        name="price"
-                        id="price"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        className="border  w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
-                      />
-                      {/* price list */}
-                      <div className="absolute top-[38px] left-4">
-                        <p className="flex items-center text-sm text-text_weak gap-1">
-                          NGN ₦
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-
-                  {/* discount price */}
-                  <div className="pb-4 w-full relative">
-                    <label htmlFor="discount-price">
-                      <p className="pb-2 text-sm">
-                        Discount price{" "}
-                        <span className="text-sm  text-text_weak">
-                          (Optional)
-                        </span>
-                      </p>
-                      <input
-                        type="text"
-                        name="discount-price"
-                        id="discount-price"
-                        value={discountPrice}
-                        onChange={(e) => setDiscountPrice(e.target.value)}
-                        className="border w-full border-stroke_strong outline-none focus:border-stroke_strong placeholder:text-text_weak rounded-md h-[40px] py-2 pl-24"
-                      />
-                      {/* price list */}
-                      <div className="absolute top-[38px] left-4">
-                        <p className="flex items-center text-sm text-text_weak gap-1">
-                          NGN ₦
-                        </p>
-                      </div>
-
-                      {/* discount display */}
-                      {calculateDiscount() && (
-                        <div className="absolute top-[38px] right-4">
-                          <p className="flex items-center text-sm text-error_1">
-                            {calculateDiscount()}
-                          </p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-
-                  {/* size filter options */}
-                  <div className="pt-4">
-                    <p className="pb-2 text-sm">Size</p>
-
-                    <p className="text-[12px] 2xl:text-sm text-text_weak relative flex gap-1  items-center">
-                      <span>{info()}</span>Select all product available size
-                      below
-                    </p>
-
-                    {/* size option filter itself */}
-                    <div className="flex gap-4 pt-4 flex-col">
-                      <div className="flex gap-3">
-                        {/*  */}
-                        <div
-                          onClick={() => handleSizeToggle("XS")}
-                          className={`w-full border text-center rounded-lg ${
-                            selectedSizes.includes("XS")
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-6`}
-                        >
-                          <h3 className="text-sm">XS</h3>
-                          <p className="text-sm text-text_weak">Extra Small</p>
-                        </div>
-                        {/*  */}
-                        <div
-                          onClick={() => handleSizeToggle("S")}
-                          className={`w-full border text-center rounded-lg ${
-                            selectedSizes.includes("S")
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-6`}
-                        >
-                          <h3 className="text-sm">S</h3>
-                          <p className="text-sm text-text_weak">Small</p>
-                        </div>
-                      </div>
-
-                      {/*  */}
-                      <div className="flex gap-3">
-                        {/*  */}
-                        <div
-                          onClick={() => handleSizeToggle("M")}
-                          className={`w-full border text-center rounded-lg ${
-                            selectedSizes.includes("M")
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-4 2xl:px-6`}
-                        >
-                          <h3 className="text-sm">M</h3>
-                          <p className="text-sm text-text_weak">Medium</p>
-                        </div>
-                        {/*  */}
-                        <div
-                          onClick={() => handleSizeToggle("L")}
-                          className={`w-full border text-center rounded-lg ${
-                            selectedSizes.includes("L")
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-4 2xl:px-6`}
-                        >
-                          <h3 className="text-sm">L</h3>
-                          <p className="text-sm text-text_weak">Large</p>
-                        </div>
-                      </div>
-
-                      <div
-                        onClick={() => handleSizeToggle("XL")}
-                        className={`w-full border text-center rounded-lg ${
-                          selectedSizes.includes("XL")
-                            ? "border-text_strong bg-stroke_weak"
-                            : "border-stroke_strong"
-                        } py-2 px-4 2xl:px-6`}
-                      >
-                        <h3 className="text-sm">XL</h3>
-                        <p className="text-sm text-text_weak">Extra Large</p>
-                      </div>
-                    </div>
-
-                    {/* category */}
-                    <div className="pt-3">
-                      <p className="text-sm pb-2">category</p>
-
-                      <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
-                        {info()}Select a product category below
-                      </p>
-
-                      {/* category filter options */}
-                      <div className="flex flex-col gap-3">
-                        <div className="flex gap-2">
-                          <div
-                            onClick={() => handleCategoryChange("men")}
-                            className={`border rounded-lg text-center text-sm w-full ${
-                              selectedCategory === "men"
-                                ? "border-text_strong bg-stroke_weak"
-                                : "border-stroke_strong"
-                            } py-2 px-6`}
-                          >
-                            Men
-                          </div>
-                          <div
-                            onClick={() => handleCategoryChange("women")}
-                            className={`border rounded-lg text-center text-sm w-full ${
-                              selectedCategory === "women"
-                                ? "border-text_strong bg-stroke_weak"
-                                : "border-stroke_strong"
-                            } py-2 px-6`}
-                          >
-                            Women
-                          </div>
-                        </div>
-                        <div
-                          onClick={() => handleCategoryChange("unisex")}
-                          className={`border rounded-lg text-center text-sm w-full ${
-                            selectedCategory === "unisex"
-                              ? "border-text_strong bg-stroke_weak"
-                              : "border-stroke_strong"
-                          } py-2 px-6`}
-                        >
-                          Unisex
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* sub-category */}
-                    <div className="pt-3">
-                      <p className="text-sm pb-2">
-                        {selectedCategory} sub-category
-                      </p>
-
-                      <p className="flex gap-1 text-sm text-text_weak pb-2 items-center">
-                        {info()}Select a sub category below
-                      </p>
-
-                      <div className="grid grid-cols-2 flex-wrap gap-3 w-full">
-                        {subCategories[selectedCategory].map((subCat) => (
-                          <div
-                            key={subCat}
-                            onClick={() => setSelectedSubCategory(subCat)}
-                            className={`border rounded-lg text-center text-sm col-span-1 ${
-                              selectedSubCategory === subCat
-                                ? "border-text_strong bg-stroke_weak"
-                                : "border-stroke_strong"
-                            } py-2 px-6 cursor-pointer`}
-                          >
-                            {subCat}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* about product */}
-                    <div className="pt-3">
-                      <p className="pb-2">About product</p>
-
-                      <textarea
-                        name=""
-                        className="w-full h-[88px] border rounded-lg text-sm  resize-none border-stroke_strong outline-none focus:border-stroke_strong placeholder-text-text_weak p-2"
-                        id=""
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                      ></textarea>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col lg:gap-2 2xl:gap-6 pt-4 pb-2">
-                    <button
-                      onClick={handleProductUpload}
-                      disabled={isUploading || isSaving || images.length === 0}
-                      className={`rounded-full py-[10px] px-18 border border-text_strong text-center text-sm 
-                        ${
-                          isUploading || isSaving
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-text_strong hover:bg-text_strong/90"
-                        } 
-                        text-white flex items-center justify-center`}
-                    >
-                      {isUploading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                          Uploading...
-                        </>
-                      ) : (
-                        "Upload product"
-                      )}
-                    </button>
-
-                    <button
-                      onClick={handleSaveToDraft}
-                      disabled={isUploading || isSaving || images.length === 0}
-                      className="rounded-full py-[10px] px-18 border border-stroke_strong text-center text-sm text-text_strong flex justify-center items-center "
-                    >
-                      {isSaving ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2" />
-                          Saving...
-                        </>
-                      ) : (
-                        "Save to draft"
-                      )}
-                    </button>
-                  </div>
-                </section>
-              </div>
-            </div>
+            <AddProduct />
           ) : (
             /* Products table view */
             <div className="w-full flex flex-col gap-6">
@@ -1302,8 +929,8 @@ export const BodyContent = () => {
                 </div>
               </div>
               {/* Search section */}
-              <div className="w-full flex items-center justify-between">
-                <div className="h-8 rounded-full border border-stroke_strong flex items-center gap-2 px-4 bg-fill">
+              <div className="w-full flex items-center justify-between gap-8">
+                <div className="h-8 rounded-full border  flex items-center gap-2 px-4 bg-fill">
                   {searchIcon()}
                   <input
                     type="text"
@@ -1317,14 +944,14 @@ export const BodyContent = () => {
                 {/* add products */}
                 <button
                   onClick={() => setAddProduct(true)}
-                  className="w-[160px] h-8 bg-text_strong text-background rounded-full"
+                  className="w-[160px] h-8 bg-text_strong text-background rounded-full text-sm md:text-base"
                 >
                   Add Product
                 </button>
               </div>
               {/* Products table */}
               <div className="overflow-x-auto">
-                <table className="w-full divide-y divide-stroke_weak mt-12 overflow-x-auto">
+                <table className="w-full divide-y divide-stroke_weak mt-10 overflow-x-auto">
                   <thead className="text-start bg-background border-y">
                     <tr className="">
                       <th
@@ -1350,7 +977,7 @@ export const BodyContent = () => {
 
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                        className="px-4 py-[12px] text-start text-nowrap  font-normal text-sm h-10"
                       >
                         Sub-category
                       </th>
@@ -1469,7 +1096,9 @@ export const BodyContent = () => {
                                 {editIcon()}
                               </i>
                               <i
-                                onClick={(e) => handleDeleteClick(e, product.id)}
+                                onClick={(e) =>
+                                  handleDeleteClick(e, product.id)
+                                }
                                 className="cursor-pointer"
                               >
                                 {trash()}
@@ -1498,7 +1127,7 @@ export const BodyContent = () => {
               </div>
 
               {/* pagination */}
-              <div className="flex justify-between p-4 border-t">
+              <div className="flex justify-between items-center p-4 border-t">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => handlePageChange(page - 1)}
@@ -1511,7 +1140,7 @@ export const BodyContent = () => {
                   >
                     {" "}
                     <i>{previousIcon()}</i>
-                    <> Previous</>
+                    <p className="hidden md:block"> Previous</p>
                   </button>
 
                   <div className="flex gap-1">
@@ -1525,7 +1154,7 @@ export const BodyContent = () => {
                           typeof pageNum === "number" &&
                           handlePageChange(pageNum)
                         }
-                        className={`h-10 w-10 flex items-center rounded-full justify-center ${
+                        className={`md:h-10 md:w-10 h-8 w-8 flex items-center rounded-full justify-center  text-sm md:text-base${
                           pageNum === paginationData.page
                             ? "bg-fill text-black  border"
                             : typeof pageNum === "number"
@@ -1549,7 +1178,7 @@ export const BodyContent = () => {
                         : "cursor-pointer"
                     }`}
                   >
-                    <>Next</>
+                    <p className="hidden md:block">Next</p>
                     <i>{nextIcon()}</i>
                   </button>
                 </div>

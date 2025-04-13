@@ -1,4 +1,3 @@
- 
 import { dates, arrowDown, cashIcon } from "@/app/global/svg";
 import { useState, useEffect } from "react";
 import { Lora } from "next/font/google";
@@ -45,7 +44,7 @@ const options = {
   elements: {
     line: {
       tension: 0.5, // Adjust the curve tension of the line
-      spanGaps: true // Enable gaps for missing data
+      spanGaps: true, // Enable gaps for missing data
     },
   },
   plugins: {
@@ -106,19 +105,19 @@ const generateDateLabels = (duration: number) => {
   const labels = [];
   const today = new Date();
   const currentYear = today.getFullYear();
-  
+
   if (duration === 365) {
     // For yearly view, get months from start of year
     for (let i = 0; i < 12; i++) {
       const date = new Date(currentYear, i, 1);
-      labels.push(date.toLocaleString('default', { month: 'short' }));
+      labels.push(date.toLocaleString("default", { month: "short" }));
     }
   } else {
     // For other durations, get exact number of past days
     for (let i = duration - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const month = date.toLocaleString('default', { month: 'short' });
+      const month = date.toLocaleString("default", { month: "short" });
       const day = date.getDate();
       labels.push(`${month} ${day}`);
     }
@@ -133,7 +132,7 @@ const aggregateDataByPeriod = (data: any[], duration: number) => {
 
   const today = new Date();
   const result = new Array(duration === 365 ? 12 : duration).fill(0);
-  
+
   if (duration === 365) {
     // Yearly view - aggregate by months
     data.forEach((item) => {
@@ -158,7 +157,7 @@ const aggregateDataByPeriod = (data: any[], duration: number) => {
       }
     });
   }
-  
+
   return result;
 };
 
@@ -179,7 +178,7 @@ export const BodyContent = () => {
         setAnalyticsData(res.data);
       }
     } catch (error) {
-      console.error("Error fetching analytics:", error);
+      throw error
     }
   };
 
@@ -193,31 +192,46 @@ export const BodyContent = () => {
     datasets: [
       {
         label: "Pending",
-        data: aggregateDataByPeriod(analyticsData?.pendingOrderGraph || [], duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.pendingOrderGraph || [],
+          duration
+        ),
         borderColor: "#E8A72D",
         backgroundColor: "rgba(232, 167, 45, 0.2)",
       },
       {
         label: "Processing",
-        data: aggregateDataByPeriod(analyticsData?.processingOrderGraph || [], duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.processingOrderGraph || [],
+          duration
+        ),
         borderColor: "#1F0EC9",
         backgroundColor: "rgba(31, 14, 201, 0.2)",
       },
       {
         label: "Delivered",
-        data: aggregateDataByPeriod(analyticsData?.deliveredOrderGraph || [], duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.deliveredOrderGraph || [],
+          duration
+        ),
         borderColor: "#22C26E",
         backgroundColor: "rgba(34, 194, 110, 0.2)",
       },
       {
         label: "Cancelled",
-        data: aggregateDataByPeriod(analyticsData?.cancelledOrderGraph || [], duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.cancelledOrderGraph || [],
+          duration
+        ),
         borderColor: "#CC2125",
         backgroundColor: "rgba(204, 33, 37, 0.2)",
       },
       {
         label: "Refunded",
-        data: aggregateDataByPeriod(analyticsData?.refundedOrderGraph || [], duration),
+        data: aggregateDataByPeriod(
+          analyticsData?.refundedOrderGraph || [],
+          duration
+        ),
         borderColor: "#727D79",
         backgroundColor: "rgba(114, 125, 121, 0.2)",
       },
@@ -229,12 +243,12 @@ export const BodyContent = () => {
   };
 
   return (
-    <div className="mt-[120px] ml-[240px] h-full max-w-[1080px] w-full pr-10">
+    <div className=" mt-[150px] md:mt-[120px] md:ml-[240px] h-full max-w-[1080px] w-full px-4 md:pr-10">
       <div className="">
         <div className="flex justify-between items-cener pb-[24px]">
           <p>Sales</p>
 
-          <p
+          <div
             onClick={() => setDays((prev) => !prev)}
             className="flex relative gap-2 cursor-pointer selection:no-underline items-center"
           >
@@ -281,88 +295,90 @@ export const BodyContent = () => {
                 1 year
               </p>
             </div>
-          </p>
+          </div>
         </div>
 
         {/* amounts */}
-        <div className="flex border border-stroke_weak py-[16px] px-[48px] w-fit rounded-lg  gap-4">
-          <div className="pt-2">{cashIcon()}</div>
+        <div className="overflow-x-auto py-4">
+          <div className="flex border border-stroke_weak py-[16px] px-[48px] w-fit rounded-lg  gap-4">
+            <div className="pt-2">{cashIcon()}</div>
 
-          <section className="flex items-center gap-4">
-            <div className="w-[134px] h-[85px] text-center">
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                Total sales
-              </p>
-              <p
-                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
-              >
-                ${formatNum(analyticsData?.totalSales?.total_order_amount)}
-              </p>
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                {analyticsData?.totalSales?.percentage_change}%
-              </p>
-            </div>
+            <section className="flex items-center gap-4">
+              <div className="w-[134px] h-[85px] text-center">
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  Total sales
+                </p>
+                <p
+                  className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+                >
+                  ${formatNum(analyticsData?.totalSales?.total_order_amount)}
+                </p>
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  {analyticsData?.totalSales?.percentage_change}%
+                </p>
+              </div>
 
-            <div className="w-[.5px] h-[58px] bg-stroke_weak" />
+              <div className="w-[.5px] h-[58px] bg-stroke_weak" />
 
-            <div className="w-[134px] h-[85px] text-center">
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                Total order
-              </p>
-              <p
-                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
-              >
-                ${formatNum(analyticsData?.totalOrders?.total_order_amount)}
-              </p>
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                {analyticsData?.totalOrders?.percentage_change}%
-              </p>
-            </div>
+              <div className="w-[134px] h-[85px] text-center">
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  Total order
+                </p>
+                <p
+                  className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+                >
+                  ${formatNum(analyticsData?.totalOrders?.total_order_amount)}
+                </p>
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  {analyticsData?.totalOrders?.percentage_change}%
+                </p>
+              </div>
 
-            <div className="w-[.5px] h-[58px] bg-stroke_weak" />
+              <div className="w-[.5px] h-[58px] bg-stroke_weak" />
 
-            <div className="w-[134px] h-[85px] text-center">
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                Cancelled
-              </p>
-              <p
-                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
-              >
-                ${formatNum(analyticsData?.totalCalcelled?.total_order_amount)}
-              </p>
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                {analyticsData?.totalCalcelled?.percentage_change}%
-              </p>
-            </div>
+              <div className="w-[134px] h-[85px] text-center">
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  Cancelled
+                </p>
+                <p
+                  className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+                >
+                  $
+                  {formatNum(analyticsData?.totalCalcelled?.total_order_amount)}
+                </p>
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  {analyticsData?.totalCalcelled?.percentage_change}%
+                </p>
+              </div>
 
-            <div className="w-[.5px] h-[58px] bg-stroke_weak" />
+              <div className="w-[.5px] h-[58px] bg-stroke_weak" />
 
-            <div className="w-[134px] h-[85px] text-center">
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                Refunded
-              </p>
-              <p
-                className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
-              >
-                ${formatNum(analyticsData?.totalRefunded?.total_order_amount)}
-              </p>
-              <p className="text-[14px] leading-[22px] text-text_weak">
-                {analyticsData?.totalRefunded?.percentage_change}%
-              </p>
-            </div>
-          </section>
+              <div className="w-[134px] h-[85px] text-center">
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  Refunded
+                </p>
+                <p
+                  className={`${lora.className} text-[22px] leading-[28px] font-[400] py-2`}
+                >
+                  ${formatNum(analyticsData?.totalRefunded?.total_order_amount)}
+                </p>
+                <p className="text-[14px] leading-[22px] text-text_weak">
+                  {analyticsData?.totalRefunded?.percentage_change}%
+                </p>
+              </div>
+            </section>
+          </div>
         </div>
 
         {/* sales pannel */}
-        {!analyticsData || (
-          !analyticsData.pendingOrderGraph && 
-          !analyticsData.processingOrderGraph && 
-          !analyticsData.deliveredOrderGraph && 
+        {!analyticsData ||
+        (!analyticsData.pendingOrderGraph &&
+          !analyticsData.processingOrderGraph &&
+          !analyticsData.deliveredOrderGraph &&
           !analyticsData.cancelledOrderGraph &&
-          !analyticsData.refundedOrderGraph
-        ) ? (
-          <div className="flex justify-center h-[455px] items-center">
-            <div className=" flex flex-col w-[400px] h-[80px]">
+          !analyticsData.refundedOrderGraph) ? (
+          <div className="flex justify-center h-[455px] items-center ">
+            <div className=" flex flex-col w-full md:w-[400px] md:h-[80px]">
               <span className="w-[40px] mx-auto">{cashIcon()}</span>
               <h3 className="pb-4 py-[16px] text-[18px] leading-[28px] text-center font-[500]">
                 There are currently no sales!
@@ -379,29 +395,23 @@ export const BodyContent = () => {
               <Line options={options} data={chartData} height={400} />
             </div>
             {/* indicators */}
-            <div className="w-full my-2 h-9 flex justify-center items-end gap-3">
+            <div className="w-full my-2 h-9 flex justify-center flex-wrap items-end gap-3">
               {/* ---Bridgecard--- */}
               <div className="inline-flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-[#E8A72D]"></span>
-                <p className="text-text_gray text-sm font-medium">
-                  Pending
-                </p>
+                <p className="text-text_gray text-sm font-medium">Pending</p>
               </div>
 
               {/* ---Bitpowr--- */}
               <div className="inline-flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-[#1F0EC9]"></span>
-                <p className="text-text_gray text-sm font-medium">
-                  Processing
-                </p>
+                <p className="text-text_gray text-sm font-medium">Processing</p>
               </div>
 
               {/* ---Yellowcard--- */}
               <div className="inline-flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-[#22C26E]"></span>
-                <p className="text-text_gray text-sm font-medium">
-                  Delivered
-                </p>
+                <p className="text-text_gray text-sm font-medium">Delivered</p>
               </div>
 
               {/* ---Link--- */}
@@ -421,4 +431,3 @@ export const BodyContent = () => {
     </div>
   );
 };
- 

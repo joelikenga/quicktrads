@@ -1,4 +1,4 @@
- "use client";
+"use client";
 import {
   arrowleft,
   // ordersIcon,
@@ -113,30 +113,52 @@ const options = {
   },
 };
 
-
-
-// const circleData = [
-//   {
-//     name: "Sales",
-//     figure: 14, // Use numbers for calculations
-//     color: "#3f51b5",
-//   },
-//   {
-//     name: "Revenue",
-//     figure: 58,
-//     color: "#4caf50",
-//   },
-//   {
-//     name: "Profit",
-//     figure: 76,
-//     color: "#ff9800",
-//   },
-//   {
-//     name: "Growth",
-//     figure: 12,
-//     color: "#f44336",
-//   },
-// ];
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "pending":
+      return {
+        bg: "bg-warning_1 bg-opacity-10",
+        text: "text-warning_1",
+        dot: "bg-warning_1",
+      };
+    case "processing":
+      return {
+        bg: "bg-[#1F0EC9] bg-opacity-10",
+        text: "text-[#1F0EC9]",
+        dot: "bg-[#1F0EC9]",
+      };
+    case "delivered":
+      return {
+        bg: "bg-success_1 bg-opacity-10",
+        text: "text-success_1",
+        dot: "bg-success_1",
+      };
+    case "refunded":
+      return {
+        bg: "bg-black bg-opacity-10",
+        text: "text-black",
+        dot: "bg-black",
+      };
+    case "cancelled":
+      return {
+        bg: "bg-error_1 bg-opacity-10",
+        text: "text-error_1",
+        dot: "bg-error_1",
+      };
+    case "shipped":
+      return {
+        bg: "bg-[#1F0EC9] bg-opacity-10",
+        text: "text-[#1F0EC9]",
+        dot: "bg-[#1F0EC9]",
+      };
+    default:
+      return {
+        bg: "bg-[#1F0EC9] bg-opacity-10",
+        text: "text-[#1F0EC9]",
+        dot: "bg-[#1F0EC9]",
+      };
+  }
+};
 
 const EmptyGraph = ({ type }: { type: string }) => (
   <div className="w-full h-[306px] flex justify-center items-center mt-12">
@@ -152,7 +174,7 @@ const EmptyGraph = ({ type }: { type: string }) => (
 
 const getGraphData = (data: any[] | null, type: string) => {
   const monthlyData = Array(12).fill(0);
-  
+
   if (data && data.length > 0) {
     data.forEach((item) => {
       monthlyData[item.month - 1] = item.total_count;
@@ -160,13 +182,28 @@ const getGraphData = (data: any[] | null, type: string) => {
   }
 
   return {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    datasets: [{
-      label: type,
-      data: monthlyData,
-      borderColor: "#22C26E",
-      backgroundColor: "rgba(34, 194, 110, 0.2)",
-    }]
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+    datasets: [
+      {
+        label: type,
+        data: monthlyData,
+        borderColor: "#22C26E",
+        backgroundColor: "rgba(34, 194, 110, 0.2)",
+      },
+    ],
   };
 };
 
@@ -178,39 +215,25 @@ export const BodyContent = () => {
   const [adminData, setAdminData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // const getAdminDashboard = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = (await getOrders()) as any;
-  //     const admin = await adminDashboard();
-  //     setAdminData(admin?.data);
-  //     setOrderData(response?.data);
-  //     // console.log("order response", response.data);
-  //   } catch (err: unknown) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const getAdminDashboard = useCallback(async () => {
     try {
       setLoading(true);
-      const [orders, admin] = await Promise.all([getOrders(), adminDashboard()]);
-      // if (isMounted) {
-        setOrderData(orders.data);
-        setAdminData(admin.data);
-      // }
+      const [orders, admin] = await Promise.all([
+        getOrders(),
+        adminDashboard(),
+      ]);
+      setOrderData(orders?.data);
+      setAdminData(admin?.data);
     } catch (err) {
-      console.error(err);
+      throw err;
     } finally {
       setLoading(false);
     }
   }, []);
-  
+
   useEffect(() => {
     getAdminDashboard();
-  }, [getAdminDashboard]); 
+  }, [getAdminDashboard]);
 
   const OrderSkeleton = () => (
     <tr>
@@ -278,12 +301,12 @@ export const BodyContent = () => {
   };
 
   return (
-    <div className="mt-[120px] mx-auto max-w-7xl">
-      <div className="">
+    <div className=" px-4 ">
+      <div className="mt-[120px] mx-auto max-w-7xl w-full">
         {/* total displays */}
-        <div className="grid grid-cols-4 gap-6 w-full">
+        <div className="flex grid-cols-4 gap-6 w-full overflow-y-auto">
           {/* total sale */}
-          <div className="border w-full max-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
+          <div className="border min-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
             <i>{totalSalesIcon()}</i>
             <div className="flex-col flex gap-2">
               <p className="text-text_weak text-base font-normal">
@@ -296,7 +319,7 @@ export const BodyContent = () => {
           </div>
 
           {/* total orders */}
-          <div className="border w-full max-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
+          <div className="border min-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
             <i>{totalOrdersIcon()}</i>
             <div className="flex-col flex gap-2">
               <p className="text-text_weak text-base font-normal">
@@ -309,7 +332,7 @@ export const BodyContent = () => {
           </div>
 
           {/* total products */}
-          <div className="border w-full max-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
+          <div className="border min-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
             <i>{totalProductsIcon()}</i>
             <div className="flex-col flex gap-2">
               <p className="text-text_weak text-base font-normal">
@@ -322,7 +345,7 @@ export const BodyContent = () => {
           </div>
 
           {/* total customers */}
-          <div className="border w-full max-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
+          <div className="border min-w-[302px] h-fit rounded-2xl flex flex-col py-6 px-8 gap-4">
             <i>{totalCustomersIcon()}</i>
             <div className="flex-col flex gap-2">
               <p className="text-text_weak text-base font-normal">
@@ -340,7 +363,7 @@ export const BodyContent = () => {
         <div className="w-full h-fit mt-8 pb-12 flex max-w-[1280px] px-4">
           {/* graph */}
           {!loading && (
-            <div className="w-2/3 h-[306px]">
+            <div className="w-2/3. w-full h-[306px]">
               {/* tabs */}
               <div className="border-b flex gap-4 font-medium text-base">
                 <div
@@ -384,31 +407,47 @@ export const BodyContent = () => {
                   Customers
                 </div>
               </div>
-              {tab === "sales" && (
-                adminData?.salesGraph ? 
-                  <Line options={options} data={getGraphData(adminData.salesGraph, "Sales")} /> :
+              {tab === "sales" &&
+                (adminData?.salesGraph ? (
+                  <Line
+                    options={options}
+                    data={getGraphData(adminData.salesGraph, "Sales")}
+                  />
+                ) : (
                   <EmptyGraph type="Sales" />
-              )}
-              {tab === "orders" && (
-                adminData?.orderGraph ? 
-                  <Line options={options} data={getGraphData(adminData.orderGraph, "Orders")} /> :
+                ))}
+              {tab === "orders" &&
+                (adminData?.orderGraph ? (
+                  <Line
+                    options={options}
+                    data={getGraphData(adminData.orderGraph, "Orders")}
+                  />
+                ) : (
                   <EmptyGraph type="Orders" />
-              )}
-              {tab === "products" && (
-                adminData?.productGraph ? 
-                  <Line options={options} data={getGraphData(adminData.productGraph, "Products")} /> :
+                ))}
+              {tab === "products" &&
+                (adminData?.productGraph ? (
+                  <Line
+                    options={options}
+                    data={getGraphData(adminData.productGraph, "Products")}
+                  />
+                ) : (
                   <EmptyGraph type="Products" />
-              )}
-              {tab === "customers" && (
-                adminData?.userGraph ? 
-                  <Line options={options} data={getGraphData(adminData.userGraph, "Customers")} /> :
+                ))}
+              {tab === "customers" &&
+                (adminData?.userGraph ? (
+                  <Line
+                    options={options}
+                    data={getGraphData(adminData.userGraph, "Customers")}
+                  />
+                ) : (
                   <EmptyGraph type="Customers" />
-              )}
+                ))}
             </div>
           )}
 
           {loading && (
-            <div className=" w-2/3 h-[306px] flex justify-center items-center mt-12">
+            <div className=" w-2/3. w-full h-[306px] flex justify-center items-center mt-12">
               <div className="w-full max-w-[400px] flex flex-col gap-6 items-center">
                 {totalSalesIcon()}
 
@@ -422,157 +461,169 @@ export const BodyContent = () => {
               </div>
             </div>
           )}
-
-          {/* packed circle */}
-          {/* <div className="w-1/3 h-[306px] relative">
-            <StackedCircles circleData={circleData} maxSize={200} />
-          </div> */}
         </div>
 
         {/* table */}
 
         <div className="w-full pt-6">
-          <div className="overflow-x-auto">
-            <div className="flex w-full justify-between mb-4 font-medium">
+          <div className="">
+            <div className="flex w-full justify-between mb-4 font-medium text-sm md:text-base">
               <div className="">Recent orders</div>
-              <Link href={`/admin_dashboard/management/orders`} className="flex gap-2 items-center cursor-pointer">
+              <Link
+                href={`/admin_dashboard/management/orders`}
+                className="flex gap-2 items-center cursor-pointer"
+              >
                 <>Go to orders</>
                 <i className="rotate-180">{arrowleft()}</i>
               </Link>
             </div>
-            <table className="w-full divide-y divide-stroke_weak  overflow-x-auto">
-              <thead className="text-start bg-background border-y">
-                <tr className="">
-                  <th
-                    scope="col"   
-                    className="px-4 py-[12px] text-start  font-normal text-sm h-10 "
-                  >
-                    Product details
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                  >
-                    Quantity
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                  >
-                    Subtotal
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                  >
-                    Date
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                  >
-                    Status
-                  </th>
-
-                  <th
-                    scope="col"
-                    className="px-4 py-[12px] text-start  font-normal text-sm h-10"
-                  ></th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-stroke_weak">
-                {loading ? (
-                  <>
-                    {[...Array(4)].map(
-                      (_, index) => loading && <OrderSkeleton key={index} />
-                    )}
-                  </>
-                ) : orderData === null || orderData?.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="p-4 text-center text-text_weak">
-                      {/* no order */}
-                      <div className=" w-full flex justify-center items-center mt-12">
-                        <div className="w-full max-w-[400px] flex flex-col gap-6 items-center">
-                          {totalOrdersIcon()}
-
-                          <div className="flex flex-col gap-2 font-normal text-center">
-                            <p className="text-text_strong text-[22px] ">{`There are currently no Products !`}</p>
-                            <p className="text-text_weak text-base ">{`It looks like there are currently no orders available at the moment`}</p>
-                          </div>
-                          <button className="text-text_strong text-backgroun font-medium text-base  w-fit px-6 flex rounded-full items-center justify-center underline">
-                            Add products
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  orderData?.slice(0, 4).map((item: any) => (
-                    <tr
-                      onClick={() => handleRowClick(item?.order.id)}
-                      key={item?.order?.id}
-                      className=""
+            <div className="overflow-x-auto">
+              <table className="w-full divide-y divide-stroke_weak  overflow-x-auto">
+                <thead className="text-start bg-background border-y">
+                  <tr className="">
+                    <th
+                      scope="col"
+                      className="px-4 py-[12px] text-start  font-normal text-sm h-10 "
                     >
-                      <td className="p-4">
-                        <div className="flex gap-6 items-start w-[304px]">
-                          {renderProductImages(
-                            item.order.order[0].product.images
-                          )}
-                          <div className="text-text_strong text-sm font-normal text-wrap">
-                            {item.order.order[0].product.name}
+                      Product details
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                    >
+                      Quantity
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                    >
+                      Subtotal
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                    >
+                      Date
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                    >
+                      Status
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                    ></th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-stroke_weak">
+                  {loading ? (
+                    <>
+                      {[...Array(4)].map(
+                        (_, index) => loading && <OrderSkeleton key={index} />
+                      )}
+                    </>
+                  ) : orderData === null || orderData?.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="p-4 text-center text-text_weak"
+                      >
+                        {/* no order */}
+                        <div className=" w-full flex justify-center items-center mt-12">
+                          <div className="w-full max-w-[400px] flex flex-col gap-6 items-center">
+                            {totalOrdersIcon()}
+
+                            <div className="flex flex-col gap-2 font-normal text-center">
+                              <p className="text-text_strong text-[22px] ">{`There are currently no Products !`}</p>
+                              <p className="text-text_weak text-base ">{`It looks like there are currently no orders available at the moment`}</p>
+                            </div>
+                            <button className="text-text_strong text-backgroun font-medium text-base  w-fit px-6 flex rounded-full items-center justify-center underline">
+                              Add products
+                            </button>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap">
-                          ${item.order.order[0].amount} x{" "}
-                          {item.order.order[0].quantity} item
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap">
-                          ${item.order.totalAmount}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap">
-                          {new Date(item.order.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-text_strong text-sm font-normal text-wrap">
-                          <div className="h-6 flex px-2 items-center justify-center rounded-full bg-[#F0F0FF] text-[#1F0EC9] text-sm font-medium gap-1">
-                            <span className="rounded-full w-2 h-2 bg-[#1F0EC9]"></span>
-                            <p>{item.order.status}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-text_strong text-sm font-normal text-nowrap underline">
-                          Update status
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    orderData?.slice(0, 4).map((item: any) => (
+                      <tr
+                        onClick={() => handleRowClick(item?.order.id)}
+                        key={item?.order?.id}
+                        className=""
+                      >
+                        <td className="p-4">
+                          <div className="flex gap-6 items-start w-[304px]">
+                            {renderProductImages(
+                              item.order.order[0].product.images
+                            )}
+                            <div className="text-text_strong text-sm font-normal text-wrap">
+                              {item.order.order[0].product.name}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-text_strong text-sm font-normal text-nowrap">
+                            ${item.order.order[0].amount} x{" "}
+                            {item.order.order[0].quantity} item
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-text_strong text-sm font-normal text-nowrap">
+                            ${item.order.totalAmount}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-text_strong text-sm font-normal text-nowrap">
+                            {new Date(item.order.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-text_strong text-sm font-normal text-wrap">
+                            <div
+                              className={`h-6 flex px-2 items-center justify-center rounded-full ${
+                                getStatusColor(item.order.status).bg
+                              } ${
+                                getStatusColor(item.order.status).text
+                              } text-sm font-medium gap-1`}
+                            >
+                              <span
+                                className={`rounded-full w-2 h-2 ${
+                                  getStatusColor(item.order.status).dot
+                                }`}
+                              ></span>
+                              <p>{item.order.status}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-text_strong text-sm font-normal text-nowrap underline">
+                            Update status
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 };
- 
