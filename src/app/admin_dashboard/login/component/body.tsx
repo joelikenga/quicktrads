@@ -101,7 +101,7 @@ const Body = () => {
       const res: AxiosResponse<LoginResponse> = (await adminLogin(
         data
       )) as AxiosResponse<LoginResponse>;
-      const loginData = res.data;
+      const loginData = res?.data;
       const { accessToken, refreshToken, user } = loginData;   
 
       console.log(res);
