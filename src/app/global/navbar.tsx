@@ -1,4 +1,4 @@
- "use client";
+"use client";
 import Link from "next/link";
 import {
   arrowDown,
@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { getAllProducts } from "@/utils/api/user/product";
+// import nookies from "nookies";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -61,13 +62,16 @@ export const Navbar = () => {
     women: false,
     unisex: false,
   });
+  // const cookies = nookies.get(null);
+  // const cookies = nookies.get(null, { path: "/" });
+
+  // alert(cookies?.accessToken)
 
   const logout = useLogout();
   const router = useRouter();
   const { getCartCount } = useCart();
   const { currency, toggleCurrency } = useCurrency();
   const [userData, setUserData] = useState<any | null>(null);
-
   const itemSearch = async () => {
     try {
       setIsLoading(true);
@@ -192,6 +196,12 @@ export const Navbar = () => {
   const handleCategoryOptions = (event: React.MouseEvent) => {
     event.stopPropagation();
     setCategoryOptions(!categoryOptions);
+  };
+
+  const getDisplayName = (fullName: string): string => {
+    if (!fullName) return "";
+    const parts = fullName.split(" ");
+    return parts[0]; // Returns the first part before space
   };
 
   return (
@@ -510,7 +520,9 @@ export const Navbar = () => {
                 >
                   {!JSON.parse(userData)?.avatar ? (
                     <ProfileAvatar
-                      name={JSON.parse(userData)?.fullName || "User"}
+                      name={
+                        getDisplayName(JSON.parse(userData)?.fullName) || "User"
+                      }
                       size="small"
                     />
                   ) : (
@@ -523,7 +535,9 @@ export const Navbar = () => {
                       alt=""
                     />
                   )}
-                  <p className="capitalize">{JSON.parse(userData)?.fullName}</p>
+                  <p className="capitalize">
+                    {getDisplayName(JSON.parse(userData)?.fullName)}
+                  </p>
                   <i
                     className={`${profileOption && "rotate-180"} duration-300`}
                   >
@@ -685,7 +699,9 @@ export const Navbar = () => {
                     <div className="flex items-center gap-2">
                       {!JSON.parse(userData)?.avatar ? (
                         <ProfileAvatar
-                          name={JSON.parse(userData)?.fullName || ""}
+                          name={
+                            getDisplayName(JSON.parse(userData)?.fullName) || ""
+                          }
                           size="large"
                         />
                       ) : (
@@ -699,7 +715,7 @@ export const Navbar = () => {
                         />
                       )}
                       <p className="text-base capitalize ">
-                        {JSON.parse(userData)?.fullName}
+                        {getDisplayName(JSON.parse(userData)?.fullName)}
                       </p>
                     </div>
                     <i

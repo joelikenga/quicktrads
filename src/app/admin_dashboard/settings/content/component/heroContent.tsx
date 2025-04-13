@@ -8,6 +8,7 @@ import {
   createContent,
 } from "@/utils/api/admin/products";
 import LoadingSkeleton from './LoadingSkeleton';
+import { errorToast } from "@/utils/toast/toast";
 
 interface EditContentProps {
   onClick: () => void;
@@ -156,7 +157,7 @@ const EditContent: React.FC<EditContentProps> = ({ onClick }) => {
       !formData.heroBtnCTA ||
       !formData.heroImage
     ) {
-      alert("Please fill in all fields before updating");
+      errorToast("Please fill in all fields before updating");
       return;
     }
 

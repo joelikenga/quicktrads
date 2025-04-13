@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, {  useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   eyeClose,
   eyeOpen,
@@ -16,6 +16,7 @@ import nookies from "nookies";
 // import { useEffect } from "react";
 import { useRouter,  } from "next/navigation";
 import { adminLogin } from "../../../../utils/api/admin/auth";
+import { errorToast } from "@/utils/toast/toast";
 // import { cookies } from 'next/headers';
 const lora = Lora({
   variable: "--font-lora",
@@ -45,36 +46,6 @@ const Body = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   // const cookies = nookies.get(null);
-
-
-
-  useEffect(() => {
-    const checkAuthConsistency = () => {
-      const cookies = nookies.get(null);
-      const localStorageUser = localStorage.getItem("admin_user");
-      const localStorageToken = localStorage.getItem("admin_accessToken");
-
-      // If both cookie and localStorage are empty, do nothing
-      if (!cookies.admin_accessToken && !localStorageUser && !localStorageToken) {
-        return;
-      }
-
-      // If localStorage exists but cookies don't, or vice versa, clear everything
-      if (
-        (!cookies.admin_accessToken && (localStorageUser || localStorageToken)) ||
-        (cookies.admin_accessToken && (!localStorageUser || !localStorageToken))
-      ) {
-        localStorage.removeItem("admin_accessToken");
-        localStorage.removeItem("admin_user");
-        nookies.destroy(null, "admin_accessToken");
-        nookies.destroy(null, "admin_refreshToken");
-        nookies.destroy(null, "admin_role");
-        router.replace("/admin_dashboard/login");
-      }
-    };
-
-    checkAuthConsistency();
-  }, [router]);
 
   const {
     register,
@@ -107,27 +78,33 @@ const Body = () => {
       console.log(res);
       // Check if user is admin
       if (user.role !== 'super_admin') {
-        //errorToat('Unauthorized: Access restricted to admin users only');
+        errorToast("Incorrect details");
+        return;
       }
 
-      // Save tokens to localStorage with admin-specific names
-      localStorage.setItem("admin_accessToken", accessToken);
-      localStorage.setItem("admin_user", JSON.stringify(user));
 
-      nookies.set(null, "admin_accessToken", accessToken, {
+      // Save tokens to localStorage
+      localStorage.setItem("accessToken", accessToken);
+      // localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("admin", JSON.stringify(user)); // Store user details
+
+      console.log(localStorage.getItem("admin"))
+
+      nookies.set(null, "accessToken", accessToken, {
         maxAge: 1 * 24 * 60 * 60,
-        path: "/admin_dashboard",
+        path: "/admin_dashboard",  // Changed from ""
       });
       
-      nookies.set(null, "admin_refreshToken", refreshToken, {
+      nookies.set(null, "refreshToken", refreshToken, {
         maxAge: 3 * 24 * 60 * 60,
-        path: "/admin_dashboard",
+        path: "/admin_dashboard",  // Changed from "/admin_dashboard"
       });
 
-      nookies.set(null, "admin_role", JSON.stringify(user?.role.trim()), {
+      nookies.set(null, "role", JSON.stringify(user?.role.trim()), {
         maxAge: 3 * 24 * 60 * 60,
         path: "/admin_dashboard", 
       });
+
 
       if (!accessToken) {
         throw new Error("Access token not found in the login response");
