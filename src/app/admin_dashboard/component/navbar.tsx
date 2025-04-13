@@ -8,7 +8,6 @@ import {
   dashborad,
   logo,
   management,
-  // notification,
   NotificationUnread,
 } from "@/app/global/svg";
 import Link from "next/link";
@@ -18,29 +17,50 @@ import { useEffect, useRef, useState } from "react";
 export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const handleLogout = useLogoutAdmin(); // Store the logout function
+  const handleLogout = useLogoutAdmin();
   const [profileOption, setProfileOption] = useState<boolean>(false);
   const [tab, setTab] = useState<string>("All");
   const [openNotification, setOpenNotification] = useState<boolean>(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const profileWrapperRef = useRef<HTMLDivElement>(null);
+  
+  // User data state
+  const [userData, setUserData] = useState<any | null>(null);
+
+  useEffect(() => {
+    // Check if we're on the client side before accessing localStorage
+      const storedUser = localStorage.getItem("admin");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUserData(parsedUser);
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+        }
+      }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Handle notification click outside
       if (
         notificationRef.current &&
         !notificationRef.current.contains(event.target as Node)
       ) {
         setOpenNotification(false);
       }
-      // Handle mobile menu click outside
       if (
         mobileMenuRef.current &&
         !mobileMenuRef.current.contains(event.target as Node)
       ) {
         setIsMobileMenuOpen(false);
+      }
+      if (
+        profileWrapperRef.current &&
+        !profileWrapperRef.current.contains(event.target as Node)
+      ) {
+        setProfileOption(false);
       }
     };
 
@@ -50,16 +70,29 @@ export const Navbar = () => {
     };
   }, []);
 
-  // Handler for toggling notification
   const handleNotificationToggle = () => {
     setOpenNotification(prev => !prev);
     setIsMobileMenuOpen(false);
+    setProfileOption(false);
   };
 
-  // Handler for toggling mobile menu
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(prev => !prev);
     setOpenNotification(false);
+    setProfileOption(false);
+  };
+
+  const handleProfileToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setProfileOption(prev => !prev);
+    setOpenNotification(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  const getDisplayName = (fullName: string): string => {
+    if (!fullName) return '';
+    const parts = fullName.split(' ');
+    return parts[0]; // Returns the first part before space
   };
 
   return (
@@ -151,49 +184,60 @@ export const Navbar = () => {
             <p className={`text-text_strong font-medium`}>Notification</p>
           </div>
 
-          <div className="flex items-center relative">
-            <div
-              className="flex items-center justify-center gap-2 cursor-pointer"
-              onClick={() => setProfileOption(!profileOption)}
-            >
-              <ProfileAvatar size="small" name={`Frank Emeka`} />
-              <p className="text-text_strong font-medium">Frank Emeka</p>
-              <i>{arrowDown()}</i>
-            </div>
-            {profileOption && (
-              <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-16 right-0 bg-background  h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
-                <Link
-                  href={`/admin_dashboard/settings/password`}
-                  className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                >
-                  Password
-                </Link>
-                <Link
-                  href={`/admin_dashboard/settings/notification`}
-                  className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                >
-                  Notification
-                </Link>
-                <Link
-                  href={`/admin_dashboard/settings/content`}
-                  className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                >
-                  Content
-                </Link>
-                <div
-                  onClick={handleLogout} // Use the stored function
-                  className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
-                >
-                  Logout
-                </div>
+          {/* Profile Section */}
+          {userData && (
+            <div ref={profileWrapperRef} className="flex items-center relative">
+              <div
+                className="flex items-center justify-center gap-2 cursor-pointer"
+                onClick={handleProfileToggle}
+              >
+                <ProfileAvatar size="small" name={getDisplayName(userData?.fullName)} />
+                <p className="text-text_strong font-medium">{getDisplayName(userData?.fullName)}</p>
+                <i className={`${profileOption ? "rotate-180" : ""} transition-transform`}>
+                  {arrowDown()}
+                </i>
               </div>
-            )}
-          </div>
+              {profileOption && (
+                <div className="min-w-[180px] flex flex-col gap-1 py-2 absolute top-16 right-0 bg-background h-fit z-10 rounded-lg overflow-hidden shadow-[0px_8px_24px_0px_#14141414] text-text_weak font-medium text-sm">
+                  {/* <Link
+                    href={`/admin_dashboard/settings/password`}
+                    className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                    onClick={() => setProfileOption(false)}
+                  >
+                    Password
+                  </Link>
+                  <Link
+                    href={`/admin_dashboard/settings/notification`}
+                    className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                    onClick={() => setProfileOption(false)}
+                  >
+                    Notification
+                  </Link> */}
+                  <Link
+                    href={`/admin_dashboard/settings/content`}
+                    className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                    onClick={() => setProfileOption(false)}
+                  >
+                    Content
+                  </Link>
+                  <div
+                    onClick={() => {
+                      handleLogout();
+                      setProfileOption(false);
+                    }}
+                    className="h-10 w-full px-6 hover:text-text_strong hover:bg-[#f5f5f5] items-center flex justify-start cursor-pointer"
+                  >
+                    Logout
+                  </div>
+                </div>
+              )}
+            </div>
+          ) }
         </div>
 
         {/* Mobile menu dropdown */}
         {isMobileMenuOpen && (
-          <div ref={mobileMenuRef} className="absolute top-20 left-0 right-0 bg-white shadow-lg md:hidden">
+          <div ref={mobileMenuRef} className="absolute top-20 left-0 right-0 bg-white shadow-lg md:hidden rounded-lg overflow-hidden">
             <div className="flex flex-col py-2">
               <div
                 onClick={() => {
@@ -247,37 +291,65 @@ export const Navbar = () => {
                 </div>
               </div>
 
+              {/* Mobile Profile Section */}
               <div className="border-t mt-2 pt-2">
-                <div className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <ProfileAvatar size="small" name={`Frank Emeka`} />
-                    <p className="text-text_strong font-medium">Frank Emeka</p>
+                {userData ? (
+                  <>
+                    <div className="px-4 py-3">
+                      <div className="flex items-center gap-2 capitalize">
+                        <ProfileAvatar size="small" name={JSON.parse(userData)?.fullName || "Admin"} />
+                        <p className="text-text_strong font-medium">{JSON.parse(userData)?.fullName || "Admin"}</p>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/admin_dashboard/settings/password`}
+                      className="px-4 py-3 block hover:bg-gray-100"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Password
+                    </Link>
+                    <Link
+                      href={`/admin_dashboard/settings/notification`}
+                      className="px-4 py-3 block hover:bg-gray-100"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Notification
+                    </Link>
+                    <Link
+                      href={`/admin_dashboard/settings/content`}
+                      className="px-4 py-3 block hover:bg-gray-100"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Content
+                    </Link>
+                    <div
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                    >
+                      Logout
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col px-4 py-3 gap-2">
+                    <Link
+                      href="/login"
+                      className="text-text_strong font-medium hover:text-primary py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="bg-primary text-white px-4 py-2 rounded text-center hover:bg-primary-dark"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
                   </div>
-                </div>
-                <Link
-                  href={`/admin_dashboard/settings/password`}
-                  className="px-4 py-3 block hover:bg-gray-100"
-                >
-                  Password
-                </Link>
-                <Link
-                  href={`/admin_dashboard/settings/notification`}
-                  className="px-4 py-3 block hover:bg-gray-100"
-                >
-                  Notification
-                </Link>
-                <Link
-                  href={`/admin_dashboard/settings/content`}
-                  className="px-4 py-3 block hover:bg-gray-100"
-                >
-                  Content
-                </Link>
-                <div
-                  onClick={handleLogout}
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer"
-                >
-                  Logout
-                </div>
+                )}
               </div>
             </div>
           </div>

@@ -1,35 +1,15 @@
- 
-import type { Metadata } from "next";
+// app/layout.tsx
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "@/context/CartContext";
-import { CurrencyProvider } from "@/context/CurrencyContext";
-import InternetConnection from "@/components/InternetConnection";
-import { Toaster } from "react-hot-toast";
+import { metadata } from './meta'; // Import the metadata
+import ClientLayout from './client-layout';
 
 const openSans = Open_Sans({
   variable: "--font-raleway",
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Quicktrads",
-  description: "Quicktrads - Your Fashion Destination",
-  icons: {
-    icon: [
-      {
-        url: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
-        sizes: "any",
-      },
-    ],
-    apple: [
-      {
-        url: "https://res.cloudinary.com/dtjf6sic8/image/upload/v1740862649/quicktrads/atqfeghcpsmjplrsaf6r.svg",
-        sizes: "180x180",
-      },
-    ],
-  },
-};
+export { metadata }; // Export from server component
 
 export default function RootLayout({
   children,
@@ -38,16 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning data-qb-installed className={`${openSans.className}  antialiased`}>
-        <InternetConnection />
-        <CurrencyProvider>
-          <CartProvider>
-            {children}
-            <Toaster position="bottom-center" />
-          </CartProvider>
-        </CurrencyProvider>
+      <body suppressHydrationWarning data-qb-installed className={`${openSans.className} antialiased`}>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
 }
- 
