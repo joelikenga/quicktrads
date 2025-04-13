@@ -38,7 +38,7 @@ export const Hero = () => {
   }, []);
 
   return (
-    <div className="w-full lg:px-10 mt-20 md:mt-[152px] my-8">
+    <div className="w-full lg:px-10 mt-20 lg:mt-[152px] my-8">
       <div
         className="flex flex-col md:flex-row items-start md:items-center justify-between md:h-[440px] px-6 md:px-10 lg:px-20 mx-auto w-full max-w-7xl"
         style={{ backgroundColor: loading ? "#e9c46a" : data?.backgroundColor }}

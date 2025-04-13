@@ -75,16 +75,38 @@ export const Body = () => {
   // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setFrom(searchParams.get('from') || '/');
+    
+    const checkAuthConsistency = () => {
       const cookies = nookies.get(null);
-      if (cookies.accessToken) {
-        successToast("You are still logged in");
-        await router.replace(from); // Redirect to homepage if logged in
+      const localStorageUser = localStorage.getItem("user");
+      const localStorageToken = localStorage.getItem("accessToken");
+
+      // If both cookie and localStorage are empty, do nothing
+      if (!cookies.accessToken && !localStorageUser && !localStorageToken) {
+        return;
+      }
+
+      // If localStorage exists but cookies don't, or vice versa, clear everything
+      if (
+        (!cookies.accessToken && (localStorageUser || localStorageToken)) ||
+        (cookies.accessToken && (!localStorageUser || !localStorageToken))
+      ) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        localStorage.removeItem("e_x_TK");
+        nookies.destroy(null, "accessToken");
+        nookies.destroy(null, "refreshToken");
+        nookies.destroy(null, "role");
+        router.replace("/login");
       }
     };
 
-    checkAuth();
+    checkAuthConsistency();
   }, [router]);
+
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
@@ -120,7 +142,7 @@ export const Body = () => {
       nookies.set(null, "refreshToken", refreshToken, {
         maxAge: refreshTokenExpiry,
         path: "/",
-      });
+      }); 
 
       nookies.set(null, "role", JSON.stringify(user?.role.trim()), {
         maxAge: refreshTokenExpiry,
@@ -151,7 +173,7 @@ export const Body = () => {
       // Clear interval when component unmounts
       return () => clearInterval(expiryInterval);
     } catch (error: any) {
-      errorToast(error);
+      throw error;
       setLoading(false);
     }
   };

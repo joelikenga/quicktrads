@@ -10,6 +10,7 @@ import {
   rightCarousel,
   trash,
   imageadd,
+  ActiveIcon,
 } from "@/app/global/svg";
 import {
   fetchProduct,
@@ -18,7 +19,7 @@ import {
 } from "../../../../../../utils/api/admin/products";
 import { Lora } from "next/font/google";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 // import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
@@ -103,7 +104,6 @@ export const Body = ({ id }: BodyProps) => {
   const [selectedCategory, setSelectedCategory] = useState<
     "men" | "women" | "unisex"
   >("men");
-  const [currency] = useState<"NGN">("NGN"); // Remove USD option, default to NGN
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>("");
 
   const subCategories = {
@@ -195,7 +195,8 @@ export const Body = ({ id }: BodyProps) => {
       };
 
       setProduct(transformedData);
-      console.log("Product details:", transformedData);
+      // Save to localStorage
+      localStorage.setItem(`product_${id}`, JSON.stringify(transformedData));
     } catch {
       throw new Error("Failed to fetch product");
     }
@@ -204,6 +205,34 @@ export const Body = ({ id }: BodyProps) => {
   useEffect(() => {
     getProduct(id);
   }, [id]);
+
+  useEffect(() => {
+    if (edit) {
+      const savedProduct = localStorage.getItem(`product_${id}`);
+      if (savedProduct) {
+        const parsedProduct = JSON.parse(savedProduct) as ProductDetails;
+        setProductName(parsedProduct.data.name);
+        setPrice(parsedProduct.data.price.toString());
+        setDiscountPrice(parsedProduct.data.priceDiscount?.toString() || "");
+        setDescription(parsedProduct.data.description);
+        setSelectedCategory(parsedProduct.data.category);
+        setSelectedSubCategory(parsedProduct.data.subCategory);
+
+        // Split sizes and convert to uppercase
+        const sizes = parsedProduct.data.size
+          .split(",")
+          .map((size) => size.trim().toUpperCase());
+        setSelectedSizes(sizes);
+
+        // Create image preview objects from saved URLs
+        const savedImages = parsedProduct.data.images.map((url) => ({
+          file: new File([], "placeholder"),
+          preview: url,
+        }));
+        setImages(savedImages);
+      }
+    }
+  }, [edit, id]);
 
   const calculateDiscount = (): string | null => {
     if (!price || !discountPrice) return null;
@@ -270,7 +299,7 @@ export const Body = ({ id }: BodyProps) => {
 
     try {
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/quicktrads`,
         {
           method: "POST",
           body: formData,
@@ -294,57 +323,72 @@ export const Body = ({ id }: BodyProps) => {
   };
 
   const handleProductUpload = async () => {
-    if (isSaving) return; // Prevent upload if saving
+    if (isSaving) return;
     try {
       setIsUploading(true);
 
-      if (
-        !productName ||
-        !price ||
-        images.length === 0 ||
-        !selectedSubCategory
-      ) {
-        throw new Error("Please fill in all required fields including subcategory");
+      if (!productName || !price || !selectedSubCategory) {
+        throw new Error(
+          "Please fill in all required fields including subcategory"
+        );
       }
 
-      // // Upload all images to Cloudinary
-      // const uploadedImageUrls = await Promise.all(
-      //   images.map(async (image) => {
-      //     const base64 = await convertFileToBase64(image.file);
-      //     const cloudinaryUrl = await uploadImageToCloudinary(base64);
-      //     return cloudinaryUrl;
-      //   })
-      // );
+      // Get current images from either new uploads or existing URLs
+      const imagesToUpload = await Promise.all(
+        images.map(async (image) => {
+          // If the image is already a URL (from localStorage), return it
+          if (image.preview.startsWith("http")) {
+            return image.preview;
+          }
+          // Otherwise, upload new image
+          const base64 = await convertFileToBase64(image.file);
+          return await uploadImageToCloudinary(base64);
+        })
+      );
 
-      // // Create product data object matching the interface
-      // const productData = {
-      //   addToInventory: true,
-      //   category: selectedCategory,
-      //   currency: currency,
-      //   description: description,
-      //   images: uploadedImageUrls,
-      //   isFeatured: false,
-      //   name: productName,
-      //   price: Number(price),
-      //   priceDiscount: discountPrice ? Number(discountPrice) : undefined,
-      //   size: selectedSizes.join(","),
-      //   subCategory: selectedSubCategory, // Add selected subcategory
-      // };
+      const productData: {
+        addToInventory: boolean;
+        category: "men" | "women" | "unisex";
+        currency: "NGN";
+        description: string;
+        images: string[];
+        isFeatured: boolean;
+        name: string;
+        price: number;
+        priceDiscount: number;
+        size: string;
+        subCategory: string;
+      } = {
+        addToInventory: true,
+        category: selectedCategory,
+        currency: "NGN" as const,
+        description: description,
+        images: imagesToUpload,
+        isFeatured: false,
+        name: productName,
+        price: Number(price),
+        priceDiscount: discountPrice ? Number(discountPrice) : 0,
+        size: selectedSizes.join(","),
+        subCategory: selectedSubCategory,
+      };
 
-      // Send to backend using the createProduct function
-      // const response = await updateProduct(id, productData);
+      // Send to backend
+      const response = await updateProduct(id, productData);
 
-      // Clear form after successful upload
-      setImages([]);
-      setProductName("");
-      setPrice("");
-      setDiscountPrice("");
-      setDescription("");
-      setSelectedSizes([]);
-
-      //successToat("Product uploaded successfully");
-    } catch {
-      //errorToat("Failed to upload product. Please try again.");
+      if (response) {
+        // Clear localStorage and form after successful update
+        localStorage.removeItem(`product_${id}`);
+        setImages([]);
+        setProductName("");
+        setPrice("");
+        setDiscountPrice("");
+        setDescription("");
+        setSelectedSizes([]);
+        setEdit(false); // Exit edit mode
+        await getProduct(id); // Refresh product data
+      }
+    } catch (error) {
+      console.error("Failed to upload product:", error);
     } finally {
       setIsUploading(false);
     }
@@ -361,7 +405,9 @@ export const Body = ({ id }: BodyProps) => {
         images.length === 0 ||
         !selectedSubCategory
       ) {
-        throw new Error("Please fill in all required fields including subcategory");
+        throw new Error(
+          "Please fill in all required fields including subcategory"
+        );
       }
 
       // Upload all images to Cloudinary
@@ -374,10 +420,22 @@ export const Body = ({ id }: BodyProps) => {
       );
 
       // Create product data object matching the interface
-      const productData = {
+      const productData: {
+        addToInventory: boolean;
+        category: "men" | "women" | "unisex";
+        currency: "NGN";
+        description: string;
+        images: string[];
+        isFeatured: boolean;
+        name: string;
+        price: number;
+        priceDiscount?: number;
+        size: string;
+        subCategory: string;
+      } = {
         addToInventory: false,
         category: selectedCategory,
-        currency: currency,
+        currency: "NGN",
         description: description,
         images: uploadedImageUrls,
         isFeatured: false,
@@ -385,7 +443,7 @@ export const Body = ({ id }: BodyProps) => {
         price: Number(price),
         priceDiscount: discountPrice ? Number(discountPrice) : undefined,
         size: selectedSizes.join(","),
-        subCategory: selectedSubCategory, // Add selected subcategory
+        subCategory: selectedSubCategory,
       };
 
       // Send to backend using the createProduct function
@@ -406,7 +464,7 @@ export const Body = ({ id }: BodyProps) => {
     }
   };
 
-  const P_Status = product?.data.status === "active" ? "deactivate" : "active";
+  const P_Status = product?.data.status === "active" ? "inactive" : "active";
 
   const handleStatusChange = async (e: React.MouseEvent, status: string) => {
     e.stopPropagation(); // Prevent row click event from firing
@@ -419,8 +477,10 @@ export const Body = ({ id }: BodyProps) => {
     }
   };
 
+  useEffect(() => {}, [handleStatusChange]);
+
   return (
-    <div className="px-10 mt-[120px] ml-[240px]">
+    <div className="px-4 mt-[150px] md:mt-[120px] md:ml-[240px]">
       <div className="mx-auto max-w-7xl w-full">
         {!edit ? (
           <>
@@ -428,7 +488,7 @@ export const Body = ({ id }: BodyProps) => {
             <div className="w-full flex items-center justify-between">
               <div
                 onClick={() => history.back()}
-                className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2"
+                className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2 text-sm md:text-base"
               >
                 <i>{arrowleft()}</i>
                 Products
@@ -437,7 +497,7 @@ export const Body = ({ id }: BodyProps) => {
               <div className="flex gap-4 items-center">
                 <div
                   onClick={() => setEdit(true)}
-                  className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2"
+                  className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2 text-sm md:text-base"
                 >
                   <i>{editIcon()}</i>
                   Edit
@@ -445,9 +505,13 @@ export const Body = ({ id }: BodyProps) => {
 
                 <div
                   onClick={(e) => handleStatusChange(e, P_Status)}
-                  className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2"
+                  className="cursor-pointer flex items-center text-[18px] font-medium text-text_strong mb-6 gap-2 text-sm md:text-base"
                 >
-                  {product?.data.status === "active" ? <i>{trash()}</i> : "dec"}
+                  {product?.data.status === "active" ? (
+                    <i>{trash()}</i>
+                  ) : (
+                    <i>{ActiveIcon()}</i>
+                  )}
                   {product?.data.status === "active"
                     ? "Deactivate"
                     : "Activate"}
@@ -455,11 +519,11 @@ export const Body = ({ id }: BodyProps) => {
               </div>
             </div>
 
-            <div className="w-full flex justify-start gap-8">
+            <div className="w-full flex flex-col md:flex justify-start gap-8">
               {/* image container */}
-              <div className="w-fit h-full flex justify-between gap-6">
+              <div className="w-fit h-full flex flex-col-reverse md:flex-row justify-between gap-6">
                 {/* 3 images */}
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-row md:flex-col gap-4">
                   {product?.data?.images.map((item) => (
                     <div
                       key={item}
@@ -516,7 +580,7 @@ export const Body = ({ id }: BodyProps) => {
 
               {/* details container*/}
 
-              <div className="w-[504px] h-fit flex flex-col gap-6">
+              <div className="w-full md:w-[504px] h-fit flex flex-col gap-6">
                 {/* name and price */}
 
                 <div className="flex flex-col gap-4 w-full">
@@ -574,12 +638,12 @@ export const Body = ({ id }: BodyProps) => {
                       {product?.data.size.split(",").map((size) => (
                         <div
                           key={size}
-                          className="col-span-1 rounded-lg border flex items-center justify-center flex-col w-[88px] py-2"
+                          className="col-span-1 rounded-lg border flex items-center justify-center flex-col w-full md:w-[88px] py-2"
                         >
                           <p className="text-text_strong text-sm uppercase">
                             {size}
                           </p>
-                          <p className="text-text_weak text-xs text-nowrap capitalize">
+                          <p className="text-text_weak text-xs text-nowrap capitalize hidden md:block">
                             {size === "xs"
                               ? "Extra Small"
                               : size === "s"
@@ -598,7 +662,7 @@ export const Body = ({ id }: BodyProps) => {
                   </div>
                 </div>
 
-                <div className="w-full flex flex-col gap-6">
+                <div className="w-full flex flex-col gap-6 pb-4">
                   {/* About product */}
                   <div className="flex flex-col gap-4">
                     <div
@@ -625,9 +689,9 @@ export const Body = ({ id }: BodyProps) => {
                               </p>
                             ))}
                         </div>
-                        <Link href={``} className="font-medium underline pb-6">
+                        {/* <Link href={``} className="font-medium underline pb-6">
                           Read more about product
-                        </Link>
+                        </Link> */}
                       </div>
                     )}
                   </div>
@@ -687,18 +751,18 @@ export const Body = ({ id }: BodyProps) => {
                                 </div>
                               )}
 
-                              <Link
+                              {/* <Link
                                 href={``}
                                 className="font-medium underline pb-6"
                               >
                                 Write a review
-                              </Link>
+                              </Link> */}
                             </div>
                           </div>
                         }
                         {/* review given */}
                         {
-                          <div className="w-full font-normal text-base flex flex-col gap-2">
+                          <div className="w-full font-normal text-base flex flex-col gap-2 ">
                             <p className="text-base font-medium">Emeka</p>
                             <div className="flex justify-start items-center gap-2">
                               <i>{review_0()}</i>
@@ -715,12 +779,12 @@ export const Body = ({ id }: BodyProps) => {
                           box`}
                             </p>
 
-                            <Link
+                            {/* <Link
                               href={``}
                               className="font-medium underline py-6 text-text_weak"
                             >
                               Explore reviews
-                            </Link>
+                            </Link> */}
                           </div>
                         }
                       </>
@@ -740,9 +804,10 @@ export const Body = ({ id }: BodyProps) => {
                 onClick={() => setEdit(false)}
                 className="flex text-lg items-center pb-6 gap-1 cursor-pointer"
               >
-                {arrowleft()}Add product
+                {arrowleft()}Edit product
               </div>
-              <div className="flex gap-[73px]">
+
+              <div className="flex flex-col md:flex-row gap-[73px]">
                 {/* the card sections where the images will be previewed and uploaded */}
                 <div>
                   <p>Image</p>
@@ -755,9 +820,9 @@ export const Body = ({ id }: BodyProps) => {
 
                   <div className="pt-2">
                     {/* the images panel */}
-                    <div className="flex gap-6 pt-2">
+                    <div className="flex flex-col-reverse md:flex-row gap-6 pt-2">
                       {/* side images */}
-                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-row justify-between md:flex-col gap-4">
                         {images.map((img, index) => (
                           <div
                             key={index}
@@ -803,7 +868,7 @@ export const Body = ({ id }: BodyProps) => {
                       {/* the main image */}
                       <div>
                         <div
-                          className="w-[492px] h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
+                          className="w-full md:w-[492px] h-[420px] md:h-[600px] border border-dashed flex flex-col justify-center items-center text-center border-text_weak relative cursor-pointer"
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={handleDrop}
                           onClick={() =>
@@ -845,7 +910,7 @@ export const Body = ({ id }: BodyProps) => {
                 </div>
 
                 {/* product options */}
-                <section className="w-[323px] h-[972px]">
+                <section className=" w-full md:w-[323px] h-[972px]">
                   {/* name */}
                   <div className="pb-4 w-full">
                     <label htmlFor="name">
@@ -937,7 +1002,7 @@ export const Body = ({ id }: BodyProps) => {
                             selectedSizes.includes("XS")
                               ? "border-text_strong bg-stroke_weak"
                               : "border-stroke_strong"
-                          } py-2 px-6`}
+                          } py-2 px-6 cursor-pointer`}
                         >
                           <h3 className="text-sm">XS</h3>
                           <p className="text-sm text-text_weak">Extra Small</p>
@@ -949,7 +1014,7 @@ export const Body = ({ id }: BodyProps) => {
                             selectedSizes.includes("S")
                               ? "border-text_strong bg-stroke_weak"
                               : "border-stroke_strong"
-                          } py-2 px-6`}
+                          } py-2 px-6 cursor-pointer`}
                         >
                           <h3 className="text-sm">S</h3>
                           <p className="text-sm text-text_weak">Small</p>
@@ -965,7 +1030,7 @@ export const Body = ({ id }: BodyProps) => {
                             selectedSizes.includes("M")
                               ? "border-text_strong bg-stroke_weak"
                               : "border-stroke_strong"
-                          } py-2 px-4 2xl:px-6`}
+                          } py-2 px-4 2xl:px-6 cursor-pointer`}
                         >
                           <h3 className="text-sm">M</h3>
                           <p className="text-sm text-text_weak">Medium</p>
@@ -977,7 +1042,7 @@ export const Body = ({ id }: BodyProps) => {
                             selectedSizes.includes("L")
                               ? "border-text_strong bg-stroke_weak"
                               : "border-stroke_strong"
-                          } py-2 px-4 2xl:px-6`}
+                          } py-2 px-4 2xl:px-6 cursor-pointer`}
                         >
                           <h3 className="text-sm">L</h3>
                           <p className="text-sm text-text_weak">Large</p>
@@ -990,7 +1055,7 @@ export const Body = ({ id }: BodyProps) => {
                           selectedSizes.includes("XL")
                             ? "border-text_strong bg-stroke_weak"
                             : "border-stroke_strong"
-                        } py-2 px-4 2xl:px-6`}
+                        } py-2 px-4 2xl:px-6 cursor-pointer`}
                       >
                         <h3 className="text-sm">XL</h3>
                         <p className="text-sm text-text_weak">Extra Large</p>
@@ -1083,17 +1148,17 @@ export const Body = ({ id }: BodyProps) => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col lg:gap-2 2xl:gap-6 pt-4 pb-2">
+                  <div className="flex flex-col lg:gap-2 2xl:gap-6 pt-4 pb-2 gap-4">
                     <button
                       onClick={handleProductUpload}
                       disabled={isUploading || isSaving || images.length === 0}
                       className={`rounded-full py-[10px] px-18 border border-text_strong text-center text-sm 
-                          ${
-                            isUploading || isSaving
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-text_strong hover:bg-text_strong/90"
-                          } 
-                          text-white flex items-center justify-center`}
+                 ${
+                   isUploading || isSaving
+                     ? "bg-gray-400 cursor-not-allowed"
+                     : "bg-text_strong hover:bg-text_strong/90"
+                 } 
+                 text-white flex items-center justify-center`}
                     >
                       {isUploading ? (
                         <>

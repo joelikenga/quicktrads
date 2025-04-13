@@ -1,4 +1,3 @@
- 
 "use client";
 
 import {
@@ -15,7 +14,11 @@ import {
 } from "@/app/global/svg";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import { getCustomer, getOrders, getStatusCount } from "@/utils/api/admin/products";
+import {
+  getCustomer,
+  getOrders,
+  getStatusCount,
+} from "@/utils/api/admin/products";
 import { Lora } from "next/font/google";
 import { useParams, useRouter } from "next/navigation";
 import { ProfileAvatar } from "@/app/global/profileGenerator";
@@ -26,34 +29,41 @@ const lora = Lora({
 });
 
 const ProfileSkeleton = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex gap-2 md:gap-4 items-center">
     <div className="w-[80px] h-[80px] rounded-full bg-text_weaker animate-pulse" />
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-6">
-        <div className="h-7 w-40 bg-text_weaker animate-pulse rounded-full" />
+      <div className="flex items-center gap-4 md:gap-6">
+        <div className="h-5 md:h-7 w-32 md:w-40 bg-text_weaker animate-pulse rounded-full" />
         <div className="w-[100px] h-[24px] bg-text_weaker animate-pulse rounded-full" />
       </div>
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-6">
-          <div className="h-4 w-36 bg-text_weaker animate-pulse rounded-full" />
-          <div className="h-4 w-32 bg-text_weaker animate-pulse rounded-full" />
+        <div className="flex items-center gap-2 md:gap-6">
+          <div className="h-4 w-28 md:w-36 bg-text_weaker animate-pulse rounded-full" />
+          <div className="h-4 w-24 md:w-32 bg-text_weaker animate-pulse rounded-full" />
         </div>
-        <div className="h-4 w-48 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-36 md:w-48 bg-text_weaker animate-pulse rounded-full" />
       </div>
     </div>
   </div>
 );
 
 const StatsSkeleton = () => (
-  <div className="grid grid-cols-5 p-6 w-[940px] border rounded-lg mt-8 text-center">
-    {[...Array(5)].map((_, i) => (
-      <div key={i} className={`flex gap-8 justify-center items-center col-span-1 ${i > 0 ? 'border-l-2' : ''} px-6`}>
-        <div className="flex-col items-center justify-center">
-          <div className="h-4 w-24 bg-text_weaker animate-pulse rounded-full mb-2" />
-          <div className="h-6 w-16 bg-text_weaker animate-pulse rounded-full" />
+  <div className="overflow-x-scroll">
+    <div className="grid grid-cols-5 p-4 md:p-6 w-[940px] border rounded-lg mt-8 text-center">
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className={`flex gap-4 md:gap-8 justify-center items-center col-span-1 ${
+            i > 0 ? "border-l-2" : ""
+          } px-3 md:px-6`}
+        >
+          <div className="flex-col items-center justify-center">
+            <div className="h-4 w-20 md:w-24 bg-text_weaker animate-pulse rounded-full mb-2" />
+            <div className="h-5 md:h-6 w-12 md:w-16 bg-text_weaker animate-pulse rounded-full" />
+          </div>
         </div>
-      </div>
-    ))}
+      ))}
+    </div>
   </div>
 );
 
@@ -74,9 +84,9 @@ export const Body = () => {
 
   const user = async (id: string) => {
     try {
-      const response = (await getCustomer(id)) as any;     
-      const customerData = response.data || response;      
-      const counts = await getStatusCount(id) as any;
+      const response = (await getCustomer(id)) as any;
+      const customerData = response.data || response;
+      const counts = (await getStatusCount(id)) as any;
       setCount(counts.data);
       const orderData = (await getOrders()) as any;
       setCustomer(customerData);
@@ -102,7 +112,7 @@ export const Body = () => {
 
     const filtered = orders.filter((item) => {
       if (!item?.order?.order?.[0]?.product?.name) return false;
-      
+
       const matchesSearch = item.order.order[0].product.name
         .toLowerCase()
         .includes(search.toLowerCase());
@@ -126,27 +136,27 @@ export const Body = () => {
   const OrderSkeleton = () => (
     <tr>
       <td className="p-4">
-        <div className="flex gap-6 items-start w-[304px]">
+        <div className="flex gap-4 md:gap-6 items-start w-full md:w-[304px]">
           <div className="flex">
-            <div className="w-[68.57px] h-[80px] bg-text_weaker animate-pulse rounded-lg" />
+            <div className="w-[60px] md:w-[68.57px] h-[70px] md:h-[80px] bg-text_weaker animate-pulse rounded-lg" />
           </div>
-          <div className="h-4 w-32 bg-text_weaker animate-pulse rounded-full" />
+          <div className="h-4 w-24 md:w-32 bg-text_weaker animate-pulse rounded-full" />
         </div>
       </td>
       <td className="p-4">
-        <div className="h-4 w-24 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-20 md:w-24 bg-text_weaker animate-pulse rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-4 w-16 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-14 md:w-16 bg-text_weaker animate-pulse rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-4 w-28 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-24 md:w-28 bg-text_weaker animate-pulse rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-6 w-24 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-5 md:h-6 w-20 md:w-24 bg-text_weaker animate-pulse rounded-full" />
       </td>
       <td className="p-4">
-        <div className="h-4 w-8 bg-text_weaker animate-pulse rounded-full" />
+        <div className="h-4 w-6 md:w-8 bg-text_weaker animate-pulse rounded-full" />
       </td>
     </tr>
   );
@@ -184,13 +194,12 @@ export const Body = () => {
     );
   };
 
-
   return (
-    <div className="ml-[280px] mt-[120px]">
+    <div className="md:ml-[280px] mt-[150px] md:mt-[120px]">
       <div className="flex justify-start gap-2 items-center font-normal text-nowrap w-full">
         <div
           onClick={() => history.back()}
-          className="text-text_strong text-[22px] flex items-center gap-2"
+          className="text-text_strong text-base md:text-[22px] flex items-center gap-2"
         >
           {arrowleft()}
           <>Customer details</>
@@ -199,124 +208,153 @@ export const Body = () => {
 
       {/* content section */}
 
-      <div className="w-full flex justify-start items-center mt-8">
-        {loading ? (
-          <ProfileSkeleton />
-        ) : (
-          <div className="flex gap-4 items-center">
-            <div className="">
-              {!customer?.avatar ? (
-                <ProfileAvatar name={customer?.fullName || "N"} size={'large'}  />
-              ) : (
-                <Image
-                  className="w-[80px] h-[80px] rounded-full border outline-none"
-                  src={customer?.avatar}
-                  width={80}
-                  height={80}
-                  alt={customer?.fullName || ""}
-                />
-              )}
-            </div>
-            {/* details */}
-            <div className="flex flex-col gap-3">
-              {/* name and status */}
-              <div className="flex items-center gap-6">
-                <p className={`${lora.className} text-text_strong text-[22px] font-normal capitalize`}>
-                  {customer?.fullName || 'No Name'}
-                </p>
-                <div className={`flex justify-center items-center w-[100px] h-[24px] rounded-full px-2 gap-2 
-                  ${customer?.status === 'active' ? 'bg-[#F5FFFC]' : 'bg-gray-100'}`}>
-                  <div className={`w-[8px] h-[8px] rounded-full 
-                    ${customer?.status === 'active' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                  <p className="text-text_weak text-sm font-normal capitalize">
-                    {customer?.status || 'Unknown'}
-                  </p>
-                </div>
-              </div>
-              {/* contact info */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2 text-text_weak">
-                    <i>{maiIcon()}</i>
-                    <p>{customer?.email || 'No email'}</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-text_weak">
-                    <i>{numberIcon()}</i>
-                    <p>{customer?.phoneNumber || 'Not provided'}</p>
-                  </div>
-                </div>
-                {/* location info */}
-                <div className="flex items-center gap-2 text-text_weak">
-                  <p>
-                    {[customer?.country, customer?.state]
-                      .filter(Boolean)
-                      .join(', ') || 'No location provided'}
-                  </p>
-                </div>
-                {/* address */}
-                {customer?.address && (
-                  <div className="flex items-center gap-2 text-text_weak">
-                    <p>{customer.address}</p>
-                  </div>
+      <div className="overflow-x-scroll">
+        <div className="w-full flex justify-start items-center mt-8">
+          {loading ? (
+            <ProfileSkeleton />
+          ) : (
+            <div className="flex gap-2 md:gap-4 items-center">
+              <div className="">
+                {!customer?.avatar ? (
+                  <ProfileAvatar
+                    name={customer?.fullName || "U"}
+                    size={"large"}
+                  />
+                ) : (
+                  <Image
+                    className=" min-w-[60px] w-full min-h-[60px] md:w-[80px] md:h-[80px] rounded-full border outline-none"
+                    src={customer?.avatar}
+                    width={80}
+                    height={80}
+                    alt={customer?.fullName || ""}
+                  />
                 )}
               </div>
+              {/* details */}
+              <div className="flex flex-col gap-3">
+                {/* name and status */}
+                <div className="flex items-center gap-4 md:gap-6">
+                  <p
+                    className={`${lora.className} text-text_strong text-[20px] md:text-[22px] font-normal capitalize`}
+                  >
+                    {customer?.fullName || "No Name"}
+                  </p>
+                  <div
+                    className={`flex justify-center text-sm md:text-base items-center w-[100px] h-[24px] rounded-full px-2 gap-2 
+                  ${
+                    customer?.status === "active"
+                      ? "bg-[#F5FFFC]"
+                      : "bg-gray-100"
+                  }`}
+                  >
+                    <div
+                      className={`w-[8px] h-[8px] rounded-full 
+                    ${
+                      customer?.status === "active"
+                        ? "bg-green-500"
+                        : "bg-gray-400"
+                    }`}
+                    ></div>
+                    <p className="text-text_weak text-sm font-normal capitalize">
+                      {customer?.status || "Unknown"}
+                    </p>
+                  </div>
+                </div>
+                {/* contact info */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 md:gap-6">
+                    <div className="flex items-center gap-2 text-text_weak text-nowrap">
+                      <i>{maiIcon()}</i>
+                      <p>{customer?.email || "No email"}</p>
+                    </div>
+                    <div className="flex items-center gap-2 text-text_weak text-nowrap">
+                      <i>{numberIcon()}</i>
+                      <p>{customer?.phoneNumber || "Not provided"}</p>
+                    </div>
+                  </div>
+                  {/* location info */}
+                  <div className="flex items-center gap-2 text-text_weak text-nowrap">
+                    <p>
+                      {[customer?.country, customer?.state]
+                        .filter(Boolean)
+                        .join(", ") || "No location provided"}
+                    </p>
+                  </div>
+                  {/* address */}
+                  {customer?.address && (
+                    <div className="flex items-center gap-2 text-text_weak text-nowrap">
+                      <p>{customer.address}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      <div className="px-7 flex flex-col justitemsify-start gap-12">
+      <div className="px- flex flex-col justitemsify-start gap-12">
         {loading ? (
           <StatsSkeleton />
         ) : (
-          <div className="grid grid-cols-5 p-6 w-[940px] border rounded-lg mt-8 text-center">
-            <div className="flex gap-8 justify-center items-center col-span-1">
-              <i>{orderSmallIcon()}</i>
-              <div className="flex-col items-center justify-center ">
-                <p className="text-text_weak">Total Orders</p>
-                <p className="text-text_strong">{customer?.totalOrders || 0}</p>
+          <div className="overflow-x-scroll">
+            <div className="grid grid-cols-5 p-6 w-[940px] border rounded-lg mt-8 text-center">
+              <div className="flex gap-8 justify-center items-center col-span-1">
+                <i>{orderSmallIcon()}</i>
+                <div className="flex-col items-center justify-center ">
+                  <p className="text-text_weak">Total Orders</p>
+                  <p className="text-text_strong">
+                    {customer?.totalOrders || 0}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-8 justify-center items-center col-span-1 border-l-2 px-6">
-              <div className="flex-col items-center justify-center ">
-                <p className="text-text_weak">Pending</p>
-                <p className="text-text_strong">{count?.pending || 0}</p>
+              <div className="flex gap-8 justify-center items-center col-span-1 border-l-2 px-6">
+                <div className="flex-col items-center justify-center ">
+                  <p className="text-text_weak">Pending</p>
+                  <p className="text-text_strong">{count?.pending || 0}</p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-8 justify-center items-center col-span-1 border-l-2 px-6">
-              <div className="flex-col items-center justify-center ">
-                <p className="text-text_weak">Cancelled</p>
-                <p className="text-text_strong">{count?.cancelled || 0}</p>
+              <div className="flex gap-8 justify-center items-center col-span-1 border-l-2 px-6">
+                <div className="flex-col items-center justify-center ">
+                  <p className="text-text_weak">Cancelled</p>
+                  <p className="text-text_strong">{count?.cancelled || 0}</p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-8 justify-center items-center col-span-1 border-x-2 px-6">
-              <div className="flex-col items-end justify-center flex-end ">
-                <p className="text-text_weak">Last purchase</p>
-                <p className="text-text_strong underline">
-                  {customer?.lastOrderedAt
-                    ? new Date(customer.lastOrderedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })
-                    : 'Never'}
-                </p>
+              <div className="flex gap-8 justify-center items-center col-span-1 border-x-2 px-6">
+                <div className="flex-col items-end justify-center flex-end ">
+                  <p className="text-text_weak">Last purchase</p>
+                  <p className="text-text_strong underline">
+                    {customer?.lastOrderedAt
+                      ? new Date(customer.lastOrderedAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
+                      : "Never"}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-8 justify-center items-center col-span-1 px-6">
-              <div className="flex-col items-center justify-center ">
-                <p className="text-text_weak">Last login</p>
-                <p className="text-text_strong">
-                  {new Date(customer?.lastLoggedInAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </p>
+              <div className="flex gap-8 justify-center items-center col-span-1 px-6">
+                <div className="flex-col items-center justify-center ">
+                  <p className="text-text_weak">Last login</p>
+                  <p className="text-text_strong">
+                    {new Date(customer?.lastLoggedInAt).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -325,7 +363,7 @@ export const Body = () => {
         {/* table */}
 
         {Array.isArray(filteredOrders) && (
-          <div className="mt-12 w-full">
+          <div className="mt-2 md:mt-10 w-full">
             {/* search and filter */}
             <div className="flex w-full justify-start items-center gap-4">
               <div className="flex gap-2 h-8 w-[220px] border bg-fill items-center rounded-full px-4">
@@ -387,42 +425,42 @@ export const Body = () => {
                     <tr className="">
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10 "
+                        className="px-4 py-[12px] text-start  font-normal text-sm h-10  text-nowrap"
                       >
                         Product details
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                        className="px-4 py-[12px] text-start  font-normal text-sm h-10 text-nowrap"
                       >
                         Quantity
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                        className="px-4 py-[12px] text-start  font-normal text-sm h-10 text-nowrap"
                       >
                         Subtotal
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                        className="px-4 py-[12px] text-start  font-normal text-sm h-10 text-nowrap"
                       >
                         Date
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                        className="px-4 py-[12px] text-start  font-normal text-sm h-10 text-nowrap"
                       >
                         Status
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-[12px] text-start  font-normal text-sm h-10"
+                        className="px-4 py-[12px] text-start  font-normal text-sm h-10 text-nowrap"
                       >
                         Review
                       </th>
@@ -532,8 +570,8 @@ export const Body = () => {
                           }}
                           className={`h-10 w-10 flex items-center rounded-full justify-center ${
                             page.page === num
-                              ? "bg-text_strong text-background"
-                              : "border text-text_strong hover:bg-fill"
+                              ? "bg-text_stron border text-black"
+                              : "border text-text_stron hover:bg-fill"
                           }`}
                         >
                           {num}
@@ -570,5 +608,3 @@ export const Body = () => {
     </div>
   );
 };
-
- 
