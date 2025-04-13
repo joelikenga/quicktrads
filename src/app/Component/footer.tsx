@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { instagram, logo, map, whatsapp } from "../global/svg";
+import { logo, } from "../global/svg";
 import { Lora } from "next/font/google";
 
 const lora = Lora({
