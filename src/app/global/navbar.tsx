@@ -696,13 +696,13 @@ export const Navbar = () => {
                         : "border-transparent"
                     }`}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {!JSON.parse(userData)?.avatar ? (
                         <ProfileAvatar
                           name={
                             getDisplayName(JSON.parse(userData)?.fullName) || ""
                           }
-                          size="large"
+                          size="medium"
                         />
                       ) : (
                         <Image
@@ -762,16 +762,16 @@ export const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <div className="flex gap-6 items-center">
+                <div className="flex gap-6 items-center pb-4">
                   <Link
                     href={`/login`}
-                    className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border-b border-text_strong py-1"
+                    className="flex items-center justify-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-10 px-10  "
                   >
                     <p className="">Login</p>
                   </Link>
                   <Link
                     href={`/sign_up`}
-                    className="flex items-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-8 px-4 border-stroke_weak py-1"
+                    className="flex items-center justify-center gap-2 font-medium text-sm w-full cursor-pointer border rounded-full h-10 px-10  "
                   >
                     <p className="">Signup</p>
                   </Link>
