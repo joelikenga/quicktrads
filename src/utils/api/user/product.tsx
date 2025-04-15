@@ -51,12 +51,12 @@ export const getProduct = async (productId: string) => {
   try {
     // console.log("Fetching product with ID:", productId);
     const response = await axios$.get(`/product/${productId}`);
-    // console.log("Raw API response:", response);
+    // // console.log("Raw API response:", response);
 
-    // Add validation for response structure
-    if (!response?.data) {
-      throw new Error("Invalid response structure");
-    }
+    // // Add validation for response structure
+    // if (!response?.data) {
+    //   throw new Error("Invalid response structure");
+    // }
 
     return response;
   } catch (error: unknown) {
@@ -140,6 +140,36 @@ export const killOrder = async (orderId: string, reason: string) => {
     console.log("order response", response);
     return response;
   } catch (error: unknown) {
+    throw error;
+  }
+};
+
+interface ReviewData {
+  message: string;
+  productId: string;
+  stars: number;
+  userId: string;
+}
+
+
+export const createReview = async (reviewData: ReviewData) => {
+  try {
+    const response = await axios$.post(`/product/review`,  reviewData );
+    console.log("review response", response.data);
+    return response.data;
+  } catch (error: unknown) {
+    // console.error("Error creating review:", error);
+    throw error;
+  }
+};
+
+export const getReview = async (productId: any) => {
+  try {
+    const response = await axios$.get (`/product/review/${ productId }`);
+    console.log("review response", response.data);
+    return response.data;
+  } catch (error: unknown) {
+    // console.error("Error creating review:", error);
     throw error;
   }
 };

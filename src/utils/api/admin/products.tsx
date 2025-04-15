@@ -289,3 +289,22 @@ export const getUserAnalytics = async (duration: any) => {
     throw error;
   }
  };
+
+
+export const getAdminNotifications = async () => {
+  try {
+    const response = await axios$.get(`/auth/admin/notification`);
+    return response; 
+  } catch (error: unknown) {
+    throw error;
+  }
+}
+
+export const markAsRead = async (id:any) => {
+  try {
+    const response = await axios$.get(`/auth/admin/notification/${id}`);
+    return response; 
+  } catch (error: unknown) {
+    throw error;
+  }
+}

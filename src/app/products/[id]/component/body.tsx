@@ -4,6 +4,8 @@ import {
   arrowleft,
   // arrowleft,
   cart,
+  CircularQuestionIcon,
+  closeBtn,
   deliveryIcon,
   info,
   // instagram,
@@ -21,13 +23,15 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 // import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { getProduct } from "../../../../utils/api/user/product";
+import {
+  createReview,
+  getProduct,
+  getReview,
+} from "../../../../utils/api/user/product";
 import { ProductSkeleton } from "./skeleton";
-// import { useCart } from "../../../../../utils/hooks/useCart";
 import { useCart } from "@/context/CartContext";
 import { errorToast, successToast } from "@/utils/toast/toast";
 import { useCurrency } from "@/context/CurrencyContext";
-// import { errorToast, successToast } from "../../../../utils/toast/toast";
 
 const lora = Lora({
   variable: "--font-lora",
@@ -61,8 +65,28 @@ interface ProductDetails {
     updatedAt: string;
   };
 }
+// #FEEBC3
+const Star = ({ color }: { color: string }) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M9.99778 1C10.8762 1 11.5681 1.66347 12.0098 2.55871L13.4849 5.53333C13.5297 5.62539 13.6357 5.75502 13.7951 5.87361C13.9543 5.99208 14.1103 6.05743 14.2129 6.07467L16.8831 6.52198C17.8476 6.68406 18.656 7.15685 18.9185 7.98011C19.1807 8.80269 18.7958 9.6582 18.1022 10.3531L16.0278 12.4446C15.9456 12.5275 15.8535 12.6837 15.7958 12.8871C15.7384 13.0892 15.7333 13.2733 15.7593 13.3922L15.7597 13.3938L16.3532 15.9812C16.5993 17.0581 16.5177 18.1259 15.7582 18.6842C14.9961 19.2444 13.9547 18.9961 13.0085 18.4326L10.5055 16.9386C10.4004 16.8758 10.2199 16.8249 10.002 16.8249C9.78568 16.8249 9.60137 16.8751 9.48942 16.9403L9.48783 16.9412L6.98971 18.4322C6.0447 18.9977 5.00453 19.2416 4.24235 18.6809C3.48337 18.1225 3.39769 17.0567 3.64463 15.9807L4.23799 13.3938L4.23835 13.3922C4.26437 13.2733 4.25928 13.0892 4.20191 12.8871C4.14415 12.6837 4.05205 12.5275 3.96983 12.4446L1.89392 10.3516C1.20477 9.65671 0.82182 8.80262 1.08196 7.98125C1.34285 7.15748 2.14973 6.68411 3.11489 6.52192L5.78374 6.07485C5.88155 6.05788 6.0352 5.99326 6.19407 5.87449C6.35324 5.75549 6.45954 5.62558 6.50436 5.53333L6.50661 5.52873L7.97984 2.55792L7.98042 2.55675C8.42633 1.66225 9.12039 1 9.99778 1Z"
+        fill={color}
+      />
+    </svg>
+  );
+};
 
 export const Body = () => {
+  const userData = localStorage.getItem("user");
+  const parsedUserData = userData ? JSON.parse(userData) : null;
+  const userId = parsedUserData?.id || null;
   const { currency } = useCurrency();
   const { id } = useParams() as { id: string };
   const [product, setProduct] = useState<ProductDetails | null>(null);
@@ -72,6 +96,16 @@ export const Body = () => {
   const [activeSection, setActiveSection] = useState<string | null>("about");
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [exploreReviews, setExploreReviews] = useState(false);
+  const [writeReview, setWriteReview] = useState(false);
+  const [reviewData, setReviewData] = useState({
+    message: "",
+    productId: id,
+    stars: 0,
+    userId: userId,
+  });
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [reviewDetails, setReviewDetails] = useState<any[]>([]);
 
   const getProducts = async (id: string) => {
     try {
@@ -137,6 +171,20 @@ export const Body = () => {
     }
   }, [index, product]);
 
+  useEffect(() => {
+    const getAllReviews = async () => {
+      try {
+        const res = await getReview(id);
+        setReviewDetails(res || []);
+      } catch (error: any) {
+        console.error(error);
+        setReviewDetails([]);
+      }
+    };
+
+    getAllReviews();
+  }, [id]);
+
   const handleImageClick = (image: string) => {
     setCurrentImage(image);
     if (product?.data.images) {
@@ -190,8 +238,190 @@ export const Body = () => {
     return <ProductSkeleton />; // Replace the loading text with skeleton
   }
 
+  const handleSubmitReview = async () => {
+    if (!reviewData.message) {
+      errorToast("Please write a review");
+      return;
+    }
+    if (reviewData.stars === 0) {
+      errorToast("Please select a rating");
+      return;
+    }
+    try {
+       await createReview(reviewData);
+      successToast("Review submitted successfully");
+      setWriteReview(false);
+      setReviewData({
+        message: "",
+        productId: id,
+        stars: 0,
+        userId: userId,
+      });
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
   return (
     <div className="px-4 md:px-10 mt-[100px] md:mt-[150px]">
+      {exploreReviews && (
+        <div className="fixed z-50 left-0 top-0 w-screen h-screen bg-[rgba(0,0,0,0.6)] backdrop-blur-md flex justify-center items-start px-4 overflow-hidden">
+          <div className="bg-white w-full max-w-[1280px] h-full max-h-[45rem] max-h -[700px] mt-10 rounded-lg p-4 md:p-8 gap-2 relative overflow-hidden">
+            <div className="flex justify-between items-center w-full">
+              <p className="font-normal text-[22px]">Review details</p>
+              <i onClick={() => setExploreReviews(false)}> {closeBtn()}</i>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between w-full my-4   gap-12 overflow-y-auto h-full max-h-[95%]">
+              {/* image */}
+              <div className="md:flex flex-col md:flex-row justify-center md:justify-start md:items-start gap-2 w-full hidden">
+                <Image
+                  width={520}
+                  height={620}
+                  src={product?.data?.images[0] || "/heroFallback.jpg"}
+                  priority
+                  alt={product?.data?.name}
+                  className="w-[280px]  h-[280px]"
+                />
+                <div className="flex flex-col gap-2">
+                  <p className="text-text_strong text-base capitalize text-[18px] font-medium">
+                    {product?.data?.name}
+                  </p>
+                  <p className="text-text_weak text-base font-normal">
+                    {product.data?.description || "No description available"}
+                  </p>
+                </div>
+              </div>
+
+              {/* reviews */}
+
+              <div className="max-w-[633px] w-full overflow-y-auto">
+                <p className="text-text_strong text-base font-medium">
+                  Reviews
+                </p>
+
+                <div className="flex justify-start items-center gap-2 mb-2">
+                  <p
+                    className={`${lora.className} font-normal text-[32px] text-text_strong`}
+                  >
+                    {reviewDetails?.length}
+                  </p>
+                  <i>{review_0()}</i>
+                </div>
+
+                {exploreReviews && userData && (
+                  <>
+                    <div
+                      onClick={() => setWriteReview(true)}
+                      className="font-medium underline pb-6 flex items-center gap-2 cursor-pointer "
+                    >
+                      <CircularQuestionIcon />
+                      Write a review
+                    </div>
+
+                    {writeReview && (
+                      <div className="w-full font-normal text-base flex flex-col gap-2">
+                        <div className="flex flex-col gap-4 w-full">
+                          <div className="flex gap-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <div
+                                key={star}
+                                onMouseEnter={() => setHoveredRating(star)}
+                                onMouseLeave={() => setHoveredRating(0)}
+                                onClick={() =>
+                                  setReviewData((prev) => ({
+                                    ...prev,
+                                    stars: star,
+                                  }))
+                                }
+                                className="cursor-pointer"
+                              >
+                                <Star
+                                  color={
+                                    star <= (hoveredRating || reviewData.stars)
+                                      ? "#F6B01E"
+                                      : "#FEEBC3"
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <textarea
+                            value={reviewData.message}
+                            onChange={(e) =>
+                              setReviewData((prev) => ({
+                                ...prev,
+                                message: e.target.value,
+                              }))
+                            }
+                            placeholder="Write your review here..."
+                            className="w-full p-2 border rounded-md min-h-[100px] outline-slate-500 resize-none"
+                          />
+                          <div className="w-full flex justify-end">
+                            <button
+                              onClick={handleSubmitReview}
+                              className="h-8 px-4 flex justify-center items-center bg-black rounded-full text-base font-medium text-white"
+                            >
+                              Submit review
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {reviewDetails.length === 0 ? (
+                  <div className="flex-col flex items-center gap-4">
+                    <i>{msgIcon()}</i>
+                    <div className="max-w-[290px]">
+                      <p className="font-medium text-[18px] text-text_strong">
+                        There are currently no reviews!
+                      </p>
+                      <p className="text-text_weak text-sm font-normal">
+                        It looks like there are currently no reviews
+                        available at the moment
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  reviewDetails.map((review) => (
+                    <div
+                      key={review.id}
+                      className="w-full font-normal text-base flex flex-col gap-2 mb-6"
+                    >
+                      <p className="text-base font-medium">
+                        {review.fullName}
+                      </p>
+                      <div className="flex justify-start items-center gap-2">
+                        <div className="flex gap-1">
+                          {[...Array(5)].map((_, index) => (
+                            <Star
+                              key={index}
+                              color={
+                                index < review.stars ? "#F6B01E" : "#FEEBC3"
+                              }
+                            />
+                          ))}
+                        </div>
+                        <p className="font-normal text-[16px] text-text_weak">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <p className="font-normal text-base text-text_weak">
+                        {review.message}
+                      </p>
+                    </div>
+                  ))
+                )}
+
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {product && (
         <div className="mx-auto max-w-7xl w-full">
           <div className="w-full flex justify-start items-center ">
@@ -209,7 +439,7 @@ export const Body = () => {
             <div className="w-fit h-full flex flex-col-reverse md:flex-row justify-between gap-6">
               {/* 3 images */}
               <div className="flex md:flex-col gap-4">
-                {product.data.images.map((item) => (
+                {product?.data?.images.map((item) => (
                   <div
                     key={item}
                     className="w-fit h-fit cursor-pointer"
@@ -243,7 +473,7 @@ export const Body = () => {
                   src={currentImage || "/heroFallback.jpg"}
                   priority
                   alt=""
-                  className="w-[420px] h-[620px]"
+                  className="w-[420px] h-[500px]"
                 />
 
                 <div className="absolute top-1/2 w-full flex justify-between px-4">
@@ -465,7 +695,7 @@ export const Body = () => {
                     onClick={() => toggleSection("reviews")}
                   >
                     <p className="text-text_strong text-base font-medium">
-                      Reviews(1)
+                      {`Reviews (${reviewDetails?.length})`}
                     </p>
                     <i
                       className={`duration-300 ${
@@ -483,18 +713,18 @@ export const Body = () => {
                             <p
                               className={`${lora.className} font-normal text-[32px] text-text_strong`}
                             >
-                              0
+                              {reviewDetails?.length}
                             </p>
                             <i>{review_0()}</i>
                           </div>
 
-                          {false && (
+                          {reviewDetails.length === 0 && (
                             <div className="flex-col flex items-center gap-4">
                               <i>{msgIcon()}</i>
 
                               <div className="max-w-[290px] ">
                                 <p className="font-medium text-[18px] text-text_strong">
-                                  There are currently no review!
+                                  There are currently no reviews!
                                 </p>
                                 <p className="text-text_weak text-sm font-normal">
                                   It looks like there are currently no reviews
@@ -504,38 +734,132 @@ export const Body = () => {
                             </div>
                           )}
 
-                          <Link
-                            href={``}
-                            className="font-medium underline pb-6"
-                          >
-                            Write a review
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="w-full font-normal text-base flex flex-col gap-2">
-                        <p className="text-base font-medium">Emeka</p>
-                        <div className="flex justify-start items-center gap-2">
-                          <i>{review_0()}</i>
-                          <p
-                            className={`font-normal text-[16px] text-text_weak`}
-                          >
-                            12/1/2024
-                          </p>
-                        </div>
-                        <p className="font-normal text-base text-text_weak">
-                          {`10 days from the date of delivery. We ask you make sure
-                        the items have not been worn, washed, or damaged, and that
-                        you ship the item(s) back in their original packaging and
-                        box`}
-                        </p>
+                          {userData && (
+                            <>
+                              <div
+                                onClick={() => setWriteReview(true)}
+                                className="font-medium underline pb-6 flex items-center gap-2 cursor-pointer"
+                              >
+                                <CircularQuestionIcon />
+                                Write a review
+                              </div>
 
-                        <Link
-                          href={``}
-                          className="font-medium underline py-6 text-text_weak"
-                        >
-                          Explore reviews
-                        </Link>
+                              {writeReview && (
+                                <div className="w-full font-normal text-base flex flex-col gap-2">
+                                  <div className="flex flex-col gap-4 w-full">
+                                    <div className="flex gap-2">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <div
+                                          key={star}
+                                          onMouseEnter={() =>
+                                            setHoveredRating(star)
+                                          }
+                                          onMouseLeave={() =>
+                                            setHoveredRating(0)
+                                          }
+                                          onClick={() =>
+                                            setReviewData((prev) => ({
+                                              ...prev,
+                                              stars: star,
+                                            }))
+                                          }
+                                          className="cursor-pointer"
+                                        >
+                                          <Star
+                                            color={
+                                              star <=
+                                              (hoveredRating ||
+                                                reviewData.stars)
+                                                ? "#F6B01E"
+                                                : "#FEEBC3"
+                                            }
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <textarea
+                                      value={reviewData.message}
+                                      onChange={(e) =>
+                                        setReviewData((prev) => ({
+                                          ...prev,
+                                          message: e.target.value,
+                                        }))
+                                      }
+                                      placeholder="Write your review here..."
+                                      className="w-full p-2 border rounded-md min-h-[100px] outline-slate-500 resize-none"
+                                    />
+                                    <div className="w-full flex justify-end">
+                                      <button
+                                        onClick={handleSubmitReview}
+                                        className="h-8 px-4 flex justify-center items-center bg-black rounded-full text-base font-medium text-white"
+                                      >
+                                        Submit review
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
+                      {/* written review */}
+                      {reviewDetails.length > 0 ? (
+                        reviewDetails.slice(0, 1).map((review) => (
+                          <div
+                            key={review.id}
+                            className="w-full font-normal text-base flex flex-col gap-2"
+                          >
+                            <p className="text-base font-medium">
+                              {review.fullName}
+                            </p>
+                            <div className="flex justify-start items-center gap-2">
+                              <div className="flex gap-1">
+                                {[...Array(5)].map((_, index) => (
+                                  <Star
+                                    key={index}
+                                    color={
+                                      index < review.stars
+                                        ? "#F6B01E"
+                                        : "#FEEBC3"
+                                    }
+                                  />
+                                ))}
+                              </div>
+                              <p
+                                className={`font-normal text-[16px] text-text_weak`}
+                              >
+                                {new Date(review.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <p className="font-normal text-base text-text_weak">
+                              {review.message}
+                            </p>
+
+                            {reviewDetails.length > 1 && (
+                              <div
+                                onClick={() => setExploreReviews(true)}
+                                className="font-medium underline py-6 text-text_weak cursor-pointer"
+                              >
+                                Explore {reviewDetails.length - 1} more reviews
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex-col flex items-center gap-4">
+                          <i>{msgIcon()}</i>
+                          <div className="max-w-[290px]">
+                            <p className="font-medium text-[18px] text-text_strong">
+                              There are currently no reviews!
+                            </p>
+                            <p className="text-text_weak text-sm font-normal">
+                              It looks like there are currently no reviews
+                              available at the moment
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
