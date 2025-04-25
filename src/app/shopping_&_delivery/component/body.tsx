@@ -47,7 +47,7 @@ export const Body = () => {
             <Navbar />
 
 
-            <div className="mt-[152px] px-2 lg:px-10">
+            <div className="mt-[152px] px-4 lg:px-10">
                 <p className="sm:text-xl text-text_weak text-[14px] pb-2 w-max mx-auto">Shipping & Delivery</p>
                 <h1 className="w-full sm:w-[507px] sm:text-3xl text-[24px]  text-text_strong text-center sm:mx-auto pb-6">Fast and reliable delivery straight to your doorstep</h1>
 
@@ -60,9 +60,8 @@ export const Body = () => {
                                 onClick={() => toggleFAQ(index)}
                             >
                                 <h3 className="font-[400] text-base text-text_strong py-6">{faq.question}</h3>
-                                <span className="transform transition-transform duration-300">
-                                    {openIndex === index ? arrowUp() : arrowDown()}
-
+                                <span className={`transform transition-transform duration-300 ${openIndex === index ? "rotate-180" : "rotate-0"}`}>
+                                    {arrowDown()}
                                 </span>
                             </button>
                             <div className={`mt-2 ${openIndex === index ? '' : 'hidden'}`}>

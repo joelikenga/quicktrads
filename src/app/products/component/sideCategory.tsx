@@ -1,4 +1,3 @@
- 
 "use client";
 
 import { arrowDown, check } from "@/app/global/svg";
@@ -235,8 +234,7 @@ export const SideCategory = ({
             )}
           </div>
 
-          {/* {showFilter && ( */}
-          <div className="overflow-y-auto  w-full  flex justify-start items-start flex-col gap-6  fixed h-screen md:relative   top-0 bg-background md:h-full d:pt-12 md:pt-0 px-2 md:pr-6  md:block">
+          <div className="overflow-y-auto w-full flex justify-start items-start flex-col gap-6 h-[calc(100vh-15rem)] px-2 md:pr-6">
             {selectedCategory === "collections" && (
               <div className="flex justify-start items-start flex-col gap-4 text-text_weak text-base font-normal">
                 <div
@@ -503,7 +501,7 @@ export const SideCategory = ({
 
             {/* ---------------------- gender ---------------------- */}
             {shouldShowGenderSection && (
-              <div className="flex w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
+              <div className="flex w-full border-b  flex-col justify-start gap-4 py-2">
                 <div
                   onClick={() => setShowGender(!showGender)}
                   className="flex justify-between w-full cursor-pointer"
@@ -538,7 +536,7 @@ export const SideCategory = ({
 
             {/* ---------------------- Size ---------------------- */}
 
-            <div className="flex w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
+            <div className="flex w-full border-b  flex-col justify-start gap-4 pb-4">
               <div
                 onClick={() => setShowSubCategory(!showSubCategory)}
                 className="flex justify-between w-full cursor-pointer"
@@ -576,7 +574,7 @@ export const SideCategory = ({
 
             {/* ---------------------- price ---------------------- */}
 
-            <div className="flex  w-full border-b min-h-[46px] flex-col justify-start gap-4 py-4">
+            <div className="flex  w-full  flex-col justify-start gap-4 py-2">
               <div
                 onClick={() => setShowPrice(!showPrice)}
                 className="flex justify-between w-full cursor-pointer"
@@ -1007,4 +1005,3 @@ export const SideCategory = ({
   );
 };
 
- 
