@@ -25,7 +25,7 @@ export const Hero1 = () => {
           const mainContent = response.data.find(
             (page: any) => page.heroPageName === "heroPagePromotion"
           );
-          // console.log(mainContent);
+          // //console.log(mainContent);
           setData(mainContent);
         }
         setLoading(false);

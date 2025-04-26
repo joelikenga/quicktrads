@@ -129,13 +129,13 @@ export const Body = () => {
 
   // const handleForward = (formData: steps) => {
   //   if (step === 1) {
-  //     console.log(formData.step1); // Log Step 1 Data
+  //     //console.log(formData.step1); // Log Step 1 Data
   //     setData((prevData) => ({ ...prevData, step1: formData.step1 }));
   //   } else if (step === 2) {
-  //     console.log(formData.step2); // Log Step 2 Data
+  //     //console.log(formData.step2); // Log Step 2 Data
   //     setData((prevData) => ({ ...prevData, step2: formData.step2 }));
   //   } else if (step === 3) {
-  //     console.log(formData.step3); // Log Step 3 Data
+  //     //console.log(formData.step3); // Log Step 3 Data
   //     setData((prevData) => ({ ...prevData, step3: formData.step3 }));
   //   }
   //   setStep((prevStep) => prevStep + 1);
@@ -145,8 +145,8 @@ export const Body = () => {
     if (step === 1) {
       setLoading(true);
       try {
-        const res = await forgetPassword(formData.step1.email);
-        console.log(res === null);
+         await forgetPassword(formData.step1.email);
+        //console.log(res === null);
         setData((prevData) => ({
           ...prevData,
           step1: formData.step1,
@@ -186,12 +186,12 @@ export const Body = () => {
         return;
       }
       try {
-        const reset = await resetPassword(
+         await resetPassword(
           data.step1.email,
           data.step2.OTP,
           formData.step3.Password
         );
-        console.log(reset === null);
+        //console.log(reset === null);
         setData((prevData) => ({
           ...prevData,
           step3: formData.step3,

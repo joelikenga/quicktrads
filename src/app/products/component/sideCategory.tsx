@@ -71,7 +71,7 @@ export const SideCategory = ({
         women: womenCount,
         unisex: unisexCount,
       });
-      // console.log("Trending count:", response.data.length);
+      // //console.log("Trending count:", response.data.length);
     } catch (error) {
       console.error("API error:", error);
       throw error;
@@ -109,7 +109,7 @@ export const SideCategory = ({
         setSelectedGenders([genderFromCategory]);
       }
     }
-    console.log(savedItem);
+    //console.log(savedItem);
   }, []);
 
   // Handle filter updates - only when selectedCategory changes

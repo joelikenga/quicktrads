@@ -161,7 +161,7 @@ export const Body = () => {
       // Get the raw date value from formData (already in YYYY-MM-DD format from input)
       const dobValue =
         formatDateForDisplay(formData.dob) || JSON.parse(userData)?.dob;
-      // console.log(dobValue);
+      // //console.log(dobValue);
       const response = await UpdateUserDetails({
         avatar: formData.avatar || JSON.parse(userData)?.avatar,
         fullName: formData.fullName || JSON.parse(userData)?.fullName,

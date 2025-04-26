@@ -25,7 +25,7 @@ export const Hero = () => {
           const mainContent = response.data.find(
             (page: any) => page.heroPageName === "heroPageMain"
           );
-          // console.log(mainContent);
+          // //console.log(mainContent);
           setData(mainContent);
         }
         setLoading(false);

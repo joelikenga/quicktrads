@@ -27,7 +27,7 @@ export const userLogin = async (data: loginData) => {
 };
 export const userSignup = async (data: UserRegistrationData) => {
   try {
-    console.log("Sending signup data:", data);
+    //console.log("Sending signup data:", data);
     const response = await axios$.post("/auth/signup", data);
     return response;
   } catch (error: unknown) {
@@ -37,7 +37,7 @@ export const userSignup = async (data: UserRegistrationData) => {
 
 export const resendOTP = async (email: string) => {
   try {
-    console.log("Sending signup data:", { email });
+    //console.log("Sending signup data:", { email });
     const response = await axios$.post("/auth/resend-otp", {
       email,
     });

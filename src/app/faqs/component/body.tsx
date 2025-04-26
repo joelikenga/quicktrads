@@ -1,7 +1,7 @@
 "use client";
 import { search } from "@/app/global/svg";
 import { Navbar } from "@/app/global/navbar";
-import { arrowUp, arrowDown } from "@/app/global/svg";
+import { arrowDown } from "@/app/global/svg";
 import React, { useState } from "react";
 import { Footer } from "@/app/Component/footer";
 import Link from "next/link";
@@ -118,10 +118,11 @@ export const Body = () => {
           ) : (
             <div className="text-center py-8">
               <p className="text-lg text-text_strong mb-2">
-                We're new to this question!
+                {`We're new to this question!`}{" "}
               </p>
               <p className="text-text_weak mb-4">
-                We haven't encountered this question before. Let us help you directly.
+                {`We haven't encountered this question before. Let us help you
+                directly.`}
               </p>
               <Link
                 href="/contact"

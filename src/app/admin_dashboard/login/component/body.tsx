@@ -16,7 +16,7 @@ import nookies from "nookies";
 // import { useEffect } from "react";
 import { useRouter,  } from "next/navigation";
 import { adminLogin } from "../../../../utils/api/admin/auth";
-import { errorToast } from "@/utils/toast/toast";
+import { errorToast, successToast } from "@/utils/toast/toast";
 // import { cookies } from 'next/headers';
 const lora = Lora({
   variable: "--font-lora",
@@ -75,7 +75,7 @@ const Body = () => {
       const loginData = res?.data;
       const { accessToken, refreshToken, user } = loginData;   
 
-      console.log(res);
+      //console.log(res);
       // Check if user is admin
       if (user.role !== 'super_admin') {
         errorToast("Incorrect details");
@@ -88,7 +88,7 @@ const Body = () => {
       // localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("admin", JSON.stringify(user)); // Store user details
 
-      console.log(localStorage.getItem("admin"))
+      //console.log(localStorage.getItem("admin"))
 
       nookies.set(null, "accessToken", accessToken, {
         maxAge: 1 * 24 * 60 * 60,
@@ -112,9 +112,11 @@ const Body = () => {
 
       setLoading(false);
       router.replace("/admin_dashboard");
+      successToast("Login successful");
     } catch (error: unknown) {
-      throw error;
       setLoading(false);
+      errorToast("An error occurred during login");
+      throw error;
     }
   };
 

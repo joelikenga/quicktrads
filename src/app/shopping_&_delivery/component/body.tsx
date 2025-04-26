@@ -1,7 +1,7 @@
 'use client'
 import { Footer } from '@/app/Component/footer';
 import { Navbar } from '@/app/global/navbar'
-import { arrowUp, arrowDown } from '@/app/global/svg';
+import {  arrowDown } from '@/app/global/svg';
 import React, { useState } from 'react'
 
 export const Body = () => {

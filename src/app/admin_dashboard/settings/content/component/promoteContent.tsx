@@ -1,4 +1,4 @@
- 'use client'
+"use client";
 import { arrowleft, info } from "@/app/global/svg";
 import { Lora } from "next/font/google";
 import Image from "next/image";
@@ -9,11 +9,9 @@ import {
   createContent,
 } from "@/utils/api/admin/products";
 import LoadingSkeleton from "./LoadingSkeleton";
-import { errorToast } from "@/utils/toast/toast";
+import { errorToast, successToast } from "@/utils/toast/toast";
 
-interface EditContentProps {
-  onClick: () => void;
-}
+
 
 const lora = Lora({
   variable: "--font-lora",
@@ -68,8 +66,11 @@ const convertFileToBase64 = (file: File): Promise<string> => {
     reader.onerror = (error) => reject(error);
   });
 };
+interface HeroContentProps {
+  setView: React.Dispatch<React.SetStateAction<"hero" | "promote" | null>>;
+}
 
-const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
+export const PromoteContent = ({ setView }: HeroContentProps) => {
   const [selectedColor, setSelectedColor] = useState<string>("#E9C46A");
   const [formData, setFormData] = useState({
     id: "",
@@ -129,15 +130,21 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
   };
 
   const handleRemoveImage = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      heroImage: ""
+      heroImage: "",
     }));
   };
 
   const handleSubmit = async () => {
     // Validate all required fields
-    if (!formData.heroTitle || !formData.heroSubTitle || !formData.heroBtnText || !formData.heroBtnCTA|| !formData.heroImage) {
+    if (
+      !formData.heroTitle ||
+      !formData.heroSubTitle ||
+      !formData.heroBtnText ||
+      // !formData.heroBtnCTA ||
+      !formData.heroImage
+    ) {
       errorToast("Please fill in all fields before updating");
       return;
     }
@@ -157,9 +164,13 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
       } else {
         await updateContent(formData.id, updatedData);
       }
-      onClick();
+      successToast("Content updated");
+      setView(null);
+      window.location.reload();
+      // onClick();
     } catch (error) {
-      console.error("Failed to save content:", error);
+      errorToast("error updating content.");
+      throw error;
     }
   };
 
@@ -177,9 +188,9 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
   }
 
   const handleImageClick = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) handleHeroImageUpload(file);
@@ -191,8 +202,8 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
     <div className="relative group">
       <div
         onClick={handleImageClick}
-        className="w-[420px] h-[320px] border-dotted border stroke-stroke_weak cursor-pointer relative overflow-hidden"
-        style={{ backgroundColor: selectedColor, zIndex: 0 }}
+        className="w-[420px] h-[320px] border-dotted border stroke-stroke_weak cursor-pointer relative overflow-hidden bg-black/20 rounded-lg"
+        // style={{ backgroundColor: selectedColor, zIndex: 0 }}
       >
         {isUploading ? (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -235,7 +246,7 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
     <>
       <div>
         <h3
-          onClick={onClick}
+          onClick={setView.bind(null, null)}
           className="font-[500] flex cursor-pointer items-center gap-1 text-[18px] leading-[28px] text-black"
         >
           <span>{arrowleft()}</span>Edit content
@@ -249,8 +260,8 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
           </p>
 
           {/* image and bg filter options */}
-          <section className="flex mt-2 pt-2 gap-8">
-            <div>
+          <section className="flex flex-col md:flex-row mt-2 pt-2 gap-8">
+            <div className="flex flex-col gap-2">
               <p className="text-[14px] text-text_strong font-[400]">Image</p>
               <ImageUploadUI />
             </div>
@@ -409,7 +420,7 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
               </div>
 
               {/* Button link */}
-              <div>
+              {/* <div>
                 <label htmlFor="button-link-text">
                   <p className="text-sm leading-[22px] font-400 text-text_strong pb-2">
                     Button link
@@ -422,7 +433,7 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
                     id="button-link-text"
                   />
                 </label>
-              </div>
+              </div> */}
             </div>
           </section>
         </section>
@@ -438,10 +449,10 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
 
           {/* preview screens */}
           <div
-            className="w-[790px] 2xl:w-[980px] mb-[48px] mt-[16px] flex"
+            className="w-full mb-[48px] mt-[16px] flex flex-col md:flex-row py-4 md:py-0 px-4 md:px-10"
             style={{ backgroundColor: selectedColor }}
           >
-            <div className="py-[76.67px] pl-[61.34px]">
+            <div className="py-[76.67px] ">
               <h1
                 className={`${lora.className} w-[372px] h-[102px] leading-[50.6px] font-[400] pb-[12px] text-[46px]`}
               >
@@ -462,10 +473,13 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
                 <p className="text-[12.27px]">{formData.heroBtnText || ""}</p>
               </div>
             </div>
-            <div 
-              className="w-[499px] h-[337px] bg-cover bg-center bg-no-repeat"
-              style={{ 
-                backgroundImage: `url(${formData.heroImage || "https://res.cloudinary.com/dymkfk58k/image/upload/v1740666686/image_ogsxr3.png"})` 
+            <div
+              className="max-w-[499px] h-[337px] bg-cover object-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${
+                  formData.heroImage ||
+                  "https://res.cloudinary.com/dymkfk58k/image/upload/v1740666686/image_ogsxr3.png"
+                })`,
               }}
             />
           </div>
@@ -478,7 +492,7 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
               Update
             </div>
             <div
-              onClick={onClick}
+              onClick={setView.bind(null, null)}
               className="w-[153.3px] cursor-pointer selection:no-underline h-[40px] rounded-full py-[9px] px-[51px] border-1 border border-stroke_weak flex justify-center items-center"
             >
               Cancel
@@ -489,6 +503,3 @@ const PromoteContent: React.FC<EditContentProps> = ({ onClick }) => {
     </>
   );
 };
-
-export default PromoteContent;
- 

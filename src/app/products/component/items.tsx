@@ -69,7 +69,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
         response = (await getAllProducts()) as any;
       }
 
-      // console.log("response", response);
+      // //console.log("response", response);
 
       const transformedProducts =
         response?.data?.map(
@@ -87,10 +87,11 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
         ) || [];
 
       setAllProducts(transformedProducts);
-    } catch (error) {
-      console.log(error);
+    } catch (error:any) {
+      //console.log(error);
       // //errorToat(error);
       setAllProducts([]);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -204,7 +205,7 @@ export const Items = ({ onFilterChange, filters }: ItemsProps) => {
   };
 
   const filteredProducts = filterProducts(allProducts);
-  // console.log("filteredProducts", filteredProducts);
+  // //console.log("filteredProducts", filteredProducts);
   // //successToat("hello")
 
   if (isLoading) {

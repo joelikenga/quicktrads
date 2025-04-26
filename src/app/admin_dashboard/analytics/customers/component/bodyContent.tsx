@@ -128,7 +128,7 @@ interface AnalyticsData {
 }
 
 const aggregateUserData = (data: UserData[] | null, duration: number) => {
-  console.log("Raw data:", data); // Debug log
+  //console.log("Raw data:", data); // Debug log
 
   if (!data || !Array.isArray(data)) {
     return new Array(duration).fill(0);
@@ -140,11 +140,11 @@ const aggregateUserData = (data: UserData[] | null, duration: number) => {
   startDate.setDate(startDate.getDate() - (duration - 1));
   startDate.setHours(0, 0, 0, 0);
 
-  console.log("Start date:", startDate); // Debug log
+  //console.log("Start date:", startDate); // Debug log
 
   data.forEach((item) => {
     const itemDate = new Date(item.year, item.month - 1, item.day);
-    console.log("Processing item date:", itemDate); // Debug log
+    //console.log("Processing item date:", itemDate); // Debug log
 
     if (itemDate >= startDate && itemDate <= today) {
       const dayIndex = Math.floor(
@@ -156,7 +156,7 @@ const aggregateUserData = (data: UserData[] | null, duration: number) => {
     }
   });
 
-  console.log("Processed result:", result); // Debug log
+  //console.log("Processed result:", result); // Debug log
   return result;
 };
 
@@ -183,7 +183,7 @@ export const BodyContent = () => {
       setIsLoading(true);
       try {
         const res = await getUserAnalytics(duration);
-        console.log("API Response:", res); // Debug log
+        //console.log("API Response:", res); // Debug log
         if (res.status === 200) {
           setAnalyticsData(res.data);
         }
