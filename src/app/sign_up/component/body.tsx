@@ -137,13 +137,14 @@ export const Body = () => {
       }
       try {
         const { confirmPassword, ...signupData } = formData.step1;
-        const res = (await userSignup(signupData)) as { data: unknown };
-        console.log("validation:", confirmPassword === formData.step1.password);
-        console.log("User registration response:", res === null);
+        await userSignup(signupData);
+        console.warn("cp", confirmPassword === formData.step1.password);
+        //console.log("User registration response:", res === null);
         setData((prevData) => ({ ...prevData, step1: formData.step1 }));
         setStep(2);
       } catch (error: unknown) {
         console.error("User registration error:", error);
+        throw error;
       } finally {
         setLoading(false);
       }
@@ -171,10 +172,10 @@ export const Body = () => {
   // Remove or comment out the handleForward function since we're not using it anymore
   // const handleForward = (formData: steps) => {
   //   if (step === 1) {
-  //     console.log(formData.step1);
+  //     //console.log(formData.step1);
   //     setData((prevData) => ({ ...prevData, step1: formData.step1 }));
   //   } else if (step === 2) {
-  //     console.log(formData.step2);
+  //     //console.log(formData.step2);
   //     setData((prevData) => ({ ...prevData, step2: formData.step2 }));
   //   }
   //   setStep((prevStep) => prevStep + 1);
@@ -183,8 +184,8 @@ export const Body = () => {
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      const res = await resendOTP(data?.step1?.email);
-      console.log("OTP resent successfully:", res);
+       await resendOTP(data?.step1?.email);
+      //console.log("OTP resent successfully:", res);
     } catch (error: unknown) {
       console.error("Resend OTP error:", error);
     } finally {

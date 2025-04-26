@@ -107,7 +107,6 @@ export const Navbar = () => {
     const getNotifications = async () => {
       try {
         const response = (await getAdminNotifications()) as any;
-        console.log("Fetched notifications:", response);
         if (response?.data) {
           setNotificationDetails(response.data);
           // Calculate unread notifications
@@ -167,6 +166,7 @@ export const Navbar = () => {
         {/* Mobile menu button */}
         <div className="md:hidden flex items-center gap-4">
           <div
+          ref={notificationRef}
             onClick={handleNotificationToggle}
             className="cursor-pointer relative"
           >
@@ -233,6 +233,7 @@ export const Navbar = () => {
 
           {/* Desktop notification button */}
           <div
+          ref={notificationRef}
             onClick={handleNotificationToggle}
             className={` ${
               pathname.includes("admin_dashboard/settings/notification")

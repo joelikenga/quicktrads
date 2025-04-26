@@ -126,7 +126,7 @@ export const Body = () => {
 
   // Add this effect to monitor customer state changes
   useEffect(() => {
-    console.log("Customer state updated:", customer);
+    //console.log("Customer state updated:", customer);
   }, [customer]);
 
   const handleRowClick = (orderId: string) => {

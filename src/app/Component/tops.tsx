@@ -35,7 +35,7 @@ export const Tops = () => {
     try {
       setIsLoading(true);
       const response = (await getAllProducts()) as any;
-      // console.log("response", response);
+      // //console.log("response", response);
 
       if (response?.data) {
         // Filter all products where subCategory === "tops"
@@ -57,10 +57,11 @@ export const Tops = () => {
         }));
 
         setAllProducts(transformedProducts);
-        // console.log("response", transformedProducts);
+        // //console.log("response", transformedProducts);
       }
     } catch (error) {
-      console.log(error);
+      //console.log(error);
+      throw error;
       setAllProducts([]);
     } finally {
       setIsLoading(false);

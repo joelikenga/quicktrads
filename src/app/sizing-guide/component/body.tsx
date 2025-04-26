@@ -36,24 +36,30 @@ export const Body = () => {
 
         {/* Gender Tabs */}
         <div className="max-w-3xl mx-auto mt-10 md:p-4">
-          <div className="relative flex items-center justify-between w-full sm:w-[344px] mx-auto bg-[#fafafa] p-1 rounded-full">
-            <div
-              className={`absolute left-1 top-1 w-1/2 h-[30px] bg-white rounded-full transition-transform duration-300 ease-in-out ${
-                tab === "Female" ? "translate-x-40" : "translate-x-0"
-              }`}
-            />
-            <button
-              className="w-1/2 z-10 text-center py-1"
-              onClick={() => setTab("Male")}
-            >
-              Men
-            </button>
-            <button
-              className="w-1/2 z-10 text-center py-1"
-              onClick={() => setTab("Female")}
-            >
-              Women
-            </button>
+
+
+          {/* button switchers */}
+          <div className="flex justify-center items-center w-full">
+            <div className="flex items-center relative justify-evenly h-11 px-1.5 py-[6px] rounded-full w-fit  sm:mx-auto bg-[#fafafa] gap-2">
+              {/* indicator */}
+
+              <button
+                className={`w-[107px]  text-nowrap py-1 px-2 ${
+                  tab === "Male" && "bg-white  rounded-full"
+                }`}
+                onClick={() => setTab("Male")}
+              >
+                Men
+              </button>
+              <button
+                className={`w-[107px]  text-nowrap py-1 px-2 ${
+                  tab === "Female" && "bg-white  rounded-full"
+                }`}
+                onClick={() => setTab("Female")}
+              >
+                Women
+              </button>
+            </div>
           </div>
 
           {/* Clothing Type Buttons */}

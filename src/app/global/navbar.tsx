@@ -53,6 +53,7 @@ export const Navbar = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currencyDropdown, setCurrencyDropdown] = useState(false);
 
   // Mobile dropdown states
   const [mobileDropdownStates, setDropdownStates] = useState({
@@ -155,6 +156,13 @@ export const Navbar = () => {
     } else {
       setSearchOptions(false);
     }
+  };
+
+  const handleCurrencySelect = (newCurrency: string) => {
+    if (currency !== newCurrency) {
+      toggleCurrency();
+    }
+    setCurrencyDropdown(false);
   };
 
   // Refs for click outside handling
@@ -319,12 +327,41 @@ export const Navbar = () => {
               )}
             </div>
 
-            <div
-              className="flex items-center gap-2 font-medium text-sm w-20  cursor-pointer"
-              onClick={toggleCurrency}
-            >
-              {currency === "NGN" ? nigeriaIcon() : USAIcon()}
-              <p className="">{currency === "NGN" ? "NGN ₦" : "USD $"}</p>
+            <div className="relative">
+              <div
+                className="flex items-center gap-2 font-medium text-sm min-w-[100px] cursor-pointer"
+                onClick={() => setCurrencyDropdown(!currencyDropdown)}
+              >
+                <div className="flex items-center gap-2 flex-1">
+                  {currency === "NGN" ? nigeriaIcon() : USAIcon()}
+                  <p className="">{currency === "NGN" ? "NGN ₦" : "USD $"}</p>
+                </div>
+                <i
+                  className={`transition-transform duration-200 ${
+                    currencyDropdown ? "rotate-180" : ""
+                  }`}
+                >
+                  {arrowDown()}
+                </i>
+              </div>
+              {currencyDropdown && (
+                <div className="absolute top-full left-0 mt-1 w-fit bg-white rounded-md shadow-lg p-2">
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer rounded-lg text-nowrap"
+                    onClick={() => handleCurrencySelect("NGN")}
+                  >
+                    {nigeriaIcon()}
+                    <p>NGN ₦</p>
+                  </div>
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer rounded-lg text-nowrap"
+                    onClick={() => handleCurrencySelect("USD")}
+                  >
+                    {USAIcon()}
+                    <p>USD $</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
