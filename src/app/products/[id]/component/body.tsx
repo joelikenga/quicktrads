@@ -140,7 +140,7 @@ export const Body = () => {
       };
 
       setProduct(transformedData);
-      // console.log("Product details:", transformedData);
+      // //console.log("Product details:", transformedData);
     } catch (error: unknown) {
       throw error;
     }

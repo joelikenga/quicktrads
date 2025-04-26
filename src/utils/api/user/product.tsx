@@ -39,7 +39,7 @@ state: string
 export const getAllProducts = async () => {
   try {
     const response = await axios$.get(`/product`);
-    // console.log("Raw API response:", response);
+    // //console.log("Raw API response:", response);
 
     return response;
   } catch (error: unknown) {
@@ -49,9 +49,9 @@ export const getAllProducts = async () => {
 
 export const getProduct = async (productId: string) => {
   try {
-    // console.log("Fetching product with ID:", productId);
+    // //console.log("Fetching product with ID:", productId);
     const response = await axios$.get(`/product/${productId}`);
-    // // console.log("Raw API response:", response);
+    // // //console.log("Raw API response:", response);
 
     // // Add validation for response structure
     // if (!response?.data) {
@@ -115,7 +115,7 @@ export const createOrder = async (data: OrderRequest): Promise<OrderResponse> =>
 export const getOrders = async () => {
   try {
     const response = await axios$.get(`/order`);
-    // console.log("order response", response);
+    // //console.log("order response", response);
 
     return response;
   } catch (error: unknown) {
@@ -137,7 +137,7 @@ export const getOrder = async (orderId: string) => {
 export const killOrder = async (orderId: string, reason: string) => {
   try {
     const response = await axios$.patch(`/order/cancel/${orderId}`, { reason});
-    console.log("order response", response);
+    //console.log("order response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -155,7 +155,7 @@ interface ReviewData {
 export const createReview = async (reviewData: ReviewData) => {
   try {
     const response = await axios$.post(`/product/review`,  reviewData );
-    console.log("review response", response.data);
+    //console.log("review response", response.data);
     return response.data;
   } catch (error: unknown) {
     // console.error("Error creating review:", error);
@@ -166,7 +166,7 @@ export const createReview = async (reviewData: ReviewData) => {
 export const getReview = async (productId: any) => {
   try {
     const response = await axios$.get (`/product/review/${ productId }`);
-    console.log("review response", response.data);
+    //console.log("review response", response.data);
     return response.data;
   } catch (error: unknown) {
     // console.error("Error creating review:", error);

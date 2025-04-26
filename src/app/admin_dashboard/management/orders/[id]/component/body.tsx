@@ -177,7 +177,7 @@ export const Body = () => {
           | "completed",
         trackingNumber: trackingId,
       });
-      console.log(statusUpdate);
+      //console.log(statusUpdate);
       if (statusUpdate) {
         await fetchOrder(id);
         setTrackingId("");

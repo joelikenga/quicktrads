@@ -152,8 +152,9 @@ export const Body = () => {
       // Clear interval when component unmounts
       return () => clearInterval(expiryInterval);
     } catch (error: any) {
-      throw error;
       setLoading(false);
+      errorToast("Incorrect details");
+      throw error;
     }
   };
 

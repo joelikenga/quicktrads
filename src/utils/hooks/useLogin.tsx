@@ -39,10 +39,11 @@ export const useLogin_2 = () => {
       const res = (await loggedInUser()) as UserResponse;
       setUserDetails(res);
       setIsLoggedIn(true);
-    } catch (error) {
+    } catch (error:any) {
       setIsLoggedIn(false);
       setUserDetails(null);
-      console.log(error)
+      throw error;
+      //console.log(error)
       // Optionally, show an error toast
       //errorToat("Failed to fetch user data. Please log in again.");
     }

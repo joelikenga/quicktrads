@@ -37,7 +37,7 @@ export function CartProvider({ children }: { children: any }) {
   // Load cart items from localStorage when the component mounts
   useEffect(() => {
     const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-    // console.log('savedCart', savedCart)
+    // //console.log('savedCart', savedCart)
     if (savedCart) {
       try {
         setCartItems(JSON.parse(savedCart));

@@ -220,14 +220,15 @@ export const Body = () => {
             setPending(false);
           }
         } catch (error) {
-          console.log(error);
+          //console.log(error);
+          throw error;
           setFailed(true);
         } finally {
           closePaymentModal();
         }
       },
       onClose: () => {
-        console.log("Payment modal closed");
+        //console.log("Payment modal closed");
       },
     });
   };
@@ -265,7 +266,8 @@ export const Body = () => {
       );
       setShippingData(transformedData);
     } catch (err: unknown) {
-      console.log(err);
+      //console.log(err);
+      throw err;
     }
   };
 
@@ -313,7 +315,8 @@ export const Body = () => {
       setShippingData((prev) => prev.filter((_, i) => i !== index));
       setDeleteAddress(false);
     } catch (error: unknown) {
-      console.log(error);
+      //console.log(error);
+      throw error;
     }
   };
 

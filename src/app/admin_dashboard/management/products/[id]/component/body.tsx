@@ -112,7 +112,7 @@ export const Body = ({ id }: BodyProps) => {
     unisex: ["Tops", "Trousers", "Two-Piece"],
   };
 
-  // console.log("Edit mode:", edit);
+  // //console.log("Edit mode:", edit);
 
   // Add form input handlers
   const handleSizeToggle = (size: string) => {
@@ -447,8 +447,8 @@ export const Body = ({ id }: BodyProps) => {
       };
 
       // Send to backend using the createProduct function
-      const response = await updateProduct(id, productData);
-      console.log("Product drafted successfully:", response);
+       await updateProduct(id, productData);
+      //console.log("Product drafted successfully:", response);
 
       // Clear form after successful upload
       setImages([]);

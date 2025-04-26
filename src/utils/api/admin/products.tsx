@@ -87,7 +87,7 @@ export const fetchAllProducts = async (page: number, size: number) => {
     const response = await axios$.get(
       `/product/admin?page=${page}&size=${size}`
     );
-    // console.log("Raw API response:", response);
+    // //console.log("Raw API response:", response);
 
     return response;
   } catch (error: unknown) {
@@ -97,9 +97,9 @@ export const fetchAllProducts = async (page: number, size: number) => {
 
 export const fetchProduct = async (productId: string) => {
   try {
-    // console.log("Fetching product with ID:", productId);
+    // //console.log("Fetching product with ID:", productId);
     const response = await axios$.get(`/product/${productId}`);
-    // console.log("Raw API response:", response);
+    // //console.log("Raw API response:", response);
 
     // Add validation for response structure
     if (!response?.data) {
@@ -116,7 +116,7 @@ export const fetchProduct = async (productId: string) => {
 export const getOrders = async () => {
   try {
     const response = await axios$.get(`/admin/order`);
-    // console.log("order response", response);
+    // //console.log("order response", response);
 
     return response;
   } catch (error: unknown) {
@@ -136,7 +136,7 @@ export const getOrder = async (orderId: any) => {
 export const updateOrderStatus = async (id: any,data:updateOrderStatus) => {
   try {
     const response = await axios$.patch(`/admin/order/${id}`,data);
-    // console.log("response", response);
+    // //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -146,7 +146,7 @@ export const updateOrderStatus = async (id: any,data:updateOrderStatus) => {
 export const adminDashboard = async () => {
   try {
     const response = await axios$.get(`/auth/admin/dashboard`);
-    // console.log("order response", response);
+    // //console.log("order response", response);
 
     return response;
   } catch (error: unknown) {
@@ -231,7 +231,7 @@ export const updateUserStatus = async (
 export const getCustomer = async (id: any) => {
   try {
     const response = await axios$.get(`/auth/admin/user/${id}`);
-    // console.log("response", response);
+    // //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -242,7 +242,7 @@ export const getCustomer = async (id: any) => {
 export const getStatusCount = async (id: any) => {
   try {
     const response = await axios$.get(`/admin/orders/status-count?userID=${id}`);
-    console.log("response", response);
+    //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -253,7 +253,7 @@ export const getStatusCount = async (id: any) => {
 export const getSalesAnalytics = async (duration: any) => {
   try {
     const response = await axios$.get(`/auth/admin/sales-analytics?duration=${duration}`);
-    console.log("response", response);
+    //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -263,7 +263,7 @@ export const getSalesAnalytics = async (duration: any) => {
 export const getOrderAnalytics = async (duration: any) => {
   try {
     const response = await axios$.get(`/auth/admin/orders-analytics?duration=${duration}`);
-    console.log("response", response);
+    //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -273,7 +273,7 @@ export const getOrderAnalytics = async (duration: any) => {
 export const getProductAnalytics = async (duration: any) => {
   try {
     const response = await axios$.get(`/auth/admin/product-analytics?duration=${duration}`);
-    console.log("response", response);
+    //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
@@ -283,7 +283,7 @@ export const getProductAnalytics = async (duration: any) => {
 export const getUserAnalytics = async (duration: any) => {
   try {
     const response = await axios$.get(`/auth/admin/product-analytics?duration=${duration}`);
-    console.log("response", response);
+    //console.log("response", response);
     return response;
   } catch (error: unknown) {
     throw error;
